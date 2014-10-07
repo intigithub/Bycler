@@ -1,0 +1,25 @@
+<head>
+  <title>Bycler</title>
+</head>
+
+<body>
+    <div class="demo-wrapper">
+        <div class="heatmap">
+        </div>
+    </div>
+    <script src="/js/heatmap.min.js"></script>
+    <script>
+    window.onload = function() {
+        var heatmapInstance = h337.create({
+            container: document.querySelector('.heatmap')
+        });
+
+        heatmapInstance.setData({{tracker-map}});
+        
+        var hm = document.querySelector('.heatmap');
+        var heatmap = h337.create({
+            container: hm
+        });
+    };
+  </script>
+</body>
