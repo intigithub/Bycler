@@ -1,4 +1,3 @@
-
  var SidebarMenuEffects = (function() {
  	function hasParentClass( e, classname ) {
 

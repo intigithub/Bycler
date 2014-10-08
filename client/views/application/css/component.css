@@ -11,11 +11,19 @@ body,
 .st-pusher,
 .st-content {
 	height: 100%;
+    margin: 0px;
+}
+
+.reveal-button {
+    position: absolute;
+    z-index: 9999;
+    border: 0;
+    background: transparent;
 }
 
 .st-content {
 	overflow-y: scroll;
-	background: #f3efe0;
+	background: #fff;
 }
 
 .st-content,

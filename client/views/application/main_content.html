@@ -1,14 +1,16 @@
 <template name="mainContent">
 <div class="st-pusher">
 	<div class="st-content">
-	<div class="st-content-inner"> 
-		<div class="main clearfix">
-			<div id="st-trigger-effects" class="column">
-					<button data-effect="st-effect-2" id="reveal-button">Reveal</button>
-                {{> mapaCalor}}
-				</div>
-			</div><!-- /main -->
-	</div><!-- /st-content-inner -->
-	</div><!-- /st-content -->
-</div><!-- /st-pusher -->
+        <div class="st-content-inner"> 
+            <div class="main clearfix">
+                <div id="st-trigger-effects" class="column">
+                    <button data-effect="st-effect-2" id="reveal-button" class="reveal-button">
+                        <img src="/imgs/reveal-bar.png" width="24px"/>
+                    </button>
+                    {{> mapaCalor}}
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
 </template>
