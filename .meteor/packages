@@ -6,3 +6,8 @@
 meteor-platform
 autopublish
 insecure
+service-configuration
+accounts-base
+accounts-ui-unstyled
+accounts-facebook
+
