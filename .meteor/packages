@@ -4,10 +4,14 @@
 # but you can also edit it by hand.
 
 meteor-platform
-autopublish
-insecure
-service-configuration
-accounts-base
-accounts-ui-unstyled
+standard-app-packages
+splendido:accounts-templates-bootstrap
+accounts-password
 accounts-facebook
+service-configuration
+mizzao:bootstrap-3
+zeroasterisk:cordova-geolocation-background
+mdg:geolocation
+mdg:reload-on-resume
+alanning:roles
 
