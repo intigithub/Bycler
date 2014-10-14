@@ -1,0 +1,21 @@
+
+<template name="states">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-8">
+        {{> states_options}}
+      </div>
+      <div id="atFormDiv" class="col-sm-12 col-md-4">
+        {{> atForm}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="states_options">
+      <div class="btn-group">
+      {{#each states}}
+        <button type="button" class="btn btn-default {{active}}" id="{{this}}"> {{this}} </button>
+      {{/each}}
+    </div>
+ </template>

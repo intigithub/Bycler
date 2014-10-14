@@ -1,0 +1,27 @@
+<template name="nav">
+   <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" role="menu">
+                <li class="sidebar-brand">
+                    <a href="/">
+                        Bycler
+                    </a>
+                </li>
+                <li><a href="/full">Full Page</a></li>
+                <li><a href="/states">States</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/loginNeeded">Private Stuff</a></li>
+                <li><a href="/" id="signOut">SALIR</a></li>
+
+
+            </ul>
+             
+        </div>
+
+           <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+</template>
+

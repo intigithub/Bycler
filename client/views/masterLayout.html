@@ -1,0 +1,22 @@
+<template name="masterLayout">
+{{#if currentUser}}
+<div id="wrapper">
+  {{> yield region='nav'}}
+	<div id="page-content-wrapper">
+	    <div class="container">
+	         <div class="row">
+	            <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">+</a>
+	                {{> yield}}
+	          </div>
+	     </div>
+	 </div>  
+ </div>
+{{else}}
+<div class="container">
+     <div class="row">
+         {{> yield}}
+     </div>
+</div>
+{{/if}}
+</template>
+
