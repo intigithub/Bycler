@@ -48,9 +48,9 @@ Router.map(function() {
         }
     });
 
-    this.route('loginNeeded', {
-        path: '/loginNeeded',
-        template: 'loginNeeded',
+    this.route('mainContent', {
+        path: '/mainContent',
+        template: 'mainContent',
         onBeforeAction: AccountsTemplates.ensureSignedIn,
     });
 });

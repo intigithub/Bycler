@@ -1,51 +1,10 @@
-/*!
- * Start Bootstrap - Simple Sidebar HTML Template (http://startbootstrap.com)
- * Code licensed under the Apache License v2.0.
- * For details, see http://www.apache.org/licenses/LICENSE-2.0.
- */
-
-/* Toggle Styles */
-
-#wrapper {
-    padding-left: 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-}
-
-#wrapper.toggled {
-    padding-left: 250px;
-}
-
-#sidebar-wrapper {
-    z-index: 1000;
-    position: fixed;
-    left: 250px;
-    width: 0;
-    height: 100%;
-    margin-left: -250px;
-    overflow-y: auto;
-    background: #000;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-}
-
-#wrapper.toggled #sidebar-wrapper {
-    width: 250px;
-}
-
-#page-content-wrapper {
-    width: 100%;
-    padding: 15px;
-}
-
-#wrapper.toggled #page-content-wrapper {
-    position: absolute;
-    margin-right: -250px;
-}
+#wrapper { padding-left: 0;    -webkit-transition: all 0.5s ease;    -moz-transition: all 0.5s ease;    -o-transition: all 0.5s ease;    transition: all 0.5s ease; }
+#wrapper.toggled {    padding-left: 72px;}
+#sidebar-wrapper {    z-index: 1000;    position: fixed;    left: 250px;    width: 0;    height: 100%;    margin-left: -250px;    overflow-y: auto;    background: #000;    -webkit-transition: all 0.5s ease;    -moz-transition: all 0.5s ease;    -o-transition: all 0.5s ease;    transition: all 0.5s ease; }
+#wrapper.toggled #sidebar-wrapper {    width: 250px;}
+#page-content-wrapper {    width: 100%;    padding: 0px;    margin-top: 0px;}
+#wrapper.toggled #page-content-wrapper {    position: absolute;}
+#menu-toggle {  position: absolute;    z-index: 990;    border: 0;    background: transparent; vertical-align: buttom; outline: none;}
 
 /* Sidebar Styles */
 
@@ -97,7 +56,8 @@
 
 @media(min-width:768px) {
     #wrapper {
-        padding-left: 250px;
+      padding-left: 0px;
+      margin-top: 0;
     }
 
     #wrapper.toggled {
@@ -113,7 +73,8 @@
     }
 
     #page-content-wrapper {
-        padding: 20px;
+        margin-top: 0px;
+        padding: 0px;
     }
 
     #wrapper.toggled #page-content-wrapper {

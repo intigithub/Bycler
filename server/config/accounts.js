@@ -10,8 +10,8 @@ Meteor.startup(function() {
   // Add Facebook configuration entry
   ServiceConfiguration.configurations.insert({
     "service": "facebook",
-    "appId": "296870120500385",
-    "secret": "427f178bcbe43791448f361f72003c37"
+    "appId": "1624038611156909",
+    "secret": "66c008a07a435d9cafc7442300b74f89"
   });
 
 });

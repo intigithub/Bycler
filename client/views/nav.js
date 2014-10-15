@@ -26,7 +26,14 @@ Template.nav.events({
         event.preventDefault();
         Meteor.logout();
     },
+    'click #linkMainContent': function (event) {
+      event.preventDefault();
+      $("#linkMainContent").toggleClass("toggled");
+      $("#menu-toggle").click();
+      this.render('
+    }
 });
+
 Handlebars.registerHelper("not", function(obj) {
   return !obj;
 });
