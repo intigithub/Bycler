@@ -153,6 +153,42 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
   });
 };
 
+GoogleMap.prototype.startAnimation = function () {
+  var self = this, count = 0;
+  
+  var lineSymbol = {
+    path: google.maps.SymbolPath.CIRCLE,
+    scale: 8,
+    strokeColor: '#FFE003'
+  };
+  
+  var line = new google.maps.Polyline({
+    path: [
+      new google.maps.LatLng(-36.832884, -73.053707),
+      new google.maps.LatLng(-36.832056, -73.054222),
+      new google.maps.LatLng(-36.832541, -73.055408)
+    ],
+    icons: [{
+      icon: lineSymbol,
+      offset: '100%'
+    }],
+    map: self.gmap
+  });
+  
+  Deps.autorun(function () {
+    var count = 0;
+    window.setInterval(function() {
+      count = (count + 1) % 200;
+
+      var icons = line.get('icons');
+      icons[0].offset = (count / 2) + '%';
+      line.set('icons', icons);
+    }, 200);
+  });
+}
+
+
+
 // accepts reactive var
 GoogleMap.prototype.bindToSelectedMarkerId = function (selectedMarkerId) {
   var self = this;
@@ -255,4 +291,5 @@ Template.googleMap.rendered = function () {
   
   map.setStyle(byclerStyles);
   map.addTestMarkers();
+  map.startAnimation();
 };

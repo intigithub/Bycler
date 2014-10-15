@@ -30,7 +30,6 @@ Template.nav.events({
       event.preventDefault();
       $("#linkMainContent").toggleClass("toggled");
       $("#menu-toggle").click();
-      this.render('
     }
 });
 
