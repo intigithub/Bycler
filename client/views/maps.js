@@ -62,7 +62,7 @@ GoogleMap.prototype.setMarkers = function (cursor) {
   var marker = new google.maps.Marker({
     position: new google.maps.LatLng(latLng?latLng.lat:0, latLng?latLng.lng:0),
     map: self.gmap,
-    ico: new google.maps.MarkerImage('/imgs/markers/robo.png', null, null, null,
+    ico: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
       new google.maps.Size(64, 64))
   });
   
@@ -107,28 +107,28 @@ GoogleMap.prototype.addTestMarkers = function () {
   var marker = new google.maps.Marker({
     position: new google.maps.LatLng(-36.831407, -73.055569),
     map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/aire.png', null, null, null,
+    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_servicentro.png', null, null, null,
       new google.maps.Size(64, 64))
   });
   
   marker1 = new google.maps.Marker({
     position: new google.maps.LatLng(-36.830986, -73.053219),
     map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/taller.png', null, null, null,
+    icon: new google.maps.MarkerImage('/imgs/markers/ic_mapa_taller.png', null, null, null,
       new google.maps.Size(64, 64))
   });
   
   marker2 = new google.maps.Marker({
     position: new google.maps.LatLng(-36.831238, -73.055424),
     map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/estacionamiento.png', null, null, null,
+    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_estacionamiento.png', null, null, null,
       new google.maps.Size(64, 64))
   });
   
   marker3 = new google.maps.Marker({
     position: new google.maps.LatLng(-36.833758, -73.055183),
     map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/estacionamiento.png', null, null, null,
+    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_estacionamiento.png', null, null, null,
       new google.maps.Size(64, 64))
   });
 };
@@ -139,7 +139,7 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
   var marker = new google.maps.Marker({
     position: new google.maps.LatLng(latLng?latLng.lat:0, latLng?latLng.lng:0),
     map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/robo.png', null, null, null,
+    icon: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
       new google.maps.Size(64, 64))
   });
 
