@@ -1,30 +1,30 @@
 <template name="masterLayout">
-{{#if currentUser}}
-<div id="wrapper">
-  {{> yield region='nav'}}
-	<div id="page-content-wrapper">
-	    <div class="container-map">
-             <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
-               <img src="/imgs/navigation/reveal-bar-cloud.png" width="24px"/>
-             </a>
-             <a class="btn btn-default" id="menu-markers-toggle">
-               <img src="/imgs/navigation/plus-cloud.png" width="24px"/>
-             </a>
-             {{> yield}}
-	     </div>
-	 </div>  
-	 {{> yield region='footer'}}
-</div>
-{{else}}
-<div class="container">
-  <div class="row">
-    <div class="logo-container">
-      <img src="/imgs/login/login_logo.png" width="50%"/>
+    {{#if currentUser}}
+    <div id="wrapper">
+        {{> yield region='nav'}}
+        <div id="page-content-wrapper">
+            <div class="container-map">
+                <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+                    <img src="/imgs/navigation/reveal-bar-cloud.png" width="24px"/>
+                </a>
+                <a class="btn btn-default" id="menu-markers-toggle">
+                    <img src="/imgs/navigation/plus-cloud.png" width="24px"/>
+                </a>
+                {{> yield}}
+            </div>
+        </div>
+        {{> yield region='footer'}}
     </div>
-    {{> yield}}
-  </div>
-</div>
-{{/if}}
+    {{else}}
+    <div class="container">
+        <div class="row">
+            <div class="logo-container">
+                <img src="/imgs/login/login_logo.png" width="50%"/>
+            </div>
+            {{> yield}}
+        </div>
+    </div>
+    {{/if}}
 
 </template>
 

@@ -7,7 +7,7 @@ Router.configure({
         },
         footer: {
             to: 'footer'
-        },
+        }
     }
 });
 
@@ -21,7 +21,6 @@ Router.map(function() {
         template: 'homeMain',
         onBeforeAction: function(){
             AccountsTemplates.setState('signIn');
-            AccountsTemplates.clearState();
         }
     });
 
@@ -30,13 +29,12 @@ Router.map(function() {
         template: 'fullPage',
         onBeforeAction: function(){
             AccountsTemplates.setState('signIn');
-            AccountsTemplates.clearState();
-        }
+         }
     });
 
     this.route('profilePage', {
         path: '/profile',
-        template: 'profile',
+        template: 'profile'
     });
 
     this.route('statesPage', {
@@ -44,7 +42,6 @@ Router.map(function() {
         template: 'states',
         onBeforeAction: function(){
             AccountsTemplates.setState('signIn');
-            AccountsTemplates.clearState();
         }
     });
 

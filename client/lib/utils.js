@@ -1,3 +1,4 @@
+GeoLog = new Mongo.Collection('geo_log');
 
 setActiveLinks = _.debounce(function() {
     $("ul.nav.navbar-nav li.active").removeClass('active');

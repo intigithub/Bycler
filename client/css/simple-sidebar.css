@@ -1,38 +1,192 @@
-#wrapper { padding-left: 0;    -webkit-transition: all 0.5s ease;    -moz-transition: all 0.5s ease;    -o-transition: all 0.5s ease;    transition: all 0.5s ease; }
-#wrapper.toggled {    padding-left: 72px;}
-#wrapper.marked-toggled {    padding-right: 72px;}
-#page-content-wrapper {    width: 100%;    padding: 0px;    margin-top: 0px;}
-#wrapper.toggled #page-content-wrapper,#wrapper.marked-toggled #page-content-wrapper {    position: absolute;}
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
 
-#sidebar-wrapper {    z-index: 1000;    position: fixed;    left: 250px;    width: 0;    height: 100%;    margin-left: -250px;    overflow-y: auto;    background: #000;    -webkit-transition: all 0.5s ease;    -moz-transition: all 0.5s ease;    -o-transition: all 0.5s ease;    transition: all 0.5s ease; }
-#wrapper.toggled #sidebar-wrapper {    width: 250px;}
-#menu-toggle {  position: absolute;    z-index: 990;    border: 0;    background: transparent; vertical-align: buttom; outline: none;}
+#wrapper.toggled {
+    padding-left: 72px;
+}
 
-#menu-markers-wrapper {  position: absolute;    z-index: 990;    border: 0;    background: transparent; right: 0; vertical-align: buttom; outline: none;}
-#wrapper.marked-toggled #menu-markers-wrapper {    width: 250px;}
-#menu-markers-toggle {  position: absolute; z-index: 990; border: 0; right:0; background: transparent; vertical-align: buttom; outline: none;}
+#wrapper.marked-toggled {
+    padding-right: 72px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    padding: 0px;
+    margin-top: 0px;
+}
+
+#wrapper.toggled #page-content-wrapper, #wrapper.marked-toggled #page-content-wrapper {
+    position: absolute;
+}
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    background: #000;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 250px;
+}
+
+#menu-toggle {
+    position: absolute;
+    z-index: 990;
+    border: 0;
+    background: transparent;
+    vertical-align: buttom;
+    outline: none;
+}
+
+#menu-markers-wrapper {
+    position: absolute;
+    z-index: 990;
+    border: 0;
+    background: transparent;
+    right: 0;
+    vertical-align: buttom;
+    outline: none;
+}
+
+#wrapper.marked-toggled #menu-markers-wrapper {
+    width: 250px;
+}
+
+#menu-markers-toggle {
+    position: absolute;
+    z-index: 990;
+    border: 0;
+    right: 0;
+    background: transparent;
+    vertical-align: buttom;
+    outline: none;
+}
 
 /* Sidebar Styles */
-.sidebar-nav { position: absolute;    top: 0;    width: 250px;    margin: 0;    padding: 0;    list-style: none;}
-.sidebar-nav li {    text-indent: 20px;    line-height: 40px;}
-.sidebar-nav li a {    display: block;    text-decoration: none;    color: #999999;}
-.sidebar-nav li a:hover {    text-decoration: none;    color: #fff;    background: rgba(255,255,255,0.2);}
-.sidebar-nav li a:active,.sidebar-nav li a:focus {    text-decoration: none;}
-.sidebar-nav > .sidebar-brand {    height: 65px;    font-size: 18px;    line-height: 60px;}
-.sidebar-nav > .sidebar-brand a {    color: #999999;}
-.sidebar-nav > .sidebar-brand a:hover {    color: #fff;    background: none;}
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
 
-.menu-markers-nav { position: absolute;    top: 0;    width: 250px;    margin: 0;    padding: 0;    list-style: none;}
-.menu-markers-nav li {    text-indent: 20px;    line-height: 40px;}
-.menu-markers-nav li a {    display: block;    text-decoration: none;    color: #999999;}
-.menu-markers-nav li a:hover {    text-decoration: none;    color: #fff;    background: rgba(255,255,255,0.2);}
-.menu-markers-nav li a:active,.sidebar-nav li a:focus {    text-decoration: none;}
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
 
-@media(min-width:768px) {
-    #wrapper { padding-left: 0px;   margin-top: 0;    }
-    #wrapper.toggled {  padding-left: 0;  }
-    #sidebar-wrapper {   width: 250px;    }
-    #wrapper.toggled #sidebar-wrapper {    width: 0;    }
-    #page-content-wrapper {        margin-top: 0px;        padding: 0px;    }
-    #wrapper.toggled #page-content-wrapper {        position: relative;        margin-right: 0;    }
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-nav li a:active, .sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+.menu-markers-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu-markers-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
+.menu-markers-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+
+.menu-markers-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.menu-markers-nav li a:active, .sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+@media (min-width: 768px) {
+    #wrapper {
+        padding-left: 0px;
+        margin-top: 0;
+    }
+
+    #wrapper.toggled {
+        padding-left: 0;
+    }
+
+    #sidebar-wrapper {
+        width: 250px;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0;
+    }
+
+    #page-content-wrapper {
+        margin-top: 0px;
+        padding: 0px;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}
+
+#play_button {
+    position: absolute;
+    z-index: 990;
+    border: 0;
+    bottom: 0;
+    background: transparent;
+    bottom: 0;
+    outline: none;
 }
