@@ -25,13 +25,9 @@ Router.map(function() {
         }
     });
 
-    this.route('fullPage', {
-        path: '/full',
-        template: 'fullPage',
-        onBeforeAction: function(){
-            AccountsTemplates.setState('signIn');
-            AccountsTemplates.clearState();
-        }
+    this.route('eventos', {
+        path: '/eventos',
+        template: 'eventos'
     });
 
     this.route('profilePage', {

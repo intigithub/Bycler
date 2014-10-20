@@ -19,6 +19,28 @@ var GoogleMap = function (element) {
     zoom: 17
   };
   self.gmap = new google.maps.Map(element, mapOptions);
+  
+  // Seccion de control de marcadores
+  var timeMillis = 0, initialClickPositionMap;
+  
+  google.maps.event.addListener(self.gmap, "mousedown", function (event) {
+    timeMillis = new Date().getTime();
+    initialClickPositionMap = event.latLng;
+  });
+
+  google.maps.event.addListener(self.gmap, "mouseup", function (event) {
+    if(initialClickPositionMap!=null && new Date().getTime() - timeMillis > 1000 
+       && event.latLng.lat==initialClickPositionMap.lat 
+       && event.latLng.lng==initialClickPositionMap.lng) {
+      self.addMarker(event);
+      $("#markers-menu-wrapper").toggleClass("toggled");
+    }
+    timeMillis = 0;
+  });
+  
+  google.maps.event.addListener(self.gmap, "drag", function(event) {
+    initialClickPositionMap = null;
+  });
 };
 
 // accepts reactive function that returns {lat: Number, lng: Number}
@@ -56,14 +78,14 @@ GoogleMap.prototype.setMarkers = function (cursor) {
 
   if (self.liveQuery) {
     self.liveQuery.stop();
-  }
-
+  }  
+  
   var latLng = Geolocation.latLng();
   var marker = new google.maps.Marker({
     position: new google.maps.LatLng(latLng?latLng.lat:0, latLng?latLng.lng:0),
     map: self.gmap,
-    ico: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
-      new google.maps.Size(64, 64))
+    ico: new google.maps.MarkerImage('/imgs/markers/ic_oasis.png', null, null, null,
+      new google.maps.Size(48, 48))
   });
   
   /*self.liveQuery = cursor.observe({
@@ -72,7 +94,7 @@ GoogleMap.prototype.setMarkers = function (cursor) {
         position: new google.maps.LatLng(doc.marker.lat, doc.marker.lng),
         map: self.gmap,
         ico: new google.maps.MarkerImage('/imgs/markers/robo.png', null, null, null,
-          new google.maps.Size(64, 64))
+          new google.maps.Size(48, 48))
       });
 
       self.markers[doc._id] = marker;
@@ -108,30 +130,42 @@ GoogleMap.prototype.addTestMarkers = function () {
     position: new google.maps.LatLng(-36.831407, -73.055569),
     map: self.gmap,
     icon: new google.maps.MarkerImage('/imgs/markers/ic_map_servicentro.png', null, null, null,
-      new google.maps.Size(64, 64))
+      new google.maps.Size(48, 48))
   });
   
-  marker1 = new google.maps.Marker({
+  var marker1 = new google.maps.Marker({
     position: new google.maps.LatLng(-36.830986, -73.053219),
     map: self.gmap,
     icon: new google.maps.MarkerImage('/imgs/markers/ic_mapa_taller.png', null, null, null,
-      new google.maps.Size(64, 64))
+      new google.maps.Size(48, 48))
   });
   
-  marker2 = new google.maps.Marker({
+  var marker2 = new google.maps.Marker({
     position: new google.maps.LatLng(-36.831238, -73.055424),
     map: self.gmap,
     icon: new google.maps.MarkerImage('/imgs/markers/ic_map_estacionamiento.png', null, null, null,
-      new google.maps.Size(64, 64))
+      new google.maps.Size(48, 48))
   });
   
-  marker3 = new google.maps.Marker({
-    position: new google.maps.LatLng(-36.833758, -73.055183),
+  var marker3 = new google.maps.Marker({
+    position: new google.maps.LatLng(-36.831238, -73.055424),
     map: self.gmap,
     icon: new google.maps.MarkerImage('/imgs/markers/ic_map_estacionamiento.png', null, null, null,
-      new google.maps.Size(64, 64))
+      new google.maps.Size(48, 48))
   });
 };
+
+// Agrega un nueva marca
+GoogleMap.prototype.addMarker = function (event) {
+  var self = this;
+  var marker8 = new google.maps.Marker({
+    position: event.latLng,
+    map: self.gmap,
+    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
+      new google.maps.Size(40, 48))
+  });
+}
+
 
 GoogleMap.prototype.showCurrLocationMarker = function () {
   var self = this;
@@ -139,20 +173,21 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
   var marker = new google.maps.Marker({
     position: new google.maps.LatLng(latLng?latLng.lat:0, latLng?latLng.lng:0),
     map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
-      new google.maps.Size(64, 64))
+    icon: new google.maps.MarkerImage('/imgs/markers/my_bycler.png', null, null, null,
+      new google.maps.Size(40, 48))
   });
 
   Deps.autorun(function () {
     var latLng = Geolocation.latLng();
 
     if (latLng) {
-      marker.setMap(self.gmap);
+      //marker.setMap(self.gmap);
       marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
     }
   });
 };
 
+// Funcion desactivada por ahora
 GoogleMap.prototype.startAnimation = function () {
   var self = this, count = 0;
   
@@ -208,6 +243,7 @@ GoogleMap.prototype.bindToSelectedMarkerId = function (selectedMarkerId) {
   });
 };
 
+
 GoogleMap.prototype.selectMarker = function (markerId) {
   var self = this;
   
@@ -215,6 +251,7 @@ GoogleMap.prototype.selectMarker = function (markerId) {
     self.selectedMarkerId.set(markerId);
   }
 };
+
 
 GoogleMap.prototype.syncWithSelectedMarkerId = function (markerId) {
   var self = this;
@@ -226,10 +263,12 @@ GoogleMap.prototype.syncWithSelectedMarkerId = function (markerId) {
   }
 };
 
+
 GoogleMap.prototype.setStyle = function (styles) {
   var self = this;
   self.gmap.setOptions({styles: styles});
 }
+
 
 Template.googleMap.rendered = function () {
   var template = this;
@@ -248,13 +287,6 @@ Template.googleMap.rendered = function () {
     map.bindToSelectedMarkerId(options.selectedMarkerId);
   }
 
-  /*var marker1 = new google.maps.Marker({
-        position: new google.maps.LatLng(-36.831407, -73.055569),
-        ico: new google.maps.MarkerImage('/imgs/markers/aire.png', null, null, null,
-        new google.maps.Size(64, 64))});
-  marker1.setMap(map);
-  
-  options.markers = [ marker1 ]; */ 
   map.setMarkers(options.markers);
   
   var byclerStyles = [
@@ -291,5 +323,5 @@ Template.googleMap.rendered = function () {
   
   map.setStyle(byclerStyles);
   map.addTestMarkers();
-  map.startAnimation();
+  // map.startAnimation();
 };

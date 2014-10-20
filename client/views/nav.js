@@ -30,6 +30,11 @@ Template.nav.events({
       event.preventDefault();
       $("#linkMainContent").toggleClass("toggled");
       $("#menu-toggle").click();
+    },
+    'click #linkEventos': function (event) {
+      event.preventDefault();
+      $("#linkMainContent").toggleClass("toggled");
+      $("#menu-toggle").click();
     }
 });
 
