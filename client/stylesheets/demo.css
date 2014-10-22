@@ -153,7 +153,7 @@ body #cdawrap {
     margin: 0;
     min-height: 100%;
     width: 100%;
-    padding: 28px;
+    padding: 0 28px 0 28px;
 }
 
 .logo-container {
@@ -198,4 +198,5 @@ body #cdawrap {
 .markers-menu li a { display: block; text-decoration: none; color: #999999;}
 .markers-menu li a:hover { text-decoration: none; color: #fff; background: rgba(255,255,255,0.2);}
 .markers-menu li a:active,.markers-menu li a:focus {    text-decoration: none;}
+#play-button { position: absolute; z-index: 990; border: 0; background: transparent; outline: none; bottom: 0; margin-left: -40px; padding-bottom: 8px; }
 

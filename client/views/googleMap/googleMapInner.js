@@ -1,7 +1,6 @@
 Meteor.subscribe('markers');
 Meteor.subscribe('byclers');
 
-
 var GoogleMap = function (element) {
     var self = this;
 
@@ -231,7 +230,7 @@ GoogleMap.prototype.init = function () {
 
     Byclers.find({}).observe({
         added: function (marker) {
-            console.log('Huy, llego marker:' + marker);
+            console.log('Huy, llego byler:' + marker);
             self.byclers[byclersCounter++] = new google.maps.Marker({
                 position: new google.maps.LatLng(marker.position.k, marker.position.B),
                 map: self.gmap,
@@ -255,10 +254,9 @@ Template.googleMapInner.rendered = function () {
         map.setCenter(Geolocation.latLng);
     }
 
-
     var DateTime = new Date();
     var strHours = DateTime.getHours();
-    if (strHours >= 7 && strHours <= 12) {
+    if (strHours >= 7 && strHours <= 19) {
 
         var byclerStyles = [
             {"featureType": "water", "elementType": "geometry", "stylers": [
@@ -307,8 +305,8 @@ Template.googleMapInner.rendered = function () {
                 {"color": "#cfb2db"}
             ]}
         ];
-    } else {
-        if (strHours > 12 && strHours <= 20) {
+      
+    } else if (strHours > 19 && strHours <= 20) {
             var byclerStyles = [
                 {"featureType": "road", "elementType": "labels", "stylers": [
                     {"visibility": "simplified"},
@@ -350,8 +348,7 @@ Template.googleMapInner.rendered = function () {
                     {"hue": "#fad959"}
                 ]}
             ];
-        }
-        else {
+        } else {
             var byclerStyles = [
                 {"featureType": "water", "stylers": [
                     {"color": "#021019"}
@@ -399,15 +396,33 @@ Template.googleMapInner.rendered = function () {
                     {"weight": 1.4}
                 ]}
             ];
+  };
+      
+  map.setStyle(byclerStyles);
+  map.init();
+};
 
-            map.setStyle(byclerStyles);
-            map.init();
-        }
-        ;
+Template.googleMapInner.events({
+    'click #menu-toggle': function (event) {
+        event.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    },
+    'click .marker-add img': function (event) {
+        event.preventDefault();
+        $("#markers-menu-wrapper").toggleClass("toggled");
+
+        MarkerEditable.setIcon(new google.maps.MarkerImage(event.target.src, null, null, null,
+            new google.maps.Size(48, 48)));
+        MarkerEditable.setDraggable(false);
+        Markers.insert({
+            fecha: new Date(),
+            imgSrc: event.target.src,
+            position: MarkerEditable.getPosition()
+        });
     }
-}
+});
 
-/*Mobile Gps Tracker To Server*/
+// Mobile Gps Tracker To Server
 if (Meteor.isClient) {
     Meteor.subscribe('basic');
     //Click to start tracking event
@@ -446,6 +461,7 @@ if (Meteor.isClient) {
     })
     ;
 }
+
 if (Meteor.isCordova) {
     GeolocationBG.config({
         // your server url to send locations to
@@ -475,24 +491,3 @@ if (Meteor.isCordova) {
         debug: true
     });
 }
-/*-------*/
-Template.googleMapInner.events({
-    'click #menu-toggle': function (event) {
-        event.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    },
-    'click .marker-add img': function (event) {
-        event.preventDefault();
-        $("#markers-menu-wrapper").toggleClass("toggled");
-
-        MarkerEditable.setIcon(new google.maps.MarkerImage(event.target.src, null, null, null,
-            new google.maps.Size(48, 48)));
-        MarkerEditable.setDraggable(false);
-        Markers.insert({
-            fecha: new Date(),
-            imgSrc: event.target.src,
-            position: MarkerEditable.getPosition()
-        });
-    }
-});
-
