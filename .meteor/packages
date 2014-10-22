@@ -11,8 +11,13 @@ accounts-facebook
 service-configuration
 mizzao:bootstrap-3
 zeroasterisk:cordova-geolocation-background
+zeroasterisk:cordova-geolocation-foreground
 mdg:geolocation
 mdg:reload-on-resume
 alanning:roles
+<<<<<<< HEAD
 cfs:reactive-property
+=======
+iron:router
+>>>>>>> 67fdd47f83b0d15824b1f091945b81b0fb04e3f9
 

@@ -7,7 +7,7 @@ Router.configure({
         },
         footer: {
             to: 'footer'
-        },
+        }
     }
 });
 
@@ -20,18 +20,26 @@ Router.map(function() {
         template: 'homeMain',
         onBeforeAction: function(){
             AccountsTemplates.setState('signIn');
-            AccountsTemplates.clearState();
         }
     });
 
+<<<<<<< HEAD
     this.route('eventos', {
         path: '/eventos',
         template: 'eventos'
+=======
+    this.route('fullPage', {
+        path: '/full',
+        template: 'fullPage',
+        onBeforeAction: function(){
+            AccountsTemplates.setState('signIn');
+         }
+>>>>>>> 67fdd47f83b0d15824b1f091945b81b0fb04e3f9
     });
 
     this.route('profilePage', {
         path: '/profile',
-        template: 'profile',
+        template: 'profile'
     });
 
     this.route('statesPage', {
@@ -39,7 +47,6 @@ Router.map(function() {
         template: 'states',
         onBeforeAction: function(){
             AccountsTemplates.setState('signIn');
-            AccountsTemplates.clearState();
         }
     });
 
