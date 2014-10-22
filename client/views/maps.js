@@ -77,19 +77,18 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
   var self = this;
   var latLng = Geolocation.latLng();
   var marker = new google.maps.Marker({
-    position: new google.maps.LatLng(latLng?latLng.lat:0, latLng?latLng.lng:0),
-    map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/my_bycler.png', null, null, null,
-      new google.maps.Size(40, 48))
+      position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
+      map: self.gmap,
+      icon: new google.maps.MarkerImage('/imgs/markers/my_bycler.png', null, null, null,
+          new google.maps.Size(40, 48))
   });
 
   Deps.autorun(function () {
-    var latLng = Geolocation.latLng();
+      var latLng = Geolocation.latLng();
 
-    if (latLng) {
-      //marker.setMap(self.gmap);
-      marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
-    }
+      if (latLng) {
+        marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
+      }
   });
 };
   
@@ -220,52 +219,52 @@ GoogleMap.prototype.setStyle = function (styles) {
 
 // Funcion que agrega una marca
 GoogleMap.prototype.addMarker = function (marker) {
-  var self = this;
-  MarkerEditable = new google.maps.Marker({
-    position: new google.maps.LatLng(marker.position.k, marker.position.B),
-    map: self.gmap,
-    icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
-                                      new google.maps.Size(48, 48))
-  });
+    var self = this;
+    MarkerEditable = new google.maps.Marker({
+        position: new google.maps.LatLng(marker.position.k, marker.position.B),
+        map: self.gmap,
+        icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+            new google.maps.Size(48, 48))
+    });
 };
 
 
 // Funcion para inicializar el mapa con los marcadores
 GoogleMap.prototype.init = function () {
-  var self = this;
-  var byclersCounter = 0;
-  var markersCounter = 0;
-  
-  Markers.find({}).observe({
-    added: function(marker) {
-      console.log('Huy, llego marker:' + marker);
-       self.markers[markersCounter++] = new google.maps.Marker({
-        position: new google.maps.LatLng(marker.position.k, marker.position.B),
-        map: self.gmap,
-        icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
-          new google.maps.Size(48, 48))
-      });
-    }
-  });
-  
-  Byclers.find({}).observe({
-    added: function(marker) {
-      console.log('Huy, llego marker:' + marker);
-      self.byclers[byclersCounter++] = new google.maps.Marker({
-        position: new google.maps.LatLng(marker.position.k, marker.position.B),
-        map: self.gmap,
-        icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
-          new google.maps.Size(48, 48))
-      });
-    }
-  });
+    var self = this;
+    var byclersCounter = 0;
+    var markersCounter = 0;
+
+    Markers.find({}).observe({
+        added: function (marker) {
+            console.log('Huy, llego marker:' + marker);
+            self.markers[markersCounter++] = new google.maps.Marker({
+                position: new google.maps.LatLng(marker.position.k, marker.position.B),
+                map: self.gmap,
+                icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+                    new google.maps.Size(48, 48))
+            });
+        }
+    });
+
+    Byclers.find({}).observe({
+        added: function (marker) {
+            console.log('Huy, llego marker:' + marker);
+            self.byclers[byclersCounter++] = new google.maps.Marker({
+                position: new google.maps.LatLng(marker.position.k, marker.position.B),
+                map: self.gmap,
+                icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+                    new google.maps.Size(48, 48))
+            });
+        }
+    });
 }
 
 Template.googleMap.rendered = function () {
-    var template = this;
+  var template = this;
 
-    var map = new GoogleMap(template.firstNode);
-    var options = template.data;
+  var map = new GoogleMap(template.firstNode);
+  var options = template.data;
 
   if (options.center) {
     map.setCenter(options.center);
@@ -311,29 +310,29 @@ Template.googleMap.rendered = function () {
 
 /*Mobile Gps Tracker To Server*/
 if (Meteor.isClient) {
-    Meteor.subscribe('basic');
-    Template.googleMap.events({
-        'click #play_button': function (event) {
-            var btn = event.currentTarget;
+  Meteor.subscribe('basic');
+  Template.googleMap.events({
+      'click #play_button': function (event) {
+          var btn = event.currentTarget;
 
-            if (!GeolocationBG.isStarted) {
-                if (!GeolocationBG.start()) {
-                    return;
-                }
-                if (!GeolocationBG.isStarted) {
-                    return;
-                }
-                return;
-            }
-            if (!GeolocationBG.stop()) {
-                return;
-            }
-            if (GeolocationBG.isStarted) {
-                return;
-            }
-            return;
-        }
-    });
+          if (!GeolocationBG.isStarted) {
+              if (!GeolocationBG.start()) {
+                  return;
+              }
+              if (!GeolocationBG.isStarted) {
+                  return;
+              }
+              return;
+          }
+          if (!GeolocationBG.stop()) {
+              return;
+          }
+          if (GeolocationBG.isStarted) {
+              return;
+          }
+          return;
+      }
+  });
 }
 
 if (Meteor.isCordova) {
@@ -364,5 +363,4 @@ if (Meteor.isCordova) {
         // enable this hear sounds for background-geolocation life-cycle.
         debug: false
     });
-}
-
+};

@@ -23,18 +23,12 @@ Router.map(function() {
         }
     });
 
-<<<<<<< HEAD
-    this.route('eventos', {
-        path: '/eventos',
-        template: 'eventos'
-=======
     this.route('fullPage', {
         path: '/full',
         template: 'fullPage',
         onBeforeAction: function(){
             AccountsTemplates.setState('signIn');
          }
->>>>>>> 67fdd47f83b0d15824b1f091945b81b0fb04e3f9
     });
 
     this.route('profilePage', {
@@ -53,6 +47,6 @@ Router.map(function() {
     this.route('mainContent', {
         path: '/mainContent',
         template: 'mainContent',
-        onBeforeAction: AccountsTemplates.ensureSignedIn,
+        onBeforeAction: AccountsTemplates.ensureSignedIn
     });
 });
