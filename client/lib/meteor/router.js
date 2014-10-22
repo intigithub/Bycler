@@ -15,7 +15,6 @@ Router.configure({
 Router.onRun(function(){setActiveLinks();});
 
 Router.map(function() {
-
     this.route('home', {
         path: '/',
         template: 'homeMain',

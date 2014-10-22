@@ -13,6 +13,5 @@ Meteor.startup(function() {
     "appId": "1624038611156909",
     "secret": "66c008a07a435d9cafc7442300b74f89"
   });
-
 });
 

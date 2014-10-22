@@ -1,16 +1,11 @@
+Meteor.subscribe('markers');
+Meteor.subscribe('byclers');
+
 var GoogleMap = function (element) {
   var self = this;
 
   self.element = element;
-  self.markers = {};
-  self.selectedMarkerId = null,
-
-  self.infowindow = new google.maps.InfoWindow({ content: "" });
-  google.maps.event.addListener(self.infowindow, "closeclick", function () {
-    if (self.selectedMarkerId) {
-      self.selectedMarkerId.set(null);
-    }
-  });
+  self.markers = { };
 
   var lat = -36.832383, lng = -73.055458;
   var mapOptions = {
@@ -32,7 +27,14 @@ var GoogleMap = function (element) {
     if(initialClickPositionMap!=null && new Date().getTime() - timeMillis > 1000 
        && event.latLng.lat==initialClickPositionMap.lat 
        && event.latLng.lng==initialClickPositionMap.lng) {
-      self.addMarker(event);
+      
+      MarkerEditable = new google.maps.Marker({
+        position: event.latLng,
+        draggable: true, 
+        map: self.gmap,
+        icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
+          new google.maps.Size(48, 48))
+      });
       $("#markers-menu-wrapper").toggleClass("toggled");
     }
     timeMillis = 0;
@@ -70,102 +72,6 @@ GoogleMap.prototype.setCenter = function (centerFunc) {
     }
   });
 };
-
-// accepts minimongo cursor
-// documents must have field marker: {lat: Number, lng: Number, infoWindowContent: String}
-GoogleMap.prototype.setMarkers = function (cursor) {
-  var self = this;
-
-  if (self.liveQuery) {
-    self.liveQuery.stop();
-  }  
-  
-  var latLng = Geolocation.latLng();
-  var marker = new google.maps.Marker({
-    position: new google.maps.LatLng(latLng?latLng.lat:0, latLng?latLng.lng:0),
-    map: self.gmap,
-    ico: new google.maps.MarkerImage('/imgs/markers/ic_oasis.png', null, null, null,
-      new google.maps.Size(48, 48))
-  });
-  
-  /*self.liveQuery = cursor.observe({
-    added: function (doc) {
-      var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(doc.marker.lat, doc.marker.lng),
-        map: self.gmap,
-        ico: new google.maps.MarkerImage('/imgs/markers/robo.png', null, null, null,
-          new google.maps.Size(48, 48))
-      });
-
-      self.markers[doc._id] = marker;
-      
-      if (doc.marker.infoWindowContent) {
-        marker.infoWindowContent = doc.marker.infoWindowContent;
-
-        google.maps.event.addListener(marker, "click", function () {
-          self.selectMarker(doc._id);
-        });
-      }
-
-      if (self.selectedMarkerId && self.selectedMarkerId.get() === doc._id) {
-        self.syncWithSelectedMarkerId(doc._id);
-      }
-    },
-    removed: function (doc) {
-      self.markers[doc._id].setMap(null);
-      delete markers[doc._id];
-    },
-    changed: function (doc) {
-      self.markers[doc._id].setPosition(
-        new google.maps.LatLng(doc.marker.lat, doc.marker.lng));
-      marker.infoWindowContent = doc.marker.infoWindowContent;
-    }
-  });*/
-};
-
-
-GoogleMap.prototype.addTestMarkers = function () {
-  var self = this;
-  var marker = new google.maps.Marker({
-    position: new google.maps.LatLng(-36.831407, -73.055569),
-    map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_servicentro.png', null, null, null,
-      new google.maps.Size(48, 48))
-  });
-  
-  var marker1 = new google.maps.Marker({
-    position: new google.maps.LatLng(-36.830986, -73.053219),
-    map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/ic_mapa_taller.png', null, null, null,
-      new google.maps.Size(48, 48))
-  });
-  
-  var marker2 = new google.maps.Marker({
-    position: new google.maps.LatLng(-36.831238, -73.055424),
-    map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_estacionamiento.png', null, null, null,
-      new google.maps.Size(48, 48))
-  });
-  
-  var marker3 = new google.maps.Marker({
-    position: new google.maps.LatLng(-36.831238, -73.055424),
-    map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_estacionamiento.png', null, null, null,
-      new google.maps.Size(48, 48))
-  });
-};
-
-// Agrega un nueva marca
-GoogleMap.prototype.addMarker = function (event) {
-  var self = this;
-  var marker8 = new google.maps.Marker({
-    position: event.latLng,
-    map: self.gmap,
-    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
-      new google.maps.Size(40, 48))
-  });
-}
-
 
 GoogleMap.prototype.showCurrLocationMarker = function () {
   var self = this;
@@ -264,11 +170,55 @@ GoogleMap.prototype.syncWithSelectedMarkerId = function (markerId) {
 };
 
 
+// Funcion para cargar los estilos
 GoogleMap.prototype.setStyle = function (styles) {
   var self = this;
   self.gmap.setOptions({styles: styles});
 }
 
+
+// Funcion que agrega una marca
+GoogleMap.prototype.addMarker = function (marker) {
+  var self = this;
+  MarkerEditable = new google.maps.Marker({
+    position: new google.maps.LatLng(marker.position.k, marker.position.B),
+    map: self.gmap,
+    icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+                                      new google.maps.Size(48, 48))
+  });
+};
+
+
+// Funcion para inicializar el mapa con los marcadores
+GoogleMap.prototype.init = function () {
+  var self = this;
+  var byclersCounter = 0;
+  var markersCounter = 0;
+  
+  Markers.find({}).observe({
+    added: function(marker) {
+      console.log('Huy, llego marker:' + marker);
+       self.markers[markersCounter++] = new google.maps.Marker({
+        position: new google.maps.LatLng(marker.position.k, marker.position.B),
+        map: self.gmap,
+        icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+          new google.maps.Size(48, 48))
+      });
+    }
+  });
+  
+  Byclers.find({}).observe({
+    added: function(marker) {
+      console.log('Huy, llego marker:' + marker);
+      self.byclers[byclersCounter++] = new google.maps.Marker({
+        position: new google.maps.LatLng(marker.position.k, marker.position.B),
+        map: self.gmap,
+        icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+          new google.maps.Size(48, 48))
+      });
+    }
+  });
+}
 
 Template.googleMap.rendered = function () {
   var template = this;
@@ -282,12 +232,6 @@ Template.googleMap.rendered = function () {
     map.showCurrLocationMarker();
     map.setCenter(Geolocation.latLng);
   }
-
-  if (options.selectedMarkerId) {
-    map.bindToSelectedMarkerId(options.selectedMarkerId);
-  }
-
-  map.setMarkers(options.markers);
   
   var byclerStyles = [
   {
@@ -322,6 +266,5 @@ Template.googleMap.rendered = function () {
   ];
   
   map.setStyle(byclerStyles);
-  map.addTestMarkers();
-  // map.startAnimation();
+  map.init();
 };

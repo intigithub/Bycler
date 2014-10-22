@@ -1,4 +1,3 @@
-
 Template.profile.helpers({
 	name: function(){
 		var user = Meteor.user();

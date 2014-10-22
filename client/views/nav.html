@@ -14,28 +14,13 @@
   
   <div id="markers-menu-wrapper">
     <ul class="markers-menu" role="menu">
-      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_estacionamiento.png" width="40"/></a></li>
-      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_evento.png" width="40"/></a></li>
-      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_servicentro.png" width="40"/></a></li>
-      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_taller.png" width="40"/></a></li>
-      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_tienda.png" width="40"/></a></li>
-      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_robo.png" width="40"/></a></li>
+      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_estacionamiento.png" width="52"/></a></li>
+      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_evento.png" width="52"/></a></li>
+      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_servicentro.png" width="52"/></a></li>
+      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_taller.png" width="52"/></a></li>
+      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_tienda.png" width="52"/></a></li>
+      <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_robo.png" width="52"/></a></li>
     </ul>
   </div>
-
-  <script>
-    $("#menu-toggle").click(function(e) {
-      $("#wrapper").toggleClass("toggled");
-    });
-    
-    $("#tracker-toggle").click(function(e) {
-      $("#markers-menu-wrapper").toggleClass("toggled");
-    });
-    
-    $(".marker-add").click(function (e) {
-      var map = $('google-map');
-      map.addMarker();
-    });
-  </script>
 </template>
 
