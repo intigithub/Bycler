@@ -12,6 +12,6 @@ html, body,.st-container,.st-pusher,.st-content { height: 100%;    margin: 0px; 
 .gmnoprint div { background:none !important; }
 
 .container-map { text-align: center; }
-#tracker-toggle { position: absolute; z-index: 990; border: 0; background: transparent; outline: none; bottom: 0; margin-left: -12px; padding-bottom: 8px; }
+#play-button { position: absolute; z-index: 990; border: 0; background: transparent; outline: none; bottom: 0; margin-left: -40px; padding-bottom: 8px; }
 
 

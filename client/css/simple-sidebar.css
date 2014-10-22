@@ -24,13 +24,4 @@
 .markers-menu li a:hover { text-decoration: none; color: #fff; background: rgba(255,255,255,0.2);}
 .markers-menu li a:active,.markers-menu li a:focus {    text-decoration: none;}
 
-
-#play_button {
-    position: absolute;
-    z-index: 990;
-    border: 0;
-    bottom: 0;
-    background: transparent;
-    bottom: 0;
-    outline: none;
-}
+#play-button { position: absolute; z-index: 990; border: 0; background: transparent; outline: none; bottom: 0; margin-left: -40px; padding-bottom: 8px; }

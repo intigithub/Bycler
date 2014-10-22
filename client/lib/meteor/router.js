@@ -11,7 +11,6 @@ Router.configure({
     }
 });
 
-
 Router.onRun(function(){setActiveLinks();});
 
 Router.map(function() {
