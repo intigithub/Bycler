@@ -1,14 +1,13 @@
-GeoLog = new Mongo.Collection('geo_log');
-
-GeoLog.allow({ insert: function () { return true; }});
-
 if (Meteor.isServer) {
     Meteor.publish('basic', function () {
-        return GeoLog.find();
+        return GeoLog.find({userId: this.userId});
+    });
+    Meteor.publish("user_tracks", function () {
+        return UserTrack.find({userId: this.userId});
     });
 }
 if (Meteor.isServer) {
-    Router.map(function() {
+    Router.map(function () {
         // REST(ish) API
         // Cordova background/foreground can post GPS data HERE
         //
@@ -19,7 +18,7 @@ if (Meteor.isServer) {
         //       longitude: Number,
         //       accuracy: Match.Optional(Number),
         //       speed: Match.Optional(Number),
-        //       recorded_at: Match.Optional(String)
+        //       recorded_at: Match.Optional(String)s
         //     },
         //     userId: Match.Optional(String),
         //     uuid: Match.Optional(String),
@@ -28,7 +27,7 @@ if (Meteor.isServer) {
         this.route('GeolocationBGRoute', {
             path: '/api/geolocation',
             where: 'server',
-            action: function() {
+            action: function () {
                 // GET, POST, PUT, DELETE
                 var requestMethod = this.request.method;
                 // Data from a POST request
