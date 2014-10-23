@@ -9,20 +9,18 @@ Meteor.startup(function () {
         ]
     });
 
-    // LEO
+    /*
     ServiceConfiguration.configurations.insert({
         "service": "facebook",
         "appId": "305948542925876",
         "secret": "df05c0af61a70f92bbb6fcd3c0ce49d0"
+    });*/
+  
+    ServiceConfiguration.configurations.insert({
+      "service": "facebook",
+      "appId": "1620984164795687 ",
+      "secret": "5ac1e79fd2444feafe5885d4c4b84866"
     });
 });
-/* EdU
 
- ServiceConfiguration.configurations.insert({
- "service": "facebook",
- "appId": "1620984164795687 ",
- "secret": "5ac1e79fd2444feafe5885d4c4b84866"
- });
-
- */
 
