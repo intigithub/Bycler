@@ -16,7 +16,6 @@ Router.map(function () {
         redirectOnLogin: function () {
             Router.go('/googleMap');
         }
-
     });
     /**
      * SeeYouLater (salir) redirect to home and logout
@@ -61,4 +60,7 @@ Router.map(function () {
         template: 'userTrackList',
         loginRequired: 'login'
     });
+    /**
+     * From userTrackList item to googleMap
+     */
 });

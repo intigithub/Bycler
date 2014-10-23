@@ -87,7 +87,7 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
         var latLng = Geolocation.latLng();
 
         if (latLng) {
-             marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
+            marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
         }
     });
 };
@@ -150,6 +150,45 @@ GoogleMap.prototype.startAnimation = function () {
     });
 }
 
+// pintar ruta en mapa
+
+GoogleMap.prototype.startAnimation = function () {
+    var self = this, count = 0;
+
+    var lineSymbol = {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        strokeColor: '#FFE003'
+    };
+    var path = new google.maps.MVCArray;
+
+    var topPosts = GeoLog.find();
+    topPosts.forEach(function (post) {
+        path.push(new google.maps.LatLng(post.location.latitude, post.location.longitude));
+    });
+
+    var line = new google.maps.Polyline({
+        path: path,
+        icons: [
+            {
+                icon: lineSymbol,
+                offset: '100%'
+            }
+        ],
+        map: self.gmap
+    });
+
+    Deps.autorun(function () {
+        var count = 0;
+        window.setInterval(function () {
+            count = (count + 1) % 200;
+
+            var icons = line.get('icons');
+            icons[0].offset = (count / 2) + '%';
+            line.set('icons', icons);
+        }, 200);
+    });
+}
 
 // accepts reactive var
 GoogleMap.prototype.bindToSelectedMarkerId = function (selectedMarkerId) {
@@ -305,101 +344,107 @@ Template.googleMapInner.rendered = function () {
                 {"color": "#cfb2db"}
             ]}
         ];
-      
+
     } else if (strHours > 19 && strHours <= 20) {
-            var byclerStyles = [
-                {"featureType": "road", "elementType": "labels", "stylers": [
-                    {"visibility": "simplified"},
-                    {"lightness": 20}
-                ]},
-                {"featureType": "administrative.land_parcel", "elementType": "all", "stylers": [
-                    {"visibility": "off"}
-                ]},
-                {"featureType": "landscape.man_made", "elementType": "all", "stylers": [
-                    {"visibility": "off"}
-                ]},
-                {"featureType": "transit", "elementType": "all", "stylers": [
-                    {"visibility": "off"}
-                ]},
-                {"featureType": "road.local", "elementType": "labels", "stylers": [
-                    {"visibility": "simplified"}
-                ]},
-                {"featureType": "road.local", "elementType": "geometry", "stylers": [
-                    {"visibility": "simplified"}
-                ]},
-                {"featureType": "road.highway", "elementType": "labels", "stylers": [
-                    {"visibility": "simplified"}
-                ]},
-                {"featureType": "poi", "elementType": "labels", "stylers": [
-                    {"visibility": "off"}
-                ]},
-                {"featureType": "road.arterial", "elementType": "labels", "stylers": [
-                    {"visibility": "off"}
-                ]},
-                {"featureType": "water", "elementType": "all", "stylers": [
-                    {"hue": "#a1cdfc"},
-                    {"saturation": 30},
-                    {"lightness": 49}
-                ]},
-                {"featureType": "road.highway", "elementType": "geometry", "stylers": [
-                    {"hue": "#f49935"}
-                ]},
-                {"featureType": "road.arterial", "elementType": "geometry", "stylers": [
-                    {"hue": "#fad959"}
-                ]}
-            ];
-        } else {
-            var byclerStyles = [
-                {"featureType": "water", "stylers": [
-                    {"color": "#021019"}
-                ]},
-                {"featureType": "landscape", "stylers": [
-                    {"color": "#08304b"}
-                ]},
-                {"featureType": "poi", "elementType": "geometry", "stylers": [
-                    {"color": "#0c4152"},
-                    {"lightness": 5}
-                ]},
-                {"featureType": "road.highway", "elementType": "geometry.fill", "stylers": [
-                    {"color": "#000000"}
-                ]},
-                {"featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [
-                    {"color": "#0b434f"},
-                    {"lightness": 25}
-                ]},
-                {"featureType": "road.arterial", "elementType": "geometry.fill", "stylers": [
-                    {"color": "#000000"}
-                ]},
-                {"featureType": "road.arterial", "elementType": "geometry.stroke", "stylers": [
-                    {"color": "#0b3d51"},
-                    {"lightness": 16}
-                ]},
-                {"featureType": "road.local", "elementType": "geometry", "stylers": [
-                    {"color": "#000000"}
-                ]},
-                {"elementType": "labels.text.fill", "stylers": [
-                    {"color": "#ffffff"}
-                ]},
-                {"elementType": "labels.text.stroke", "stylers": [
-                    {"color": "#000000"},
-                    {"lightness": 13}
-                ]},
-                {"featureType": "transit", "stylers": [
-                    {"color": "#146474"}
-                ]},
-                {"featureType": "administrative", "elementType": "geometry.fill", "stylers": [
-                    {"color": "#000000"}
-                ]},
-                {"featureType": "administrative", "elementType": "geometry.stroke", "stylers": [
-                    {"color": "#144b53"},
-                    {"lightness": 14},
-                    {"weight": 1.4}
-                ]}
-            ];
-  };
-      
-  map.setStyle(byclerStyles);
-  map.init();
+        var byclerStyles = [
+            {"featureType": "road", "elementType": "labels", "stylers": [
+                {"visibility": "simplified"},
+                {"lightness": 20}
+            ]},
+            {"featureType": "administrative.land_parcel", "elementType": "all", "stylers": [
+                {"visibility": "off"}
+            ]},
+            {"featureType": "landscape.man_made", "elementType": "all", "stylers": [
+                {"visibility": "off"}
+            ]},
+            {"featureType": "transit", "elementType": "all", "stylers": [
+                {"visibility": "off"}
+            ]},
+            {"featureType": "road.local", "elementType": "labels", "stylers": [
+                {"visibility": "simplified"}
+            ]},
+            {"featureType": "road.local", "elementType": "geometry", "stylers": [
+                {"visibility": "simplified"}
+            ]},
+            {"featureType": "road.highway", "elementType": "labels", "stylers": [
+                {"visibility": "simplified"}
+            ]},
+            {"featureType": "poi", "elementType": "labels", "stylers": [
+                {"visibility": "off"}
+            ]},
+            {"featureType": "road.arterial", "elementType": "labels", "stylers": [
+                {"visibility": "off"}
+            ]},
+            {"featureType": "water", "elementType": "all", "stylers": [
+                {"hue": "#a1cdfc"},
+                {"saturation": 30},
+                {"lightness": 49}
+            ]},
+            {"featureType": "road.highway", "elementType": "geometry", "stylers": [
+                {"hue": "#f49935"}
+            ]},
+            {"featureType": "road.arterial", "elementType": "geometry", "stylers": [
+                {"hue": "#fad959"}
+            ]}
+        ];
+    } else {
+        var byclerStyles = [
+            {"featureType": "water", "stylers": [
+                {"color": "#021019"}
+            ]},
+            {"featureType": "landscape", "stylers": [
+                {"color": "#08304b"}
+            ]},
+            {"featureType": "poi", "elementType": "geometry", "stylers": [
+                {"color": "#0c4152"},
+                {"lightness": 5}
+            ]},
+            {"featureType": "road.highway", "elementType": "geometry.fill", "stylers": [
+                {"color": "#000000"}
+            ]},
+            {"featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [
+                {"color": "#0b434f"},
+                {"lightness": 25}
+            ]},
+            {"featureType": "road.arterial", "elementType": "geometry.fill", "stylers": [
+                {"color": "#000000"}
+            ]},
+            {"featureType": "road.arterial", "elementType": "geometry.stroke", "stylers": [
+                {"color": "#0b3d51"},
+                {"lightness": 16}
+            ]},
+            {"featureType": "road.local", "elementType": "geometry", "stylers": [
+                {"color": "#000000"}
+            ]},
+            {"elementType": "labels.text.fill", "stylers": [
+                {"color": "#ffffff"}
+            ]},
+            {"elementType": "labels.text.stroke", "stylers": [
+                {"color": "#000000"},
+                {"lightness": 13}
+            ]},
+            {"featureType": "transit", "stylers": [
+                {"color": "#146474"}
+            ]},
+            {"featureType": "administrative", "elementType": "geometry.fill", "stylers": [
+                {"color": "#000000"}
+            ]},
+            {"featureType": "administrative", "elementType": "geometry.stroke", "stylers": [
+                {"color": "#144b53"},
+                {"lightness": 14},
+                {"weight": 1.4}
+            ]}
+        ];
+    }
+    ;
+
+    map.setStyle(byclerStyles);
+    map.init();
+
+    var curentTrack = Session.get('currentTrackId');
+    if(curentTrack != null){
+        map.startAnimation();
+    }
 };
 
 Template.googleMapInner.events({
@@ -428,20 +473,20 @@ if (Meteor.isClient) {
     Meteor.subscribe('basic');
     //Click to start tracking event
     Template.googleMapInner.events({
-        'click #play_button': function (event) {
+        'click #play-button': function (event) {
             var btn = event.currentTarget;
+            //cambiar play stop
+            UserTrack.insert({
+                name: new Date().toString(),
+                created: new Date(),
+                finish: new Date(),
+                userId: Meteor.userId,
+                public: true
+            });
+            var iconClassName = document.getElementById("play-pause-icon").className;
+            iconClassName = iconClassName == "glyphicon glyphicon-pause" ? "glyphicon glyphicon-play" : "glyphicon glyphicon-pause";
+            document.getElementById("play-pause-icon").className = iconClassName;
 
-            document.getElementById("play-pause-icon").className = "glyphicon glyphicon-pause";
-
-
-            var myTrack = function () {
-                return UserTrack.insert({
-                    name: new Date().toString(),
-                    created: new Date(),
-                    userId: Meteor.userId,
-                    public: true
-                });
-            };
             if (!GeolocationBG.isStarted) {
                 if (!GeolocationBG.start()) {
                     return;
@@ -468,7 +513,7 @@ if (Meteor.isCordova) {
         // your server url to send locations to
         //   YOU MUST SET THIS TO YOUR SERVER'S URL
         //   (see the setup instructions below)
-        url: 'http://179.56.234.41:3000/api/geolocation',
+        url: 'http:/:3000/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()
