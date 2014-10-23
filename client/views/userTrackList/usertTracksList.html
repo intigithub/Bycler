@@ -1,4 +1,5 @@
 <template name="userTrackList">
+    {{#if userTracksListCount}}
     {{#each userTracksList}}
     <div class="row">
         <div class="[ col-xs-12 col-sm-offset-1 col-sm-5 ]">
@@ -9,12 +10,15 @@
                     <h5><span>{{public}}</span></h5>
                 </div>
                 <div class="panel-footer">
-                    <button type="button" class="[ btn btn-default ]">Eliminar</button>
-                    <button type="button" class="[ btn btn-default ]">Ver</button>
-                    <button type="button" class="[ btn btn-default ]">Resumen</button>
+                    <button type="button" class="view-track-btn" id="{{_id}}">
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     {{/each}}
+    {{else}}
+    Lista Vacia
+    {{/if}}
+
 </template>
