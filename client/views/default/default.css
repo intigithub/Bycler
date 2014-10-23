@@ -8,7 +8,7 @@ body,
 }
 
 .container-slide-nav {
-	background: #34495e;
+  background: #ECF0F1;
 }
 
 .menu-wrap-slide-nav a {
@@ -17,7 +17,7 @@ body,
 
 .menu-wrap-slide-nav a:hover,
 .menu-wrap a:focus {
-	color: #FF7757;
+	color: #FFF;
 }
 
 .content-wrap-slide-nav {
@@ -27,7 +27,8 @@ body,
 
 .content-slide-nav {
 	position: relative;
-	background: #f2f2f2;
+	background: #ECF0F1;
+  height: 100%;
 }
 
 .content-slide-nav::before {
@@ -119,7 +120,11 @@ body,
 	z-index: 1001;
 	width: 300px;
 	height: 100%;
-	background: #373a47;
+    background: url('/imgs/login/fondo_login_dark.png') no-repeat ;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 	padding: 1.5em 1.5em 0;
 	font-size: 2.15em;
 	-webkit-transform: translate3d(-320px,0,0);

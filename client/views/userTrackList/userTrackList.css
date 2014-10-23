@@ -1,3 +1,4 @@
+#play-button { position: absolute; z-index: 990; border: 0; background: transparent; outline: none; bottom: 0; margin-left: -40px; padding-bottom: 8px; }
 
 .panel-google-plus {
     position: relative;
@@ -173,3 +174,4 @@
     background-color: rgb(255, 255, 255);
     border-color: rgb(0, 0, 0);
 }
+
