@@ -11,7 +11,11 @@
             </nav>
             <button class="close-button" id="close-button-slide-nav">Close Menu</button>
         </div>
-        <button class="menu-button-slide-nav" id="open-button-slide-nav">Open Menu</button>
+      
+        
+        <button class="menu-button-slide-nav" id="open-button-slide-nav" style="{{#if currentUser}}{{else}}visibility:hidden{{/if}}">Open Menu</button>
+        
+      
         <div class="content-wrap-slide-nav">
             <div class="content-slide-nav" style="min-height: 100%" >
                 {{> yield}}
@@ -20,11 +24,11 @@
     </div>
     <script>
         (function () {
-
             var bodyEl = document.body,
                     content = document.querySelector('.content-wrap-slide-nav'),
                     openbtn = document.getElementById('open-button-slide-nav'),
                     closebtn = document.getElementById('close-button-slide-nav'),
+                    menulinks = document.querySelectorAll('.icon-list-slide-nav a'),
                     isOpen = false;
 
             function init() {
@@ -32,18 +36,25 @@
             }
 
             function initEvents() {
-                openbtn.addEventListener('click', toggleMenu);
-                if (closebtn) {
-                    closebtn.addEventListener('click', toggleMenu);
+              openbtn.addEventListener('click', toggleMenu);
+              
+              if(menulinks) {
+                for(var i=0; i &lt; menulinks.length; i++) {
+                  menulinks[i].addEventListener('click', toggleMenu);
                 }
+              }
 
-                // close the menu element if the target it´s not the menu element or one of its descendants..
-                content.addEventListener('click', function (ev) {
-                    var target = ev.target;
-                    if (isOpen && target !== openbtn) {
-                        toggleMenu();
-                    }
-                });
+              if (closebtn) {
+                closebtn.addEventListener('click', toggleMenu);
+              }
+
+              // close the menu element if the target it´s not the menu element or one of its descendants..
+              content.addEventListener('click', function (ev) {
+                var target = ev.target;
+                if (isOpen && target !== openbtn) {
+                  toggleMenu();
+                }
+              });
             }
 
             function toggleMenu() {
@@ -57,7 +68,6 @@
             }
 
             init();
-
         })();
         (function (window) {
 
