@@ -31,7 +31,6 @@ a {
     outline: none;
 }
 
-
 button:focus {
     outline: none;
 }
@@ -142,6 +141,38 @@ body #cdawrap {
 
 }
 
+.login-container {
+    background: url('/imgs/login/fondo_login.png') no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+    min-height: 100%;
+    width: 100%;
+    padding: 0 28px 0 28px;
+}
+
+.logo-container {
+    width: 100%;
+    text-align: center;
+    margin-top: 16px;
+
+}
+
+.at-title, .at-sep {
+    display: none;
+}
+
+.at-oauth {
+    display: block;
+}
+
+.at-signal-link {
+
+}
 
 .btn-circle.btn-lg {
     width: 50px;
@@ -153,11 +184,8 @@ body #cdawrap {
     position: fixed;
     z-index: 990;
     bottom: 4px;
-    border-line:1px ;
+    border-line: 1px;
     border-color: #34495e;
-    background-color:#FF7757 ;
-    left:42%;
+    background-color: #FF7757;
+    left: 42%;
 }
-
-#play-button { position: absolute; z-index: 990; border: 0; background: transparent; outline: none; bottom: 0; margin-left: -40px; padding-bottom: 8px; }
-
