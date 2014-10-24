@@ -16,12 +16,12 @@ Template.userTrackList.helpers({
         var currentTrackId =
             Session.get('currentTrackId');
         if (currentTrackId != null) {
-            if(trackItemId == currentTrackId){
+            if (trackItemId == currentTrackId) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
     }
@@ -33,7 +33,16 @@ Template.userTrackList.events({
         var trackId = btn.id;
         Session.set('currentTrackId', trackId);
         Router.go('googleMap');
+    },
+    'click .delete-track-btn': function (event) {
+        var btn = event.currentTarget;
+        var trackId = btn.id;
+        if (Session.get('currentTrackId') != trackId) {
+            var btn = event.currentTarget;
+            UserTrack.remove(trackId);
+        }
     }
+
 });
 
 UI.registerHelper("formatDate", function (datetime) {
