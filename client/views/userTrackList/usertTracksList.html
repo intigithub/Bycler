@@ -1,24 +1,43 @@
 <template name="userTrackList">
-    {{#if userTracksListCount}}
-    {{#each userTracksList}}
-    <div class="row">
-        <div class="[ col-xs-12 col-sm-offset-1 col-sm-5 ]">
-            <div class="[ panel panel-default ] panel-google-plus">
-                <div class="panel-heading">
-                    <h5><span>{{name}}</span> - <span>{{created}}</span></h5>
-                    <h5><span>{{_id}}</span> - <span>{{userId}}</span></h5>
-                    <h5><span>{{public}}</span></h5>
+    <div class="panel panel-warning">
+        <div class="panel-heading" style="text-align: center;">
+            <h3 class="panel-title">Mis Rutas</h3>
+        </div>
+        <div class="panel-body">
+            {{#if userTracksListCount}}
+                {{#each userTracksList}}
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">Nombre: <span>{{name}}</span></h4>
+
+                            <div style="position: relative; min-height: 35px;">
+                                <h5 class="list-group-item-text" style="float: left">{{formatDate created}}</h5>
+
+                                <div class="btn-group" style="float: right">
+                                    <button type="button" class="btn btn-info view-track-btn" id="{{_id}}">
+                                        <span class="glyphicon glyphicon-road"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-warning delete-track-btn" id="{{_id}}">
+                                        <span class="glyphicon glyphicon-trash"> </span>
+                                    </button>
+                                    <button type="button" class="btn btn-success detail-track-btn" id="{{_id}}">
+                                        <span class="glyphicon glyphicon-info-sign"> </span>
+                                    </button>
+                                    {{#if isTrackStillAlive _id}}
+                                        <button class="btn btn-warning detail-track-btn"><span
+                                                class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                                        </button>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {{/each}}
+            {{else}}
+                <div class="alert alert-danger" role="alert" style="margin-top: 4px;">
+                    <a href="/googleMap" class="alert-link"><h4>Aun no has subido ninguna ruta</h4></a>
                 </div>
-                <div class="panel-footer">
-                    <button type="button" class="view-track-btn" id="{{_id}}">
-                    </button>
-                </div>
-            </div>
+            {{/if}}
         </div>
     </div>
-    {{/each}}
-    {{else}}
-    Lista Vacia
-    {{/if}}
-
 </template>
