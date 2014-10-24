@@ -204,9 +204,9 @@ GoogleMap.prototype.setStyle = function (styles) {
 GoogleMap.prototype.addMarker = function (marker) {
     var self = this;
     MarkerEditable = new google.maps.Marker({
-        position: new google.maps.LatLng(marker.position.k, marker.position.B),
+        position: new google.maps.LatLng(marker.x, marker.y),
         map: self.gmap,
-        icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+        icon: new google.maps.MarkerImage(getImgFromTypeMarker(marker.type), null, null, null,
             new google.maps.Size(48, 48))
     });
 };
@@ -220,11 +220,10 @@ GoogleMap.prototype.init = function () {
 
     Markers.find({}).observe({
         added: function (marker) {
-            console.log('Huy, llego marker:' + marker);
             self.markers[markersCounter++] = new google.maps.Marker({
-                position: new google.maps.LatLng(marker.position.k, marker.position.B),
+                position: new google.maps.LatLng(marker.x, marker.y),
                 map: self.gmap,
-                icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
+                icon: new google.maps.MarkerImage(getImgFromTypeMarker(marker.type), null, null, null,
                     new google.maps.Size(48, 48))
             });
         }
@@ -508,13 +507,44 @@ Template.googleMapInner.events({
             null, null, null,
             new google.maps.Size(48, 48)));
         MarkerEditable.setDraggable(false);
+
         Markers.insert({
+            titulo: '--',
+            direccion: '?',
             fecha: new Date(),
-            imgSrc: event.target.src.substr(event.target.src.indexOf('/imgs/markers/')),
-            position: MarkerEditable.getPosition()
+            type: getTypeMarker(event.target.src),
+            x: MarkerEditable.getPosition().k,
+            y: MarkerEditable.getPosition().B
         });
     }
 });
+
+function getTypeMarker(imgSrc) {
+  if(imgSrc.indexOf('estacionamiento')) return 0;
+  if(imgSrc.indexOf('evento')) return 1;
+  if(imgSrc.indexOf('servicentro')) return 2;
+  if(imgSrc.indexOf('taller')) return 3;
+  if(imgSrc.indexOf('tienda')) return 4;
+  if(imgSrc.indexOf('robo')) return 5;
+  if(imgSrc.indexOf('bici_publica')) return 6;
+  return -1;
+}
+
+function getImgFromTypeMarker(idType) {
+  var path = '/imgs/markers/ic_map_';
+  switch(idType) {
+      case 0: path = path + 'estacionamiento'; break;
+      case 1: path = path + 'evento'; break;
+      case 2: path = path + 'servicentro'; break;
+      case 3: path = path + 'taller'; break;
+      case 4: path = path + 'tienda'; break;
+      case 5: path = path + 'robo'; break;
+      case 6: path = path + 'bici_publica'; break;
+      default: path = path + 'evento';
+  }
+  path = path + '.png';
+  return path;
+}
 
 // Mobile Gps Tracker To Server
 if (Meteor.isClient) {

@@ -1,5 +1,7 @@
 Bycler
 ======
-This is a new project in meteor 0.9.4
+Proyecto Meteor 0.9.4
 
-
+Colaboradores:
+EdU
+Leo
