@@ -111,45 +111,6 @@ GoogleMap.prototype.setMarkers = function (cursor) {
 };
 
 
-// Funcion desactivada por ahora
-GoogleMap.prototype.startAnimation = function () {
-    var self = this, count = 0;
-
-    var lineSymbol = {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 8,
-        strokeColor: '#FFE003'
-    };
-    var path = new google.maps.MVCArray;
-
-    var topPosts = GeoLog.find();
-    topPosts.forEach(function (post) {
-        path.push(new google.maps.LatLng(post.location.latitude, post.location.longitude));
-    });
-
-    var line = new google.maps.Polyline({
-        path: path,
-        icons: [
-            {
-                icon: lineSymbol,
-                offset: '100%'
-            }
-        ],
-        map: self.gmap
-    });
-
-    Deps.autorun(function () {
-        var count = 0;
-        window.setInterval(function () {
-            count = (count + 1) % 200;
-
-            var icons = line.get('icons');
-            icons[0].offset = (count / 2) + '%';
-            line.set('icons', icons);
-        }, 200);
-    });
-}
-
 // pintar ruta en mapa
 
 GoogleMap.prototype.startAnimation = function () {
@@ -162,7 +123,9 @@ GoogleMap.prototype.startAnimation = function () {
     };
     var path = new google.maps.MVCArray;
 
-    var topPosts = GeoLog.find();
+    var trackId = Session.get('selectedTrackId');
+    console.log(trackId);
+    var topPosts = GeoLog.find({'trackId': trackId});
     topPosts.forEach(function (post) {
         path.push(new google.maps.LatLng(post.location.latitude, post.location.longitude));
     });
@@ -527,9 +490,8 @@ Template.googleMapInner.rendered = function () {
 
     map.setStyle(byclerStyles);
     map.init();
-
-    var curentTrack = Session.get('currentTrackId');
-    if (curentTrack != null) {
+    console.log(Session.get('selectedTrackId'));
+    if (Session.get('selectedTrackId') != null) {
         map.startAnimation();
     }
 };
@@ -600,6 +562,8 @@ if (Meteor.isClient) {
                 Session.set('currentTrackId', null);
                 setPlayPauseStyle('play');
                 console.log('STOP TRACK:   Stopped');
+
+
                 return;
             }
             if (GeolocationBG.isStarted) {
@@ -632,7 +596,7 @@ if (Meteor.isCordova) {
             // will be sent in with 'location' in HTTP Header data
         },
         desiredAccuracy: 10,
-        stationaryRadius: 20,
+        stationaryRadius: 10,
         distanceFilter: 2,
         // Android ONLY, customize the title of the notification
         notificationTitle: 'Trazando Ruta',

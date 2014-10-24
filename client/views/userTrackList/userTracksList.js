@@ -31,7 +31,7 @@ Template.userTrackList.events({
     'click .view-track-btn': function (event) {
         var btn = event.currentTarget;
         var trackId = btn.id;
-        Session.set('currentTrackId', trackId);
+        Session.set('selectedTrackId', trackId);
         Router.go('googleMap');
     },
     'click .delete-track-btn': function (event) {
