@@ -27,7 +27,7 @@ Meteor.startup(function () {
     //Productivo
     ServiceConfiguration.configurations.insert({
       "service": "facebook",
-      "appId": "296870120500385 ",
+      "appId": "296870120500385",
       "secret": "427f178bcbe43791448f361f72003c37"
     });
 });
