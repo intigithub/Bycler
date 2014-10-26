@@ -24,11 +24,11 @@ Meteor.startup(function () {
      "secret": "5ac1e79fd2444feafe5885d4c4b84866"
      });
      */
-
+    //Productivo
     ServiceConfiguration.configurations.insert({
       "service": "facebook",
-      "appId": "304310749756322 ",
-      "secret": "352b8ed5f9a2e614b11f9ad0696e8291"
+      "appId": "296870120500385 ",
+      "secret": "427f178bcbe43791448f361f72003c37"
     });
 });
 

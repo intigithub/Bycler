@@ -46,32 +46,6 @@ var GoogleMap = function (element) {
 };
 
 // accepts reactive function that returns {lat: Number, lng: Number}
-GoogleMap.prototype.setCenter = function (centerFunc) {
-    var self = this;
-
-    if (self.centerComputation) {
-        self.centerComputation.stop();
-    }
-
-    self.centerComputation = Deps.autorun(function () {
-        var center = centerFunc();
-
-        if (self.selectedMarkerId && self.selectedMarkerId.get()) {
-            // marker is currently selected, don't update the center until it's closed
-            var markerId = self.selectedMarkerId.get();
-            if (self.markers[markerId]) {
-                var marker = self.markers[markerId];
-                self.gmap.setCenter(marker.getPosition());
-            }
-            return;
-        }
-
-        if (center) {
-            var latLng = new google.maps.LatLng(center.lat, center.lng);
-            self.gmap.setCenter(latLng);
-        }
-    });
-};
 
 GoogleMap.prototype.showCurrLocationMarker = function () {
     var self = this;
@@ -255,12 +229,7 @@ Template.googleMapInner.rendered = function () {
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
 
-    if (options.center) {
-        map.setCenter(options.center);
-    } else if (options.geolocate) {
         map.showCurrLocationMarker();
-        map.setCenter(Geolocation.latLng);
-    }
 
     var DateTime = new Date();
     var strHours = DateTime.getHours();
@@ -635,6 +604,6 @@ if (Meteor.isCordova) {
         //
         activityType: 'AutomotiveNavigation',
         // enable this hear sounds for background-geolocation life-cycle.
-        debug: true
+        debug: false
     });
 }
