@@ -7,7 +7,8 @@ App.info({
     description: 'Comparte el movimiento',
     author: 'Bycler',
     email: 'info@bycler.com',
-    website: 'http://www.bycler.com'
+    website: 'http://www.bycler.com',
+    version: '0.0.2'
 });
 
 App.icons({

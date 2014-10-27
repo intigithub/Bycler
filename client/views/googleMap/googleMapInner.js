@@ -229,7 +229,7 @@ Template.googleMapInner.rendered = function () {
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
 
-    map.showCurrLocationMarker();
+        map.showCurrLocationMarker();
 
     var DateTime = new Date();
     var strHours = DateTime.getHours();
@@ -489,45 +489,30 @@ Template.googleMapInner.events({
 });
 
 function getTypeMarker(imgSrc) {
-    if (imgSrc.indexOf('estacionamiento')) return 0;
-    if (imgSrc.indexOf('evento')) return 1;
-    if (imgSrc.indexOf('servicentro')) return 2;
-    if (imgSrc.indexOf('taller')) return 3;
-    if (imgSrc.indexOf('tienda')) return 4;
-    if (imgSrc.indexOf('robo')) return 5;
-    if (imgSrc.indexOf('bici_publica')) return 6;
-    return -1;
+  if(imgSrc.indexOf('estacionamiento')) return 0;
+  if(imgSrc.indexOf('evento')) return 1;
+  if(imgSrc.indexOf('servicentro')) return 2;
+  if(imgSrc.indexOf('taller')) return 3;
+  if(imgSrc.indexOf('tienda')) return 4;
+  if(imgSrc.indexOf('robo')) return 5;
+  if(imgSrc.indexOf('bici_publica')) return 6;
+  return -1;
 }
 
 function getImgFromTypeMarker(idType) {
-    var path = '/imgs/markers/ic_map_';
-    switch (idType) {
-        case 0:
-            path = path + 'estacionamiento';
-            break;
-        case 1:
-            path = path + 'evento';
-            break;
-        case 2:
-            path = path + 'servicentro';
-            break;
-        case 3:
-            path = path + 'taller';
-            break;
-        case 4:
-            path = path + 'tienda';
-            break;
-        case 5:
-            path = path + 'robo';
-            break;
-        case 6:
-            path = path + 'bici_publica';
-            break;
-        default:
-            path = path + 'evento';
-    }
-    path = path + '.png';
-    return path;
+  var path = '/imgs/markers/ic_map_';
+  switch(idType) {
+      case 0: path = path + 'estacionamiento'; break;
+      case 1: path = path + 'evento'; break;
+      case 2: path = path + 'servicentro'; break;
+      case 3: path = path + 'taller'; break;
+      case 4: path = path + 'tienda'; break;
+      case 5: path = path + 'robo'; break;
+      case 6: path = path + 'bici_publica'; break;
+      default: path = path + 'evento';
+  }
+  path = path + '.png';
+  return path;
 }
 
 // Mobile Gps Tracker To Server
@@ -594,11 +579,12 @@ function setPlayPauseStyle(playOrPause) {
     document.getElementById("play-pause-icon").className = 'glyphicon glyphicon-' + playOrPause;
 }
 if (Meteor.isCordova) {
+    alert('Bycler real time tracking config start');
     GeolocationBG.config({
         // your server url to send locations to
         //   YOU MUST SET THIS TO YOUR SERVER'S URL
         //   (see the setup instructions below)
-        url: 'http://104.131.178.231:80/api/geolocation',
+        url: 'http://bycler.cl/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()
