@@ -24,6 +24,7 @@ var GoogleMap = function (element) {
     });
 
     google.maps.event.addListener(self.gmap, "mouseup", function (event) {
+        console.log("mouseup");
         if (initialClickPositionMap != null && new Date().getTime() - timeMillis > 1000
             && event.latLng.lat == initialClickPositionMap.lat
             && event.latLng.lng == initialClickPositionMap.lng) {
@@ -45,33 +46,6 @@ var GoogleMap = function (element) {
     });
 };
 
-// accepts reactive function that returns {lat: Number, lng: Number}
-GoogleMap.prototype.setCenter = function (centerFunc) {
-    var self = this;
-
-    if (self.centerComputation) {
-        self.centerComputation.stop();
-    }
-
-    self.centerComputation = Deps.autorun(function () {
-        var center = centerFunc();
-
-        if (self.selectedMarkerId && self.selectedMarkerId.get()) {
-            // marker is currently selected, don't update the center until it's closed
-            var markerId = self.selectedMarkerId.get();
-            if (self.markers[markerId]) {
-                var marker = self.markers[markerId];
-                self.gmap.setCenter(marker.getPosition());
-            }
-            return;
-        }
-
-        if (center) {
-            var latLng = new google.maps.LatLng(center.lat, center.lng);
-            self.gmap.setCenter(latLng);
-        }
-    });
-};
 
 GoogleMap.prototype.showCurrLocationMarker = function () {
     var self = this;
@@ -92,27 +66,9 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
     });
 };
 
-// accepts minimongo cursor
-// documents must have field marker: {lat: Number, lng: Number, infoWindowContent: String}
-GoogleMap.prototype.setMarkers = function (cursor) {
-    var self = this;
-
-    if (self.liveQuery) {
-        self.liveQuery.stop();
-    }
-
-    var latLng = Geolocation.latLng();
-    var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
-        map: self.gmap,
-        ico: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
-            new google.maps.Size(64, 64))
-    });
-};
 
 
 // pintar ruta en mapa
-
 GoogleMap.prototype.startAnimation = function () {
     var self = this, count = 0;
 
@@ -209,6 +165,25 @@ GoogleMap.prototype.addMarker = function (marker) {
         icon: new google.maps.MarkerImage(getImgFromTypeMarker(marker.type), null, null, null,
             new google.maps.Size(48, 48))
     });
+    
+    var infoBubble = new InfoBubble({
+        content: '<button id="modal-trigger" class="btn btn-primary" data-toggle="modal" data-target="#basicModal">'
+            + (marker.data?marker.data.nombre:'Nuevo evento') 
+            + '</button><br/><span class="bubble-evento-label-detalle">30/Oc/14<strong> - 23:30<strong></span><div id="radio">'
+            + '<input type="radio" id="radio1" name="radio"/><label class="glyphicon glyphicon-thumbs-up" form="radio1">Sí</label>'
+            + '<input type="radio" id="radio2" name="radio"/><label class="glyphicon glyphicon-thumbs-down" form="radio2">No</label>'
+            + '</div>',
+        alignBottom: true,
+        pixelOffset: new google.maps.Size(-150, -40)
+    });
+
+    infoBubble.open(selg.gmap, MarkerEditable);
+
+    google.maps.event.addListener(MarkerEditable, 'click', function() {
+        if (!infoBubble.isOpen()) {
+            infoBubble.open(MarkerEditable.getMap(), MarkerEditable);
+        }
+    });
 };
 
 
@@ -217,19 +192,38 @@ GoogleMap.prototype.init = function () {
     var self = this;
     var byclersCounter = 0;
     var markersCounter = 0;
-
+    
     Markers.find({}).observe({
         added: function (marker) {
-            self.markers[markersCounter++] = new google.maps.Marker({
+            var googleMarker = new google.maps.Marker({
                 position: new google.maps.LatLng(marker.x, marker.y),
                 map: self.gmap,
                 icon: new google.maps.MarkerImage(getImgFromTypeMarker(marker.type), null, null, null,
                     new google.maps.Size(48, 48))
             });
+            
+            self.markers[markersCounter] = googleMarker;
+            
+            // InfoBubble EVENTOS
+            var infoBubble = new InfoBubble({
+                content: '<button id="modal-trigger" class="btn btn-primary" data-toggle="modal" data-target="#basicModal"'
+                    + 'onclick="$(\'#basicModal\').modal(\'show\'); ' 
+                    + '">' + (marker.data?marker.data.nombre:'Nuevo evento') 
+                    + '</button><br/><span class="bubble-evento-label-detalle">30/Oc/14<strong> - 23:30<strong></span>',
+                alignBottom: true,
+                pixelOffset: new google.maps.Size(-150, -40)
+            });
+            if(marker.type==1) {
+                google.maps.event.addListener(googleMarker, 'click', function() {
+                    infoBubble.open(self.gmap, googleMarker);
+                });
+            }
+            
+            markersCounter++;
         }
     });
-
-    Byclers.find({}).observe({
+    
+    /*Byclers.find({}).observe({
         added: function (marker) {
             console.log('Huy, llego byler:' + marker);
             self.byclers[byclersCounter++] = new google.maps.Marker({
@@ -239,7 +233,7 @@ GoogleMap.prototype.init = function () {
                     new google.maps.Size(48, 48))
             });
         }
-    });
+    });*/
 }
 
 Template.googleMapInner.rendered = function () {
@@ -255,16 +249,12 @@ Template.googleMapInner.rendered = function () {
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
 
-    if (options.center) {
-        map.setCenter(options.center);
-    } else if (options.geolocate) {
-        map.showCurrLocationMarker();
-        map.setCenter(Geolocation.latLng);
-    }
-
+    map.showCurrLocationMarker();
+    
     var DateTime = new Date();
     var strHours = DateTime.getHours();
-    if (strHours >= 7 && strHours <= 19) {
+    console.log(strHours + 'Para revisar');
+    if (strHours >= 7 && strHours <= 15) {
 
         var byclerStyles = [
             {
@@ -274,7 +264,7 @@ Template.googleMapInner.rendered = function () {
             },
             {
                 "featureType": "landscape.man_made", "elementType": "geometry", "stylers": [
-                {"color": "#f7f1df"}
+                {"color": "#718AA3"}
             ]
             },
             {
@@ -313,11 +303,6 @@ Template.googleMapInner.rendered = function () {
             ]
             },
             {
-                "featureType": "road", "elementType": "labels", "stylers": [
-                {"visibility": "off"}
-            ]
-            },
-            {
                 "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [
                 {"color": "#ffe15f"}
             ]
@@ -344,7 +329,7 @@ Template.googleMapInner.rendered = function () {
             }
         ];
 
-    } else if (strHours > 19 && strHours <= 20) {
+    } else if (strHours > 15 && strHours <= 19) {
         var byclerStyles = [
             {
                 "featureType": "road", "elementType": "labels", "stylers": [
@@ -488,7 +473,9 @@ Template.googleMapInner.rendered = function () {
     ;
 
     map.setStyle(byclerStyles);
+    
     map.init();
+
     console.log(Session.get('selectedTrackId'));
     if (Session.get('selectedTrackId') != null) {
         map.startAnimation();
@@ -509,24 +496,43 @@ Template.googleMapInner.events({
         MarkerEditable.setDraggable(false);
 
         Markers.insert({
-            titulo: '--',
-            direccion: '?',
             fecha: new Date(),
             type: getTypeMarker(event.target.src),
             x: MarkerEditable.getPosition().k,
-            y: MarkerEditable.getPosition().B
+            y: MarkerEditable.getPosition().B,
+            data: { nombre: "Nuevo Evento", fecha: new Date() }
         });
+
+        // InfoBubble EVENTOS
+        if(getTypeMarker(event.target.src)==1) {
+            var infoBubble = new InfoBubble({
+                content: '<button id="modal-trigger" class="btn btn-primary" data-toggle="modal" data-target="#basicModal">Nuevo evento 2.1</button>'
+                    + '<p>30/Oc/14<strong> - 23:30<strong></p><div id="radio">'
+                    + '<input type="radio" id="radio1" name="radio"/><label class="glyphicon glyphicon-thumbs-up" form="radio1">Sí</label>'
+                    + '<input type="radio" id="radio2" name="radio"/><label class="glyphicon glyphicon-thumbs-down" form="radio2">No</label>'
+                    + '</div>',
+                alignBottom: true,
+                pixelOffset: new google.maps.Size(-150, -40)
+            });
+        
+            var map = MarkerEditable.getMap();
+            google.maps.event.addListener(MarkerEditable, 'click', function() {
+                if (!infoBubble.isOpen()) {
+                    infoBubble.open(map, MarkerEditable);
+                }
+            });
+        }        
     }
 });
 
 function getTypeMarker(imgSrc) {
-  if(imgSrc.indexOf('estacionamiento')) return 0;
-  if(imgSrc.indexOf('evento')) return 1;
-  if(imgSrc.indexOf('servicentro')) return 2;
-  if(imgSrc.indexOf('taller')) return 3;
-  if(imgSrc.indexOf('tienda')) return 4;
-  if(imgSrc.indexOf('robo')) return 5;
-  if(imgSrc.indexOf('bici_publica')) return 6;
+  if(imgSrc.indexOf('estacionamiento')!=-1) return 0;
+  if(imgSrc.indexOf('evento')!=-1) return 1;
+  if(imgSrc.indexOf('servicentro')!=-1) return 2;
+  if(imgSrc.indexOf('taller')!=-1) return 3;
+  if(imgSrc.indexOf('tienda')!=-1) return 4;
+  if(imgSrc.indexOf('robo')!=-1) return 5;
+  if(imgSrc.indexOf('bici_publica')!=-1) return 6;
   return -1;
 }
 
@@ -606,9 +612,11 @@ if (Meteor.isClient) {
     })
     ;
 }
+
 function setPlayPauseStyle(playOrPause) {
     document.getElementById("play-pause-icon").className = 'glyphicon glyphicon-' + playOrPause;
 }
+
 if (Meteor.isCordova) {
     GeolocationBG.config({
         // your server url to send locations to

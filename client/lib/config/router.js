@@ -47,9 +47,9 @@ Router.map(function () {
     /**
      * Show Event List
      */
-    this.route('events', {
-        path: '/events',
-        template: 'events',
+    this.route('userEventList', {
+        path: '/userEventList',
+        template: 'userEventList',
         loginRequired: 'login'
     });
     /**

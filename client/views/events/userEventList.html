@@ -1,0 +1,35 @@
+<template name="userEventList">
+<div class="panel panel-warning">
+    <div class="panel-heading" style="text-align: center;">
+        <h3 class="panel-title">Mis Eventos</h3>
+    </div>
+    <div class="panel-body">
+        {{#if userEventListCount}}
+            {{#each userEventList}}
+                <div class="list-group">
+                    <a href="#" class="list-group-item">
+                        <h4 class="list-group-item-heading"><span>{{data.nombre}}</span></h4>
+
+                        <div style="position: relative; min-height: 35px;">
+                            <h5 class="list-group-item-text" style="float: left">{{formatDate fecha}}</h5>
+
+                            <div class="btn-group" style="float: right">
+                                <button id="btn-voy" type="button" class="btn btn-default">
+                                    <label class="glyphicon glyphicon-thumbs-up"> Sí</label>
+                                </button>
+                                <button id="btn-paso" type="button" class="btn btn-default">
+                                    <label class="glyphicon glyphicon-thumbs-down"> No</label>
+                                </button>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {{/each}}
+        {{else}}
+            <div class="alert alert-danger" role="alert" style="margin-top: 4px;">
+                <a href="/googleMap" class="alert-link"><h4>No hay eventos</h4></a>
+            </div>
+        {{/if}}
+    </div>
+</div>
+</template>
