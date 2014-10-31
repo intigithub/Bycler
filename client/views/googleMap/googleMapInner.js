@@ -68,7 +68,7 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
 
 // accepts minimongo cursor
 // documents must have field marker: {lat: Number, lng: Number, infoWindowContent: String}
-GoogleMap.prototype.setMarkers = function (cursor) {
+/*GoogleMap.prototype.setMarkers = function (cursor) {
     var self = this;
 
     if (self.liveQuery) {
@@ -82,7 +82,7 @@ GoogleMap.prototype.setMarkers = function (cursor) {
         ico: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
             new google.maps.Size(64, 64))
     });
-};
+};*/
 
 
 // pintar ruta en mapa
@@ -544,7 +544,6 @@ if (Meteor.isClient) {
                 var trackId = UserTrack.insert({
                     name: moment().format("DD-MM-YYYY, h:mm:ss a"),
                     created: new Date(),
-                    finish: new Date(),
                     userId: Meteor.userId(),
                     public: true
                 });
@@ -579,12 +578,11 @@ function setPlayPauseStyle(playOrPause) {
     document.getElementById("play-pause-icon").className = 'glyphicon glyphicon-' + playOrPause;
 }
 if (Meteor.isCordova) {
-    alert('Bycler real time tracking config start');
-    GeolocationBG.config({
+     GeolocationBG.config({
         // your server url to send locations to
         //   YOU MUST SET THIS TO YOUR SERVER'S URL
         //   (see the setup instructions below)
-        url: 'http://bycler.cl/api/geolocation',
+        url: 'http://179.56.236.81:3000/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()

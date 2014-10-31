@@ -51,14 +51,10 @@ if (Meteor.isServer) {
                     var geoLogCurrent = GeoLog.findOne({'_id': id});
                     console.log('geoLogCurrent ' + geoLogCurrent);
                     var userId = geoLogCurrent.userId;
-                    console.log('userId ' + userId);
                     var trackId = UserTrack.findOne({'userId': userId}, {sort: {created: -1}})._id;
-                    console.log('trackId ' + trackId);
                     GeoLog.update({'_id': id}, {$set: {trackId: trackId}});
                     return;
                 }
-
-
                 // if we end up with an error case, you can return 500
                 console.log('GeolocationBG failed to insert');
                 this.response.writeHead(500, {'Content-Type': 'application/json'});

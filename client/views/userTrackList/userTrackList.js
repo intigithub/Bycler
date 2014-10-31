@@ -32,7 +32,7 @@ Template.userTrackList.events({
         var btn = event.currentTarget;
         var trackId = btn.id;
         Session.set('selectedTrackId', trackId);
-        Router.go('googleMap');
+        Router.go('/googleMap');
     },
     'click .delete-track-btn': function (event) {
         var btn = event.currentTarget;
@@ -42,7 +42,6 @@ Template.userTrackList.events({
             UserTrack.remove(trackId);
         }
     }
-
 });
 
 UI.registerHelper("formatDate", function (datetime) {
@@ -53,3 +52,4 @@ UI.registerHelper("formatDate", function (datetime) {
         return datetime;
     }
 });
+

@@ -1,0 +1,16 @@
+<template name="userTrackDetail">
+    <div class="panel panel-warning">
+        <div class="panel-heading" style="text-align: center;">
+            <h3 class="panel-title">{{name}}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="bs-callout bs-callout-warning">
+                <h5 class="list-group-item-text">{{formatDate created}}</h5>
+                <div id="maxSpeed" style="max-width: 30% ;float: right;"></div>
+                <div id="averageSpeed" style="max-width: 30%;float: right;"></div>
+                <div id="distance" style="max-width: 30%;float: right;"></div>
+                <div id="time" style="max-width: 30%;float: right;"></div>
+            </div>
+        </div>
+    </div>
+</template>

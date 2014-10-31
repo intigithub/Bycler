@@ -13,6 +13,7 @@
     width: 100%;
     background-size: 100% auto; /* width and height, can be %, px or whatever. */
     background-position: bottom;
+    overflow-y: scroll;
 }
 
 .panel-body {
