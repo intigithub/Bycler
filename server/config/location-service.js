@@ -1,12 +1,4 @@
 if (Meteor.isServer) {
-    Meteor.publish('basic', function () {
-        return GeoLog.find({userId: this.userId});
-    });
-    Meteor.publish("user_tracks", function () {
-        return UserTrack.find({userId: this.userId});
-    });
-}
-if (Meteor.isServer) {
     Router.map(function () {
         // REST(ish) API
         // Cordova background/foreground can post GPS data HERE

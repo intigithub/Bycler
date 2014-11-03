@@ -8,7 +8,7 @@ body,
 }
 
 .container-slide-nav {
-    background: #ECF0F1;
+    background: #FFFFFF;
 }
 
 .menu-wrap-slide-nav a {
@@ -26,8 +26,14 @@ body,
 }
 
 .content-slide-nav {
+    background: url('/imgs/track/listado_vacio_rutas.png') no-repeat;
+    padding: 0px;
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    background-size: 100% auto; /* width and height, can be %, px or whatever. */
+    background-position: bottom;
     position: relative;
-    background: #FFF;
     height: 100%;
 }
 
@@ -70,7 +76,7 @@ body,
     right: 0.5em;
     bottom: 0.5em;
     left: 0.5em;
-    background: linear-gradient(#373a47 20%, transparent 20%, transparent 40%, #373a47 40%, #373a47 60%, transparent 60%, transparent 80%, #373a47 80%);
+    background: linear-gradient(#FFFFFF 20%, transparent 20%, transparent 40%, #FFFFFF 40%, #FFFFFF 60%, transparent 60%, transparent 80%, #FFFFFF 80%);
     content: '';
 }
 
@@ -118,7 +124,7 @@ body,
 .menu-wrap-slide-nav {
     position: absolute;
     z-index: 1001;
-    width: 300px;
+    width: 13em;
     height: 100%;
     background: url('/imgs/login/fondo_login_dark.png') no-repeat;
     background-position: right bottom;
@@ -127,7 +133,7 @@ body,
     -o-background-size: cover;
     background-size: cover;
     padding: 1.5em 1.5em 0;
-    font-size: 2.15em;
+    font-size: 2.1em;
     -webkit-transform: translate3d(-320px, 0, 0);
     transform: translate3d(-320px, 0, 0);
     -webkit-transition: -webkit-transform 0.4s;
@@ -224,4 +230,9 @@ body,
     transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+}
+
+.menu-slide-nav span {
+    /* font-family: Verdana;*/
+    font-weight: 100;
 }

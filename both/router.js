@@ -21,128 +21,108 @@ function deg2rad(deg) {
 }
 
 Router.configure({
-    layoutTemplate: 'layout'/*,
-     notFoundTemplate: 'notFound',
-     loadingTemplate: 'loading'*/
-});
-Router.route('/userTrackDetail/:_id', {
-    name: 'userTrackDetail', data: function () {
-        var trackId = this.params._id;
-        console.log(trackId);
-        /*Variables para generacion de la data*/
-        var maxSpeed = 0.0;
-        var averageSpeed = 0.0;
-        var prevWaypoint = null;
-        var totalDistance = 0.0;
-        var date1 = new Date();
-        var date2 = new Date();
-        var count = 1;
-        /*------------------------------------*/
-        var Track = UserTrack.findOne({_id: trackId});
-
-        if (Track.isDataGenerated) {
-            this.render('userTrackDetail')
-            return UserTrack.findOne({_id: trackId});
-        } else {
-            var Waypoints = GeoLog.find({trackId: Track._id});
-            Waypoints.forEach(function (waypoint) {
-                if (prevWaypoint != null) {
-                    //si existe punto previo calcula las distancias entre puntos y aumenta el contador
-                    totalDistance = totalDistance + getDistanceFromLatLonInKm(prevWaypoint.location.latitude,
-                        prevWaypoint.location.longitude, waypoint.location.latitude, waypoint.location.longitude);
-                } else {
-                    //si no existe punto previo es el primero y almacena el tiempo de ese punto (inicio de ruta)
-                    date1 = new Date(waypoint.location.recorded_at);
-                }
-                // en caso de ser necesario reemplaza velocidad maxima
-                if (maxSpeed < waypoint.location.speed) {
-                    maxSpeed = waypoint.location.speed;
-                }
-                //acumula las velocidades de los puntos
-                averageSpeed = averageSpeed + waypoint.location.speed;
-                prevWaypoint = waypoint;
-                if (count == Waypoints.count()) {
-                    date2 = new Date(waypoint.location.recorded_at);
-                }
-                count++;
-            });
-
-            if (averageSpeed > 0.0) {
-                averageSpeed = averageSpeed / waypoints.count();
-            } else {
-                averageSpeed = 0.0;
-            }
-
-            var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-            var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            var diffMs = (date2 - date1); // milliseconds between now & Christmas
-            var diffHrs = Math.round((diffMs % 86400000) / 3600000); // hours
-            var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-
-            UserTrack.update({_id: trackId}
-                , {
-                    $set: {
-                        isDataGenerated: true,
-                        maxSpeed: maxSpeed,
-                        averageSpeed: averageSpeed,
-                        totalDistance: totalDistance,
-                        timeDiff: timeDiff,
-                        diffDays: diffDays,
-                        diffMs: diffMs,
-                        diffHrs: diffHrs,
-                        diffMins: diffMins
-                    }
-                }
-            );
-            this.render('userTrackDetail')
-            return UserTrack.findOne({_id: trackId});
-        }
-    }
-});
+    layoutTemplate: 'layout',
+    loadingTemplate: 'loading'
+    /*   notFoundTemplate: 'notFound',*/
+})
+;
 
 /** Redirects user on login. */
 Router.route('/login', {
     redirectOnLogin: function () {
-        Router.go('/googleMap');
+        if (Meteor.user()) {
+            Router.go('/googleMap');
+        }
+        else {
+            this.render('login');
+        }
+
     }
 }, function () {
     this.render('login');
 });
+
 /** Redirects user on login. */
 Router.route('/', function () {
     this.render('login');
 });
+
 /** SeeYouLater (salir) redirect to home and logout */
 Router.route('/seeYouLater', {
-        onBeforeAction: function () {
+        action: function () {
             Meteor.logout();
             this.render('login');
         }
     }
 );
+
 /** Hacia donde lleva el redirect de login.*/
 Router.route('/loginRedirectRoute', {
+    loginRequired: 'login'
+}, {
     action: function () {
         Router.go('/googleMap');
     }
 });
 
 /** Google Map Show */
-Router.route('/googleMap', {}, function () {
-    this.render('/googleMap');
+Router.route('/googleMap', {
+    name: 'googleMap',
+    waitOn: function () {
+        Meteor.subscribe('basic');
+        Meteor.subscribe('user_tracks')
+        return Meteor.subscribe('markers');
+    },
+    onBeforeAction: function () {
+        // this.ready() is true if all items returned from waitOn are ready
+        if (this.ready())
+            this.render('googleMap');
+        else {
+            this.render('Loading');
+        }
+    }
 });
 
 /** Event List */
-Router.route('/events', {
-    loginRequired: 'login'
-}, function () {
-    this.render('events');
+Router.route('/userEventList', {
+    name: 'userEventList', loginRequired: 'login',
+    waitOn: function () {
+        return Meteor.subscribe("markers");
+    },
+    action: function () {
+        // this.ready() is true if all items returned from waitOn are ready
+        if (this.ready())
+            this.render('userEventList');
+        else
+            this.render('Loading');
+    }
 });
-
 /** User Recorded Track List */
 Router.route('/userTrackList', {
-    loginRequired: 'login'
-}, function () {
-    this.render('userTrackList');
+    name: 'userTrackList', loginRequired: 'login',
+    waitOn: function () {
+        return Meteor.subscribe("user_tracks");
+    },
+    action: function () {
+        // this.ready() is true if all items returned from waitOn are ready
+        if (this.ready())
+            this.render('userTrackList');
+        else
+            this.render('Loading');
+    }
+});
+
+Router.route('/userTrackDetail/:_id', {
+    name: 'userTrackDetail', loginRequired: 'login',
+    waitOn: function () {
+        return;
+    },
+    action: function () {
+        // this.ready() is true if all items returned from waitOn are ready
+        if (this.ready())
+            this.render('userTrackDetail');
+        else
+            this.render('Loading');
+    }
 });
 

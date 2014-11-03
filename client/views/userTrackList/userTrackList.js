@@ -1,12 +1,10 @@
 /**
  * Created by zilnus on 20-10-14.
  */
-Meteor.subscribe("user_tracks");
-Meteor.subscribe("basic");
-
 Template.userTrackList.helpers({
     userTracksList: function () {
         return UserTrack.find({}, {sort: {created: -1}});
+
     },
     userTracksListCount: function () {
         var count = UserTrack.find({}).count();
@@ -32,7 +30,10 @@ Template.userTrackList.events({
         var btn = event.currentTarget;
         var trackId = btn.id;
         Session.set('selectedTrackId', trackId);
+        console.log('renderizando');
         Router.go('/googleMap');
+        console.log('fin renderizando');
+
     },
     'click .delete-track-btn': function (event) {
         var btn = event.currentTarget;

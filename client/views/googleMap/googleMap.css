@@ -1,8 +1,75 @@
-#markers-menu-wrapper { z-index: 1000; position: fixed; right: 72px; width: 0; height: 100%; margin-right: -72px; overflow-y: auto; background: rgba(0,0,0,0.2); -webkit-transition: all 0.5s ease;    -moz-transition: all 0.5s ease;    -o-transition: all 0.5s ease;    transition: all 0.5s ease; }
-#markers-menu-wrapper.toggled { width: 56px; }
-.markers-menu { position: absolute; top: 0; width: 52px; margin: 0; padding: 0; list-style: none; right: 0; }
-.markers-menu li { line-height: 40px;}
-.markers-menu li a { display: block; text-decoration: none; color: #999999;}
-.markers-menu li a:hover { text-decoration: none; color: #fff; background: rgba(255,255,255,0.2);}
-.markers-menu li a:active,.markers-menu li a:focus {    text-decoration: none; }
-#play-button { position: absolute; z-index: 990; border: 0; bottom: 4; outline: none;}
+#markers-menu-wrapper {
+    z-index: 1000;
+    position: fixed;
+    right: 72px;
+    width: 0;
+    height: 100%;
+    margin-right: -72px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#markers-menu-wrapper.toggled {
+    width: 56px;
+}
+
+.markers-menu {
+    position: absolute;
+    top: 0;
+    width: 52px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    right: 0;
+}
+
+.markers-menu li {
+    line-height: 40px;
+}
+
+.markers-menu li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+
+.markers-menu li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.markers-menu li a:active, .markers-menu li a:focus {
+    text-decoration: none;
+}
+
+#play-button {
+    position: absolute;
+    z-index: 990;
+    border: 0;
+    bottom: 4;
+    outline: none;
+}
+
+.bubble-container {
+    height: auto !important;
+    width: auto !important;
+    overflow: visible !important;
+}
+
+.bubble-container p {
+    padding: 4px;
+}
+
+.bubble-container button {
+    margin-right: 16px;
+}
+
+.bubble-evento-label-detalle {
+    font-size: 10px;
+    color: #34495E;
+}

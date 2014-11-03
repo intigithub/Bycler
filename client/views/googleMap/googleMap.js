@@ -1,6 +1,3 @@
-Meteor.subscribe('markers');
-Meteor.subscribe('byclers');
-
 var GoogleMap = function (element) {
     var self = this;
 
@@ -69,24 +66,23 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
 // accepts minimongo cursor
 // documents must have field marker: {lat: Number, lng: Number, infoWindowContent: String}
 /*GoogleMap.prototype.setMarkers = function (cursor) {
-    var self = this;
+ var self = this;
 
-    if (self.liveQuery) {
-        self.liveQuery.stop();
-    }
+ if (self.liveQuery) {
+ self.liveQuery.stop();
+ }
 
-    var latLng = Geolocation.latLng();
-    var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
-        map: self.gmap,
-        ico: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
-            new google.maps.Size(64, 64))
-    });
-};*/
+ var latLng = Geolocation.latLng();
+ var marker = new google.maps.Marker({
+ position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
+ map: self.gmap,
+ ico: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
+ new google.maps.Size(64, 64))
+ });
+ };*/
 
 
 // pintar ruta en mapa
-
 GoogleMap.prototype.startAnimation = function () {
     var self = this, count = 0;
 
@@ -115,16 +111,6 @@ GoogleMap.prototype.startAnimation = function () {
         map: self.gmap
     });
 
-    Deps.autorun(function () {
-        var count = 0;
-        window.setInterval(function () {
-            count = (count + 1) % 200;
-
-            var icons = line.get('icons');
-            icons[0].offset = (count / 2) + '%';
-            line.set('icons', icons);
-        }, 200);
-    });
 }
 
 // accepts reactive var
@@ -203,20 +189,9 @@ GoogleMap.prototype.init = function () {
         }
     });
 
-    Byclers.find({}).observe({
-        added: function (marker) {
-            console.log('Huy, llego byler:' + marker);
-            self.byclers[byclersCounter++] = new google.maps.Marker({
-                position: new google.maps.LatLng(marker.position.k, marker.position.B),
-                map: self.gmap,
-                icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
-                    new google.maps.Size(48, 48))
-            });
-        }
-    });
 }
 
-Template.googleMapInner.rendered = function () {
+Template.googleMap.rendered = function () {
     var template = this;
 
     if (!GeolocationBG.isStarted) {
@@ -229,7 +204,7 @@ Template.googleMapInner.rendered = function () {
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
 
-        map.showCurrLocationMarker();
+    map.showCurrLocationMarker();
 
     var DateTime = new Date();
     var strHours = DateTime.getHours();
@@ -464,7 +439,7 @@ Template.googleMapInner.rendered = function () {
     }
 };
 
-Template.googleMapInner.events({
+Template.googleMap.events({
     'click #menu-toggle': function (event) {
         event.preventDefault();
         $("#wrapper").toggleClass("toggled");
@@ -489,37 +464,51 @@ Template.googleMapInner.events({
 });
 
 function getTypeMarker(imgSrc) {
-  if(imgSrc.indexOf('estacionamiento')) return 0;
-  if(imgSrc.indexOf('evento')) return 1;
-  if(imgSrc.indexOf('servicentro')) return 2;
-  if(imgSrc.indexOf('taller')) return 3;
-  if(imgSrc.indexOf('tienda')) return 4;
-  if(imgSrc.indexOf('robo')) return 5;
-  if(imgSrc.indexOf('bici_publica')) return 6;
-  return -1;
+    if (imgSrc.indexOf('estacionamiento')) return 0;
+    if (imgSrc.indexOf('evento')) return 1;
+    if (imgSrc.indexOf('servicentro')) return 2;
+    if (imgSrc.indexOf('taller')) return 3;
+    if (imgSrc.indexOf('tienda')) return 4;
+    if (imgSrc.indexOf('robo')) return 5;
+    if (imgSrc.indexOf('bici_publica')) return 6;
+    return -1;
 }
 
 function getImgFromTypeMarker(idType) {
-  var path = '/imgs/markers/ic_map_';
-  switch(idType) {
-      case 0: path = path + 'estacionamiento'; break;
-      case 1: path = path + 'evento'; break;
-      case 2: path = path + 'servicentro'; break;
-      case 3: path = path + 'taller'; break;
-      case 4: path = path + 'tienda'; break;
-      case 5: path = path + 'robo'; break;
-      case 6: path = path + 'bici_publica'; break;
-      default: path = path + 'evento';
-  }
-  path = path + '.png';
-  return path;
+    var path = '/imgs/markers/ic_map_';
+    switch (idType) {
+        case 0:
+            path = path + 'estacionamiento';
+            break;
+        case 1:
+            path = path + 'evento';
+            break;
+        case 2:
+            path = path + 'servicentro';
+            break;
+        case 3:
+            path = path + 'taller';
+            break;
+        case 4:
+            path = path + 'tienda';
+            break;
+        case 5:
+            path = path + 'robo';
+            break;
+        case 6:
+            path = path + 'bici_publica';
+            break;
+        default:
+            path = path + 'evento';
+    }
+    path = path + '.png';
+    return path;
 }
 
 // Mobile Gps Tracker To Server
 if (Meteor.isClient) {
-    Meteor.subscribe('basic');
     //Click to start tracking event
-    Template.googleMapInner.events({
+    Template.googleMap.events({
         'click #play-button': function (event) {
             var btn = event.currentTarget;
 
@@ -560,8 +549,6 @@ if (Meteor.isClient) {
                 Session.set('currentTrackId', null);
                 setPlayPauseStyle('play');
                 console.log('STOP TRACK:   Stopped');
-
-
                 return;
             }
             if (GeolocationBG.isStarted) {
@@ -577,12 +564,58 @@ if (Meteor.isClient) {
 function setPlayPauseStyle(playOrPause) {
     document.getElementById("play-pause-icon").className = 'glyphicon glyphicon-' + playOrPause;
 }
+
+
+// pintar ruta en mapa
+GoogleMap.prototype.startAnimation = function () {
+    var self = this, count = 0;
+
+    var lineSymbol = {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        strokeColor: '#FFE003'
+    };
+    var path = new google.maps.MVCArray;
+
+    var trackId = Session.get('selectedTrackId');
+    console.log(trackId);
+    debugger;
+    var trackPoints = GeoLog.find({'trackId': trackId});
+    console.log('trackPointsCount', trackPoints.count());
+    trackPoints.forEach(function (point) {
+        path.push(new google.maps.LatLng(point.location.latitude, point.location.longitude));
+    });
+
+    var line = new google.maps.Polyline({
+        path: path,
+        icons: [
+            {
+                icon: lineSymbol,
+                offset: '100%'
+            }
+        ],
+        map: self.gmap
+    });
+
+    Deps.autorun(function () {
+        var count = 0;
+        window.setInterval(function () {
+            count = (count + 1) % 200;
+
+            var icons = line.get('icons');
+            icons[0].offset = (count / 2) + '%';
+            line.set('icons', icons);
+        }, 200);
+    });
+}
+
+
 if (Meteor.isCordova) {
-     GeolocationBG.config({
+    GeolocationBG.config({
         // your server url to send locations to
         //   YOU MUST SET THIS TO YOUR SERVER'S URL
         //   (see the setup instructions below)
-        url: 'http://179.56.236.81:3000/api/geolocation',
+        url: 'http://181.226.76.87:3000/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()

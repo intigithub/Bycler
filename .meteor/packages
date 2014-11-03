@@ -9,10 +9,9 @@ useraccounts:bootstrap
 accounts-password
 accounts-facebook
 service-configuration
-mizzao:bootstrap-3
-mdg:reload-on-resume
 zeroasterisk:cordova-geolocation-background
 zeroasterisk:cordova-geolocation-foreground
 mdg:geolocation
 mrt:moment
-
+nemo64:bootstrap
+less

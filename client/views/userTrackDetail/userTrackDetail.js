@@ -1,6 +1,10 @@
 /**
  * Created by zilnus on 29-10-14.
  */
+Template.userTrackDetail.created = function () {
+    
+}
+
 Template.userTrackDetail.rendered = function () {
     console.log();
 
