@@ -5,3 +5,6 @@ Template.login.helpers({
         }
     }
 });
+Template.login.rendered = function () {
+    $('#myModal').modal();
+}

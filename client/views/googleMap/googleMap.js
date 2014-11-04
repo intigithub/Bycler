@@ -192,6 +192,7 @@ GoogleMap.prototype.init = function () {
 }
 
 Template.googleMap.rendered = function () {
+
     var template = this;
 
     if (!GeolocationBG.isStarted) {
@@ -408,7 +409,7 @@ if (Meteor.isCordova) {
         // your server url to send locations to
         //   YOU MUST SET THIS TO YOUR SERVER'S URL
         //   (see the setup instructions below)
-        url: 'http://181.226.76.87:3000/api/geolocation',
+        url: 'http://104.131.178.231:80/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()
