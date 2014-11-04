@@ -1,16 +1,50 @@
 <template name="userTrackDetail">
     <div class="panel panel-warning">
         <div class="panel-heading" style="text-align: center;">
-            <h3 class="panel-title">{{name}}</h3>
+            <h3 class="panel-title">{{trackObject.name}}</h3>
         </div>
         <div class="panel-body">
-            <div class="bs-callout bs-callout-warning">
-                <div><h5 class="list-group-item-text">{{formatDate created}}</h5></div>
-                <div id="maxSpeed"></div>
-                <div id="averageSpeed"></div>
-                <div id="distance"></div>
-                <div id="time"></div>
-            </div>
+
+            <ul class="list-group">
+                <li class="list-group-item"> Nombre: <input type="text" class="form-control track-name"
+                                                            id="{{trackObject._id}}" value="{{trackObject.name}}">
+                </li>
+                <li class="list-group-item">{{formatDate trackObject.created}}</li>
+            </ul>
+            <ul>
+                <li>
+                    <div class="container-track-detail">
+                        <canvas id="distance-canvas" width="120" height="70"></canvas>
+                    </div>
+                    <div class="label-track-dt">Distancia:</div>
+
+                    <div id="distance" class="label-track-dt"></div>
+                </li>
+                <li>
+                    <div class="container-track-detail">
+                        <canvas id="time-canvas" width="120" height="70"></canvas>
+                    </div>
+                    <div class="label-track-dt">Duración:</div>
+
+                    <div id="time" class="label-track-dt"></div>
+                </li>
+                <li>
+                    <div class="container-track-detail">
+                        <canvas id="max-speed-canvas" width="120" height="70"></canvas>
+                    </div>
+                    <div class="label-track-dt">Velocidad Máxima:</div>
+
+                    <div id="max-speed" class="label-track-dt"></div>
+                </li>
+                <li>
+                    <div class="container-track-detail">
+                        <canvas id="average-speed-canvas" width="120" height="70"></canvas>
+                    </div>
+                    <div class="label-track-dt">Velocidad Promedio:</div>
+                    <div id="average-speed" class="label-track-dt"></div>
+                </li>
+
+            </ul>
         </div>
     </div>
 </template>

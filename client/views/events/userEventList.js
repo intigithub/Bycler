@@ -10,7 +10,6 @@ Template.userEventList.helpers({
 
 Template.userEventList.events({
     'click .btn-voy': function (event) {
-        debugger;
         event.preventDefault();
     },
     'click .btn-paso': function (event) {

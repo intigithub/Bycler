@@ -36,15 +36,17 @@ if (Meteor.isServer) {
                 // Can insert into a Collection from the server (or whatever)
                 var id = GeoLog.insert(requestData);
                 if (id) {
-                    console.log('GeolocationBG inserted');
+                    console.log('GeolocationBG inserted to');
                     this.response.writeHead(200, {'Content-Type': 'application/json'});
                     this.response.end('ok');
 
                     var geoLogCurrent = GeoLog.findOne({'_id': id});
                     console.log('geoLogCurrent ' + geoLogCurrent);
                     var userId = geoLogCurrent.userId;
+                    console.log('userId ' + userId);
                     var trackId = UserTrack.findOne({'userId': userId}, {sort: {created: -1}})._id;
-                    GeoLog.update({'_id': id}, {$set: {trackId: trackId}});
+                    console.log('trackId ' + trackId);
+                    GeoLog.update({'_id': id}, {$set: {trackId: trackId, pointDateTime: new Date()}});
                     return;
                 }
                 // if we end up with an error case, you can return 500

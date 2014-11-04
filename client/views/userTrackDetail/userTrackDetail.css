@@ -1,0 +1,24 @@
+.label-track-dt {
+    top: 70px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #596680;
+    font-family: 'Amaranth', sans-serif;
+}
+ul {
+    padding: 0 0 0 0;
+}
+.container-track-detail {
+    width: 100%;
+    margin-top: 20px;
+    top: 70px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+.margin-panel{
+    margin: 16px;
+}
