@@ -8,4 +8,7 @@ if(Meteor.isServer) {
   Meteor.publish("user_tracks", function () {
     return UserTrack.find({userId: this.userId});
   });
+  Meteor.publish("userStatus", function() {
+      return Meteor.users.find({});
+  });
 }

@@ -47,6 +47,7 @@ if (Meteor.isServer) {
                     var trackId = UserTrack.findOne({'userId': userId}, {sort: {created: -1}})._id;
                     console.log('trackId ' + trackId);
                     GeoLog.update({'_id': id}, {$set: {trackId: trackId, pointDateTime: new Date()}});
+                    Meteor.users.update({_id: userId}, {$set: {"currentLocation": geoLogCurrent.location}})
                     return;
                 }
                 // if we end up with an error case, you can return 500

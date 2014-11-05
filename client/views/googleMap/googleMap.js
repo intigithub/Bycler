@@ -1,3 +1,5 @@
+Meteor.subscribe('userStatus');
+
 var GoogleMap = function (element) {
     var self = this;
 
@@ -56,31 +58,11 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
 
     Deps.autorun(function () {
         var latLng = Geolocation.latLng();
-
         if (latLng) {
             marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
         }
     });
 };
-
-// accepts minimongo cursor
-// documents must have field marker: {lat: Number, lng: Number, infoWindowContent: String}
-/*GoogleMap.prototype.setMarkers = function (cursor) {
- var self = this;
-
- if (self.liveQuery) {
- self.liveQuery.stop();
- }
-
- var latLng = Geolocation.latLng();
- var marker = new google.maps.Marker({
- position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
- map: self.gmap,
- ico: new google.maps.MarkerImage('/imgs/markers/ic_ladon_marcador.png', null, null, null,
- new google.maps.Size(64, 64))
- });
- };*/
-
 
 // pintar ruta en mapa
 GoogleMap.prototype.startAnimation = function () {
@@ -191,10 +173,11 @@ GoogleMap.prototype.init = function () {
 
 }
 
+
 Template.googleMap.rendered = function () {
-
+    //call to real time users
     var template = this;
-
+    //geolocation code
     if (!GeolocationBG.isStarted) {
         console.log(GeolocationBG.isStarted + 'play')
         setPlayPauseStyle('play')
@@ -216,13 +199,47 @@ Template.googleMap.rendered = function () {
     } else {
         var byclerStyles = noche;
     }
-
+    //init map here
     map.setStyle(byclerStyles);
     map.init();
-    console.log(Session.get('selectedTrackId'));
+    //is some track is selected it draw in map
     if (Session.get('selectedTrackId') != null) {
         map.startAnimation();
     }
+    var byclersMarkersArray = [];
+    UsersOnline = Meteor.users.find({"status.online": true}).observe({
+        added: function (id) {
+            console.log('ha agregado uno;)')
+            console.log(id);
+            if (id.currentLocation) {
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude),
+                    map: map,
+                    icon: new google.maps.MarkerImage('/imgs/markers/my_bycler.png', null, null, null,
+                        new google.maps.Size(36, 36)),
+                    id: id._id
+                });
+                byclersMarkersArray.add(marker);
+            } else {
+                console.log('no location user')
+            }
+        },
+        removed: function (id) {
+            console.log('uno que se fue offline')
+        },
+        changed: function (id) {
+            console.log('ha cambiado la posicion =D')
+            if (id.currentLocation) {
+                user = Meteor.users.find({_id: id});
+                var currentUserMarker = $.grep(byclersMarkersArray, function (e) {
+                    return e.id == user._id;
+                });
+                console.log(currentUserMarker);
+            } else {
+                console.log('no location user')
+            }
+        }
+    });
 };
 
 Template.googleMap.events({
@@ -409,7 +426,7 @@ if (Meteor.isCordova) {
         // your server url to send locations to
         //   YOU MUST SET THIS TO YOUR SERVER'S URL
         //   (see the setup instructions below)
-        url: 'http://104.131.178.231:80/api/geolocation',
+        url: 'http://181.226.76.87:3000/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()
@@ -433,7 +450,6 @@ if (Meteor.isCordova) {
         debug: false
     });
 }
-
 
 var dia = [
     {
