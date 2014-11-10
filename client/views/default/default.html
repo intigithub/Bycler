@@ -5,18 +5,33 @@
                 <div class="icon-list-slide-nav">
                     <a href="{{pathFor 'googleMap'}}"><i class="fa fa-fw fa-comment-o"></i><span>Mapa</span></a>
                     <a href="{{pathFor 'userEventList'}}"><i class="fa fa-fw fa-comment-o"></i><span>Eventos</span></a>
-                    <a href="{{pathFor 'userTrackList'}}"><i class="fa fa-fw fa-comment-o"></i><span>Mis Rutas</span></a>
+                    <a href="{{pathFor 'userTrackList'}}"><i
+                            class="fa fa-fw fa-comment-o"></i><span>Mis Rutas</span></a>
                     <a href="{{pathFor 'seeYouLater'}}"><i class="fa fa-fw fa-comment-o"></i><span>Salir</span></a>
                 </div>
             </nav>
-         </div>
-        <button class="menu-button-slide-nav" id="open-button-slide-nav" style="{{#if currentUser}}{{else}}visibility:hidden{{/if}}">Open Menu</button>
+        </div>
+        <button class="menu-button-slide-nav" id="open-button-slide-nav"
+                style="{{#if currentUser}}{{else}}visibility:hidden{{/if}}">Open Menu
+        </button>
         <div class="content-wrap-slide-nav">
-            <div class="content-slide-nav" style="min-height: 100%" >
+            <div class="content-slide-nav" style="min-height: 100%">
                 {{> yield}}
             </div>
         </div>
+
     </div>
+    {{#unless connected}}
+        <div class="notifications">
+            <div class="notification">
+                <span class="icon-sync"></span>
+                <div class="meta">
+                    <div class="title-notification">Intentando conectar</div>
+                    <div class="description">... No encuentro servidor</div>
+                </div>
+            </div>
+        </div>
+    {{/unless}}
     <script>
         (function () {
             var bodyEl = document.body,
@@ -31,25 +46,25 @@
             }
 
             function initEvents() {
-              openbtn.addEventListener('click', toggleMenu);
+                openbtn.addEventListener('click', toggleMenu);
 
-              if(menulinks) {
-                for(var i=0; i &lt; menulinks.length; i++) {
-                  menulinks[i].addEventListener('click', toggleMenu);
+                if (menulinks) {
+                    for (var i = 0; i &lt; menulinks.length; i++) {
+                        menulinks[i].addEventListener('click', toggleMenu);
+                    }
                 }
-              }
 
-              if (closebtn) {
-                closebtn.addEventListener('click', toggleMenu);
-              }
-
-              // close the menu element if the target it´s not the menu element or one of its descendants..
-              content.addEventListener('click', function (ev) {
-                var target = ev.target;
-                if (isOpen && target !== openbtn) {
-                  toggleMenu();
+                if (closebtn) {
+                    closebtn.addEventListener('click', toggleMenu);
                 }
-              });
+
+                // close the menu element if the target it´s not the menu element or one of its descendants..
+                content.addEventListener('click', function (ev) {
+                    var target = ev.target;
+                    if (isOpen && target !== openbtn) {
+                        toggleMenu();
+                    }
+                });
             }
 
             function toggleMenu() {

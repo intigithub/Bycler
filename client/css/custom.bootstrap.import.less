@@ -4,6 +4,17 @@
 // mixins and variables that bootstrap provides.
 @import "custom.bootstrap.mixins.import.less";
 
+// Mixins & utilities
+@import 'util/helpers.import.less';
+@import 'util/lesshat.import.less';
+@import 'util/fontface.import.less';
+@import 'util/text.import.less';
+@import 'util/typography.import.less';
+@import 'util/variables.import.less';
+
+@import 'globals/notification.import.less';
+@import 'globals/icon.import.less';
+
 // @import "bootstrap/less/variables.less"
 //
 // Variables
@@ -828,4 +839,54 @@
 //** Horizontal line color.
 @hr-border: @gray-lighter;
 
+
+/**********************************************************
+BYCLER STYLES
+
+***********************************************************/
+// Notification message (e.g., when unable to connect)
+.notifications {
+  .position(absolute, auto, auto, 10px, 50%, 280px);
+  .transform(translate3d(-50%, 0, 0));
+  z-index: 1;
+
+  @media screen and (min-width: 40em) {
+    .transform(translate3d(0, 0, 0));
+    bottom: auto;
+    right: 1rem;
+    top: 1rem;
+    left: auto;
+  }
+
+  .notification {
+    .font-s1;
+    background: rgba(51,51,51, .85);
+    color: @color-empty;
+    margin-bottom: .25rem;
+    padding: .5rem .75rem;
+    position: relative;
+    width: 100%;
+
+    .icon-sync {
+      .position(absolute, 30%, auto, auto, 1rem);
+      .animation(spin 2s infinite linear);
+      color: @color-empty;
+      font-size: 1.5em;
+    }
+
+    .meta {
+      overflow: hidden;
+      padding-left: 3em;
+
+      .title-notification {
+        .title-caps;
+        display: block;
+      }
+
+      .description {
+        display: block;
+      }
+    }
+  }
+}
 
