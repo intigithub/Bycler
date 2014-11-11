@@ -4,10 +4,24 @@
 .markers-menu li { line-height: 40px;}
 .markers-menu li a { display: block; text-decoration: none; color: #999999;}
 .markers-menu li a:hover { text-decoration: none; color: #fff; background: rgba(255,255,255,0.2);}
-.markers-menu li a:active,.markers-menu li a:focus {    text-decoration: none; }
-#play-button { position: absolute; z-index: 990; border: 0; bottom: 4; outline: none;}
+.markers-menu li a:active,.markers-menu li a:focus { text-decoration: none; }
+
+#play-button { position: absolute; z-index: 990; border: 0; bottom: 4; outline: none; }
+
+#close-addmarker-menu-btn { position: absolute; background: transparent; z-index: 990; border: 0; right: 0; outline: none; color: #FF6339; font-size: 24px; }
+#close-addmarker-menu-btn .toggled { color: #EBA538; }
 
 .bubble-container { height: auto important!; width: auto important!; overflow: visible important!; }
 .bubble-container p { padding: 4px; }
 .bubble-container button { margin-right: 16px; }
 .bubble-evento-label-detalle { font-size: 10px; color: #34495E; }
+
+
+#show-current-location-btn { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.3em; left: 2.5em; outline: none; color: #FF6339; font-size: 28px; }
+#show-current-location-btn .toggled { color: #EBA538; }
+#addmarker-btn { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.35em; left: 5.75em; outline: none; color: #FF6339; font-size: 24px; }
+#addmarker-btn .toggled { color: #EBA538; }
+#visibility-btn { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.3em; left: 8.5em; outline: none; color: #FF6339; font-size: 24px; height: 52px; }
+#visibility-btn .toggled { color: #EBA538; }
+
+#open-button-slide-nav { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.3em; left: 0.5em; outline: none; color: #FF6339; font-size: 24px; height: 52px; }

@@ -1,6 +1,8 @@
 Meteor.subscribe('markers');
 Meteor.subscribe('byclers');
 
+var googleMapInstance, visibleMode = false, findmeMode = false, infobubbleInstance = false;
+
 var GoogleMap = function (element) {
     var self = this;
 
@@ -14,58 +16,58 @@ var GoogleMap = function (element) {
         zoom: 17
     };
     self.gmap = new google.maps.Map(element, mapOptions);
+    
+    googleMapInstance = self.gmap;
 
     // Seccion de control de marcadores
     var timeMillis = 0, initialClickPositionMap;
 
-    google.maps.event.addListener(self.gmap, "mousedown", function (event) {
-        timeMillis = new Date().getTime();
-        initialClickPositionMap = event.latLng;
+    self.infobubble = new InfoBubble({
+        content: '<span class="bubble-evento-label-detalle">30/Oc/14<strong> - 23:30<strong></span>',
+        alignBottom: true,
+        pixelOffset: new google.maps.Size(-150, -40)
     });
-
-    google.maps.event.addListener(self.gmap, "mouseup", function (event) {
-        console.log("mouseup");
-        if (initialClickPositionMap != null && new Date().getTime() - timeMillis > 1000
-            && event.latLng.lat == initialClickPositionMap.lat
-            && event.latLng.lng == initialClickPositionMap.lng) {
-
-            MarkerEditable = new google.maps.Marker({
-                position: event.latLng,
-                draggable: true,
-                map: self.gmap,
-                icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
-                    new google.maps.Size(48, 48))
-            });
-            $("#markers-menu-wrapper").toggleClass("toggled");
-        }
-        timeMillis = 0;
-    });
-
-    google.maps.event.addListener(self.gmap, "drag", function (event) {
-        initialClickPositionMap = null;
-    });
+    
+    self.infobubble.modalDetail = $('#basicModal');
 };
 
 
 GoogleMap.prototype.showCurrLocationMarker = function () {
     var self = this;
     var latLng = Geolocation.latLng();
+    var imgSrc = visibleMode?'/imgs/markers/my_bycler.png':'/imgs/markers/my_bycler_invi.png';
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
         map: self.gmap,
-        icon: new google.maps.MarkerImage('/imgs/markers/my_bycler.png', null, null, null,
+        icon: new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(40, 48))
     });
 
     Deps.autorun(function () {
+        console.log('Autorun para marker-bycler');
         var latLng = Geolocation.latLng();
 
         if (latLng) {
+            marker.setMap(self.gmap);
+            if(findmeMode) {
+                marker.setMap(self.gmap);
+                marker.setCenter(latLng.lat, latLng.lng);
+            } 
+
             marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
         }
+        
+                    
+        var imgSrc = visibleMode?'/imgs/markers/my_bycler.png':'/imgs/markers/my_bycler_invi.png';
+        marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
+            new google.maps.Size(40, 48)));
     });
 };
 
+
+GoogleMap.prototype.getCenter = function () {
+    return Geolocation.latLng();
+};
 
 
 // pintar ruta en mapa
@@ -109,50 +111,18 @@ GoogleMap.prototype.startAnimation = function () {
     });
 }
 
-// accepts reactive var
-GoogleMap.prototype.bindToSelectedMarkerId = function (selectedMarkerId) {
-    var self = this;
-
-    self.selectedMarkerId = selectedMarkerId;
-
-    if (self.selectedMarkerIdComputation) {
-        self.selectedMarkerIdComputation.stop();
-    }
-
-    self.selectedMarkerIdComputation = Deps.autorun(function () {
-        var markerId = self.selectedMarkerId.get();
-
-        if (markerId) {
-            self.syncWithSelectedMarkerId(markerId);
-        }
-    });
-};
-
-
-GoogleMap.prototype.selectMarker = function (markerId) {
-    var self = this;
-
-    if (self.selectedMarkerId) {
-        self.selectedMarkerId.set(markerId);
-    }
-};
-
-
-GoogleMap.prototype.syncWithSelectedMarkerId = function (markerId) {
-    var self = this;
-    var marker = self.markers[markerId];
-
-    if (marker) {
-        self.infowindow.setContent(marker.infoWindowContent);
-        self.infowindow.open(self.gmap, marker);
-    }
-};
 
 
 // Funcion para cargar los estilos
 GoogleMap.prototype.setStyle = function (styles) {
     var self = this;
     self.gmap.setOptions({styles: styles});
+}
+
+// Funcion para cargar los estilos
+GoogleMap.prototype.getMapInstance = function () {
+    var self = this;
+    return self;
 }
 
 
@@ -166,24 +136,11 @@ GoogleMap.prototype.addMarker = function (marker) {
             new google.maps.Size(48, 48))
     });
     
-    var infoBubble = new InfoBubble({
-        content: '<button id="modal-trigger" class="btn btn-primary" data-toggle="modal" data-target="#basicModal">'
-            + (marker.data?marker.data.nombre:'Nuevo evento') 
-            + '</button><br/><span class="bubble-evento-label-detalle">30/Oc/14<strong> - 23:30<strong></span><div id="radio">'
-            + '<input type="radio" id="radio1" name="radio"/><label class="glyphicon glyphicon-thumbs-up" form="radio1">Sí</label>'
-            + '<input type="radio" id="radio2" name="radio"/><label class="glyphicon glyphicon-thumbs-down" form="radio2">No</label>'
-            + '</div>',
-        alignBottom: true,
-        pixelOffset: new google.maps.Size(-150, -40)
-    });
-
-    infoBubble.open(selg.gmap, MarkerEditable);
-
-    google.maps.event.addListener(MarkerEditable, 'click', function() {
-        if (!infoBubble.isOpen()) {
-            infoBubble.open(MarkerEditable.getMap(), MarkerEditable);
-        }
-    });
+    if(marker.type==1) {
+        google.maps.event.addListener(MarkerEditable, 'click', function() {
+            console.log('Click en el addMarker NO IMPLEMENTADO');
+        });
+    }
 };
 
 
@@ -192,9 +149,10 @@ GoogleMap.prototype.init = function () {
     var self = this;
     var byclersCounter = 0;
     var markersCounter = 0;
-    
+        
     Markers.find({}).observe({
         added: function (marker) {
+            // @TODO Improve the filter (radio, markerfilter)
             var googleMarker = new google.maps.Marker({
                 position: new google.maps.LatLng(marker.x, marker.y),
                 map: self.gmap,
@@ -204,39 +162,43 @@ GoogleMap.prototype.init = function () {
             
             self.markers[markersCounter] = googleMarker;
             
-            // InfoBubble EVENTOS
-            var infoBubble = new InfoBubble({
-                content: '<button id="modal-trigger" class="btn btn-primary" data-toggle="modal" data-target="#basicModal"'
-                    + 'onclick="$(\'#basicModal\').modal(\'show\'); ' 
-                    + '">' + (marker.data?marker.data.nombre:'Nuevo evento') 
-                    + '</button><br/><span class="bubble-evento-label-detalle">30/Oc/14<strong> - 23:30<strong></span>',
-                alignBottom: true,
-                pixelOffset: new google.maps.Size(-150, -40)
-            });
             if(marker.type==1) {
                 google.maps.event.addListener(googleMarker, 'click', function() {
-                    infoBubble.open(self.gmap, googleMarker);
+                    
+                    var marker_ = Session.get('SelectedMarker');
+                    if(marker_) {
+                        console.log('Setting marker from Session scope');
+                        marker = marker_;
+                    } else {
+                        console.log('Markerid: ' + marker._id);
+                    }
+                    if (!self.infobubble.isOpen()) {
+                        console.log('Showing infobubble marker_=' + marker.data.nombre);
+                        self.infobubble.setContent('<button id="btnid' + marker._id + '" class="btn btn-info"><span class="glyphicon glyphicon-info-sign"> </span> ' 
+                                                   + marker.data.nombre + '</button><br/><span id="spn-event-detail" style="margin-left: 4px;">' 
+                                                   + (marker.data.cuando?marker.data.cuando:'Sin fecha') + (marker.data.hora?' (' + (marker.data.hora) + ')':'')
+                                                  + "</span>");
+                        self.infobubble.open(googleMarker.getMap(), googleMarker);
+                        Session.set('SelectedMarker', marker);
+                        infobubbleInstance = self.infobubble;
+                    } else {
+                        console.log('Close infobubble from Markers.find({}).observe...');
+                        Session.set('SelectedMarker', false);
+                        self.infobubble.close();
+                        infobubbleInstance = false;
+                    }
                 });
             }
             
             markersCounter++;
+        },
+        update: function(marker) {
+            console.log('Updating marker');
         }
     });
-    
-    /*Byclers.find({}).observe({
-        added: function (marker) {
-            console.log('Huy, llego byler:' + marker);
-            self.byclers[byclersCounter++] = new google.maps.Marker({
-                position: new google.maps.LatLng(marker.position.k, marker.position.B),
-                map: self.gmap,
-                icon: new google.maps.MarkerImage(marker.imgSrc, null, null, null,
-                    new google.maps.Size(48, 48))
-            });
-        }
-    });*/
 }
 
-Template.googleMapInner.rendered = function () {
+Template.googleMap.rendered = function () {
     var template = this;
 
     if (!GeolocationBG.isStarted) {
@@ -482,7 +444,7 @@ Template.googleMapInner.rendered = function () {
     }
 };
 
-Template.googleMapInner.events({
+Template.googleMap.events({
     'click #menu-toggle': function (event) {
         event.preventDefault();
         $("#wrapper").toggleClass("toggled");
@@ -500,28 +462,64 @@ Template.googleMapInner.events({
             type: getTypeMarker(event.target.src),
             x: MarkerEditable.getPosition().k,
             y: MarkerEditable.getPosition().B,
-            data: { nombre: "Nuevo Evento", fecha: new Date() }
+            data: { nombre: "Nuevo Evento", cuando: new Date(), donde: "Sin definir", hora: "08:30", asistentes:"" }
         });
 
-        // InfoBubble EVENTOS
+        // InfoBubble EVENTOS AQUI!
         if(getTypeMarker(event.target.src)==1) {
-            var infoBubble = new InfoBubble({
-                content: '<button id="modal-trigger" class="btn btn-primary" data-toggle="modal" data-target="#basicModal">Nuevo evento 2.1</button>'
-                    + '<p>30/Oc/14<strong> - 23:30<strong></p><div id="radio">'
-                    + '<input type="radio" id="radio1" name="radio"/><label class="glyphicon glyphicon-thumbs-up" form="radio1">Sí</label>'
-                    + '<input type="radio" id="radio2" name="radio"/><label class="glyphicon glyphicon-thumbs-down" form="radio2">No</label>'
-                    + '</div>',
-                alignBottom: true,
-                pixelOffset: new google.maps.Size(-150, -40)
-            });
-        
             var map = MarkerEditable.getMap();
             google.maps.event.addListener(MarkerEditable, 'click', function() {
-                if (!infoBubble.isOpen()) {
-                    infoBubble.open(map, MarkerEditable);
+                var marker_ = Session.get('SelectedMarker');
+                if(marker_) {
+                    marker = marker_;
+                }
+                if (!self.infobubble.isOpen()) {
+                    self.infobubble.setContent('<button id="btnid' + marker._id + '" class="btn btn-info"><span class="glyphicon glyphicon-info-sign"> </span> ' 
+                                               + marker.data.nombre + '</button><br/><span id="spn-event-detail" style="margin-left: 4px;">' 
+                                               + (marker.data.cuando?marker.data.cuando:'Sin fecha') + (marker.data.hora?' (' + (marker.data.hora) + ')':'')
+                                              + "</span>");
+                    self.infobubble.open(googleMarker.getMap(), googleMarker);
+                    Session.set('SelectedMarker', marker);
+                    infobubbleInstance = self.infobubble;
+                } else {
+                    Session.set('SelectedMarker', false);
+                    self.infobubble.close();
+                    infobubbleInstance = false;
                 }
             });
         }        
+    },
+    'click #show-current-location-btn': function (event) {
+        console.log("showcurrent-location toggling findmeMode: " + findmeMode);
+        $('#show-current-location-btn').toggleClass("toggled");
+        this.showCurrLocationMarker;
+        findmeMode = !findmeMode;
+    },
+    'click #addmarker-btn': function (event) {
+        console.log("add-marker toggling");
+        $('#addmarker-btn').toggleClass("toggled");
+        if(googleMapInstance) {
+            MarkerEditable = new google.maps.Marker({
+                position: googleMapInstance.getCenter(),
+                draggable: true,
+                map: googleMapInstance,
+                icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
+                    new google.maps.Size(48, 48))
+            });
+            $("#markers-menu-wrapper").toggleClass("toggled");
+        }
+    },
+    'click #visibility-btn': function (event) {
+        if(!visibleMode) {
+            console.log("visibility on");
+            $('#visibility-icon').removeClass("glyphicon-eye-close");
+            $('#visibility-icon').addClass("glyphicon-eye-open");
+        } else {
+            console.log("visibility off");
+            $('#visibility-icon').removeClass("glyphicon-eye-open");
+            $('#visibility-icon').addClass("glyphicon-eye-close");
+        }
+        visibleMode = !visibleMode;
     }
 });
 
@@ -556,7 +554,7 @@ function getImgFromTypeMarker(idType) {
 if (Meteor.isClient) {
     Meteor.subscribe('basic');
     //Click to start tracking event
-    Template.googleMapInner.events({
+    Template.googleMap.events({
         'click #play-button': function (event) {
             var btn = event.currentTarget;
 

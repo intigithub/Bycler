@@ -6,7 +6,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <div class="input-group" style="margin-right: 40px;">
                   <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                  <input type="text" class="form-control" placeholder="Titulo Evento" value="Nuevo Evento">
+                  <input type="text" id="eventMarker-nombre" class="form-control" placeholder="Titulo del Evento" value="{{ eventMarker.data.nombre }}"/>
                 </div>
             </div>
             <div class="modal-body">
@@ -15,7 +15,7 @@
                         Dónde
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control" />
+                                <input type="text" id="eventMarker-donde" class="form-control" value="{{ eventMarker.data.donde }}"/>
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-map-marker"></span>
                                 </span>
@@ -28,7 +28,7 @@
                         Cuándo
                         <div class="form-group">
                             <div class="input-group date" id="datepicker-fecha">
-                                <input type="text" class="form-control" />
+                                <input type="text" id="eventMarker-cuando" class="form-control" value="{{ eventMarker.data.cuando }}"/>
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span>
@@ -39,7 +39,7 @@
                         Hora
                         <div class="form-group">
                             <div class="input-group" id="input-evento-hora">
-                                <input type="text" class="form-control" />
+                                <input type="text" id="eventMarker-hora" class="form-control" value="{{ eventMarker.data.hora }}"/>
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-time"></span>
                                 </span>
@@ -52,7 +52,7 @@
                         Asistirán (15)
                         <div class="form-group">
                             <div class="input-group">
-                                <input id="tagsinput-participantes" type="text" value="joke, pepe, lulacler, pepeyork" data-role="tagsinput"/>                        
+                                <input id="eventMarker-asistentes" type="text" value="{{ eventMarker.data.asistentes }}" data-role="tagsinput"/>                        
                             </div>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" id="btn-save">Save changes</button>
             </div>
         </div>
     </div>

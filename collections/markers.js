@@ -4,8 +4,8 @@ Markers.allow({
     insert: function () {
         return true;
     },
-    update: function (userId, doc, fields, modifier) {
-        return doc.owner === userId;
+    update: function () {
+        return true;
     },
     remove: function (userId, doc) {
         return doc.owner === userId;
@@ -13,9 +13,6 @@ Markers.allow({
     fetch: ['owner']
 });
 Markers.deny({
-    update: function (userId, docs, fields, modifier) {
-        return _.contains(fields, 'owner');
-    },
     remove: function (userId, doc) {
         return doc.locked;
     },

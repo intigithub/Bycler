@@ -9,12 +9,7 @@
                     <a href="/seeYouLater"><i class="fa fa-fw fa-comment-o"></i><span>Salir</span></a>
                 </div>
             </nav>
-        </div>
-      
-        
-        <button class="menu-button-slide-nav" id="open-button-slide-nav" style="{{#if currentUser}}{{else}}visibility:hidden{{/if}}">Open Menu</button>
-        
-      
+        </div>      
         <div class="content-wrap-slide-nav">
             <div class="content-slide-nav" style="min-height: 100%" >
                 {{> yield}}
@@ -42,25 +37,13 @@
                   menulinks[i].addEventListener('click', toggleMenu);
                 }
               }
-
-              if (closebtn) {
-                closebtn.addEventListener('click', toggleMenu);
-              }
-
-              // close the menu element if the target it´s not the menu element or one of its descendants..
-              content.addEventListener('click', function (ev) {
-                var target = ev.target;
-                if (isOpen && target !== openbtn) {
-                  toggleMenu();
-                }
-              });
             }
 
             function toggleMenu() {
+                console.log('Toggling');
                 if (isOpen) {
                     classie.remove(bodyEl, 'show-menu-slide-nav');
-                }
-                else {
+                } else {
                     classie.add(bodyEl, 'show-menu-slide-nav');
                 }
                 isOpen = !isOpen;

@@ -3,4 +3,3 @@ Template.layout.helpers({
         Meteor.logout();
     }
 });
-

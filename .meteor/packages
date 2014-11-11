@@ -6,7 +6,7 @@
 iron:router
 meteor-platform
 standard-app-packages
-splendido:accounts-templates-bootstrap
+useraccounts:bootstrap
 accounts-password
 accounts-facebook
 alanning:roles

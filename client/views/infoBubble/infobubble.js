@@ -1,4 +1,4 @@
-function InfoBubble(opt_options) {
+var InfoBubble = function(opt_options) {
   this.extend(InfoBubble, google.maps.OverlayView);
   this.baseZIndex_ = 100;
   this.isOpen_ = false;
@@ -163,6 +163,8 @@ InfoBubble.prototype.extend = function(obj1, obj2) {
  * @private
  */
 InfoBubble.prototype.buildDom_ = function() {
+    var marker = Session.get('SelectedMarker');
+    
     var bubble = this.bubble_ = document.createElement('DIV');
     bubble.className = 'bubble-container';
     bubble.style['position'] = 'absolute';
@@ -178,6 +180,7 @@ InfoBubble.prototype.buildDom_ = function() {
 
     var that = this;
     google.maps.event.addDomListener(close, 'click', function() {
+        Session.set('SelectedMarker', false);
         that.close();
         google.maps.event.trigger(that, 'closeclick');
     });
@@ -986,6 +989,10 @@ InfoBubble.prototype.position_changed = function() {
 InfoBubble.prototype['position_changed'] =
     InfoBubble.prototype.position_changed;
 
+InfoBubble.prototype.setMarker = function (marker) {
+    self.marker = marker;
+    this.updateContent_;
+};
 
 /**
  * Pan the InfoBubble into view
@@ -1084,52 +1091,46 @@ InfoBubble.prototype.removeChildren_ = function(node) {
  * @param {string|Node} content The content to set.
  */
 InfoBubble.prototype.setContent = function(content) {
-  this.set('content', content);
+    this.set('content', content);
 };
 InfoBubble.prototype['setContent'] = InfoBubble.prototype.setContent;
 
-
-/**
- * Get the content of the infobubble.
- *
- * @return {string|Node} The marker content.
- */
 InfoBubble.prototype.getContent = function() {
   return /** @type {Node|string} */ (this.get('content'));
 };
 InfoBubble.prototype['getContent'] = InfoBubble.prototype.getContent;
 
 
+
+
 /**
  * Sets the marker content and adds loading events to images
  */
 InfoBubble.prototype.updateContent_ = function() {
-  if (!this.content_) {
-    // The Content area doesnt exist.
-    return;
-  }
-
-  this.removeChildren_(this.content_);
-  var content = this.getContent();
-  if (content) {
-    if (typeof content == 'string') {
-      content = this.htmlToDocumentFragment_(content);
+    console.log('updating InforBubble content...');
+    if (!this.content_) {
+        console.log('There is no content!');
+        // The Content area doesnt exist.
+        return;
     }
-    this.content_.appendChild(content);
 
-    var that = this;
-    var images = this.content_.getElementsByTagName('IMG');
-    for (var i = 0, image; image = images[i]; i++) {
-      // Because we don't know the size of an image till it loads, add a
-      // listener to the image load so the marker can resize and reposition
-      // itself to be the correct height.
-      google.maps.event.addDomListener(image, 'load', function() {
-        that.imageLoaded_();
-      });
+    this.removeChildren_(this.content_);
+    var content = this.getContent();
+    if (content) {
+        if (typeof content == 'string') {
+        content = this.htmlToDocumentFragment_(content);
+        }  
+        this.content_.appendChild(content);
+
+        var that = this;
+        var buttons = this.content_.getElementsByTagName('BUTTON');
+        buttons[0].addEventListener('click', function () {
+            console.log('Close infobubble from updateContent_');
+            that.close();
+            $('#basicModal').modal('show');
+        });
     }
-    google.maps.event.trigger(this, 'domready');
-  }
-  this.redraw_();
+    this.redraw_();
 };
 
 /**
@@ -1399,3 +1400,13 @@ InfoBubble.prototype.positionCloseButton_ = function() {
   this.close_.style['right'] = this.px(right);
   this.close_.style['top'] = this.px(top);
 };
+
+Template.infobubble.rendered = function() {
+    console.log('rendered de infobubble');
+}
+
+Template.infobubble.events({
+    'click div': function (event) {
+        console.log('click infobubble');
+    }
+});
