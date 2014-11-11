@@ -1,11 +1,13 @@
 <template name="login">
-    <div class="login-container">
+    <div class="login-container" style="overflow-y: scroll">
         <div class="row">
             <div class="logo-container">
                 <img src="/imgs/login/login_logo.png" width="50%"/>
             </div>
-        {{> atForm}}
+            {{> atForm}}
         </div>
         {{ checkUserLogin}}
     </div>
+    <!-- Modal -->
+
 </template>

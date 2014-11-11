@@ -20,14 +20,16 @@
                                     <button type="button" class="btn btn-warning delete-track-btn" id="{{_id}}">
                                         <span class="glyphicon glyphicon-trash"> </span>
                                     </button>
-                                    <button type="button" class="btn btn-success detail-track-btn" id="{{_id}}">
+                                    <a type="button" class="btn btn-success detail-track-btn"
+                                       href="{{pathFor route='userTrackDetail' _id = _id}}">
                                         <span class="glyphicon glyphicon-info-sign"> </span>
-                                    </button>
+                                    </a>
                                     {{#if isTrackStillAlive _id}}
                                         <button class="btn btn-warning detail-track-btn"><span
                                                 class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
                                         </button>
                                     {{/if}}
+
                                 </div>
                             </div>
                         </a>

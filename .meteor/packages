@@ -3,21 +3,19 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-iron:router
+iron:router@1.0.0-pre4
 meteor-platform
 standard-app-packages
 useraccounts:bootstrap
 accounts-password
 accounts-facebook
-alanning:roles
 service-configuration
-mizzao:bootstrap-3
-mdg:reload-on-resume
 zeroasterisk:cordova-geolocation-background
 zeroasterisk:cordova-geolocation-foreground
 mdg:geolocation
-fuatsengul:iron-router-auth
 mrt:moment
 rajit:bootstrap3-datepicker
 ajduke:bootstrap-tagsinput
-
+nemo64:bootstrap
+less
+mizzao:user-status
