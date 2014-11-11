@@ -1,6 +1,6 @@
 Meteor.subscribe('userStatus');
 
-var googleMapInstance, visibleMode = false, findmeMode = false, infobubbleInstance = false;
+var googleMapInstance, visibleMode = false, findmeMode = false, infobubbleInstance = false, MarkerEditable = false;
 
 var GoogleMap = function (element) {
     var self = this;
@@ -231,16 +231,19 @@ Template.googleMap.events({
             new google.maps.Size(48, 48)));
         MarkerEditable.setDraggable(false);
 
-        Markers.insert({
-            fecha: new Date(),
-            type: getTypeMarker(event.target.src),
-            x: MarkerEditable.getPosition().k,
-            y: MarkerEditable.getPosition().B,
-            data: { nombre: "Nuevo Evento", cuando: new Date(), donde: "Sin definir", hora: "08:30", asistentes:"" }
-        });
-
+        var markerType = getTypeMarker(event.target.src);
+        console.log('markerType:' + markerType);
+        
         // InfoBubble EVENTOS AQUI!
-        if(getTypeMarker(event.target.src)==1) {
+        if(markerType==1) { 
+            Markers.insert({
+                fecha: new Date(),
+                type: markerType,
+                x: MarkerEditable.getPosition().k,
+                y: MarkerEditable.getPosition().B,
+                data: { nombre: "Nuevo Evento", cuando: moment().format('L'), donde: "Sin definir", hora: "08:30", asistentes:"" }
+            });
+            
             var map = MarkerEditable.getMap();
             google.maps.event.addListener(MarkerEditable, 'click', function() {
                 var marker_ = Session.get('SelectedMarker');
@@ -261,7 +264,16 @@ Template.googleMap.events({
                     infobubbleInstance = false;
                 }
             });
-        }        
+        } else {
+            Markers.insert({
+                fecha: new Date(),
+                type: markerType,
+                x: MarkerEditable.getPosition().k,
+                y: MarkerEditable.getPosition().B
+            });
+        }
+        
+        MarkerEditable = false;
     },
     'click #show-current-location-btn': function (event) {
         console.log("showcurrent-location toggling findmeMode: " + findmeMode);
@@ -270,17 +282,22 @@ Template.googleMap.events({
         findmeMode = !findmeMode;
     },
     'click #addmarker-btn': function (event) {
-        console.log("add-marker toggling");
         $('#addmarker-btn').toggleClass("toggled");
         if(googleMapInstance) {
-            MarkerEditable = new google.maps.Marker({
-                position: googleMapInstance.getCenter(),
-                draggable: true,
-                map: googleMapInstance,
-                icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
-                    new google.maps.Size(48, 48))
-            });
-            $("#markers-menu-wrapper").toggleClass("toggled");
+            if(!MarkerEditable) {
+                MarkerEditable = new google.maps.Marker({
+                    position: googleMapInstance.getCenter(),
+                    draggable: true,
+                    map: googleMapInstance,
+                    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
+                        new google.maps.Size(48, 48))
+                });
+                $("#markers-menu-wrapper").toggleClass("toggled");
+            } else {
+                MarkerEditable.setMap(null);
+                MarkerEditable = false;
+                $("#markers-menu-wrapper").toggleClass("toggled");
+            }
         }
     },
     'click #visibility-btn': function (event) {
@@ -298,13 +315,13 @@ Template.googleMap.events({
 });
 
 function getTypeMarker(imgSrc) {
-    if (imgSrc.indexOf('estacionamiento')) return 0;
-    if (imgSrc.indexOf('evento')) return 1;
-    if (imgSrc.indexOf('servicentro')) return 2;
-    if (imgSrc.indexOf('taller')) return 3;
-    if (imgSrc.indexOf('tienda')) return 4;
-    if (imgSrc.indexOf('robo')) return 5;
-    if (imgSrc.indexOf('bici_publica')) return 6;
+    if (imgSrc.indexOf('estacionamiento')!=-1) return 0;
+    if (imgSrc.indexOf('evento')!=-1) return 1;
+    if (imgSrc.indexOf('servicentro')!=-1) return 2;
+    if (imgSrc.indexOf('taller')!=-1) return 3;
+    if (imgSrc.indexOf('tienda')!=-1) return 4;
+    if (imgSrc.indexOf('robo')!=-1) return 5;
+    if (imgSrc.indexOf('bici_publica')!=-1) return 6;
     return -1;
 }
 
@@ -457,7 +474,8 @@ if (Meteor.isCordova) {
         // your server url to send locations to
         //   YOU MUST SET THIS TO YOUR SERVER'S URL
         //   (see the setup instructions below)
-        url: 'http://181.226.76.87:3000/api/geolocation',
+        url: //'http://181.226.76.87:3000/api/geolocation', /*productivo*/
+        'http://179.56.233.87:3000/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()

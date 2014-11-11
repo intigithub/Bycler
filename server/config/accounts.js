@@ -16,6 +16,7 @@ Meteor.startup(function () {
     });
     */
 
+    
     // EDU
     ServiceConfiguration.configurations.insert({
         "service": "facebook",
