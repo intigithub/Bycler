@@ -55,35 +55,6 @@ body,
     transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
 }
 
-/* Menu Button */
-.menu-button-slide-nav {
-    position: fixed;
-    z-index: 1000;
-    margin: 1em;
-    padding: 0;
-    width: 2.5em;
-    height: 2.25em;
-    border: none;
-    text-indent: 2.5em;
-    font-size: 1.5em;
-    color: transparent;
-    background: transparent;
-}
-
-.menu-button-slide-nav::before {
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-    bottom: 0.5em;
-    left: 0.5em;
-    background: linear-gradient(#FFFFFF 20%, transparent 20%, transparent 40%, #FFFFFF 40%, #FFFFFF 60%, transparent 60%, transparent 80%, #FFFFFF 80%);
-    content: '';
-}
-
-.menu-button-slide-nav:hover {
-    opacity: 0.6;
-}
-
 /* Close Button */
 .close-button-slide-nav {
     width: 1em;

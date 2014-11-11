@@ -30,11 +30,6 @@ var GoogleMap = function (element) {
     self.infobubble.modalDetail = $('#basicModal');
 };
 
-<<<<<<< HEAD:client/views/googleMap/googleMap.js
-=======
-// accepts reactive function that returns {lat: Number, lng: Number}
->>>>>>> master:client/views/googleMap/googleMap.js
-
 GoogleMap.prototype.showCurrLocationMarker = function () {
     var self = this;
     var latLng = Geolocation.latLng();
@@ -66,15 +61,10 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
     });
 };
 
-<<<<<<< HEAD:client/views/googleMap/googleMap.js
-
 GoogleMap.prototype.getCenter = function () {
     return Geolocation.latLng();
 };
 
-
-=======
->>>>>>> master:client/views/googleMap/googleMap.js
 // pintar ruta en mapa
 GoogleMap.prototype.startAnimation = function () {
     var self = this, count = 0;
