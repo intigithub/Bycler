@@ -12,7 +12,7 @@ var GoogleMap = function (element) {
     var mapOptions = {
         center: new google.maps.LatLng(lat, lng),
         disableDefaultUI: true,
-        zoom: 17
+        zoom: 15
     };
     self.gmap = new google.maps.Map(element, mapOptions);
     
@@ -38,7 +38,7 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
         position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
         map: self.gmap,
         icon: new google.maps.MarkerImage(imgSrc, null, null, null,
-            new google.maps.Size(40, 48))
+            new google.maps.Size(50, 61))
     });
 
     Deps.autorun(function () {
@@ -57,7 +57,7 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
                     
         var imgSrc = visibleMode?'/imgs/markers/my_bycler.png':'/imgs/markers/my_bycler_invi.png';
         marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
-            new google.maps.Size(40, 48)));
+            new google.maps.Size(50, 61)));
     });
 };
 
@@ -149,16 +149,14 @@ GoogleMap.prototype.init = function () {
             
             if(marker.type==1) {
                 google.maps.event.addListener(googleMarker, 'click', function() {
-                    
                     var marker_ = Session.get('SelectedMarker');
-                    if(marker_) {
-                        console.log('Setting marker from Session scope');
+                    if(marker_ && marker_._id==marker._id) {
                         marker = marker_;
                     } else {
-                        console.log('Markerid: ' + marker._id);
+                        self.infobubble.close();
                     }
+                        
                     if (!self.infobubble.isOpen()) {
-                        console.log('Showing infobubble marker_=' + marker.data.nombre);
                         self.infobubble.setContent('<button id="btnid' + marker._id + '" class="btn btn-info"><span class="glyphicon glyphicon-info-sign"> </span> ' 
                                                    + marker.data.nombre + '</button><br/><span id="spn-event-detail" style="margin-left: 4px;">' 
                                                    + (marker.data.cuando?marker.data.cuando:'Sin fecha') + (marker.data.hora?' (' + (marker.data.hora) + ')':'')
@@ -167,7 +165,6 @@ GoogleMap.prototype.init = function () {
                         Session.set('SelectedMarker', marker);
                         infobubbleInstance = self.infobubble;
                     } else {
-                        console.log('Close infobubble from Markers.find({}).observe...');
                         Session.set('SelectedMarker', false);
                         self.infobubble.close();
                         infobubbleInstance = false;
