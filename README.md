@@ -4,6 +4,8 @@ Meteor 1.0
 
 Colaboradores:
 EdU
-Leo
+vsalgado
 
-School Project, no best practice here, beta and learning meteor
+Para correr bien
+-Facebook keys 
+-Location Api Url
