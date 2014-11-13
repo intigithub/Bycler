@@ -2,15 +2,8 @@ var MarkerModalDetail = function (element) {
     console.log('Constructor de MarkerModalDetail');
 }
 
-MarkerModalDetail.prototype.setMarker = function (markerId) {
-    var self = this;
-    self.markerId = id;
-    console.log('Marker: ' + self.markerId);
-}
-
 Template.markerModalDetail.rendered = function () {
     $('#datepicker-fecha').datepicker({ format: 'dd/mm/yy' });
-    
     $('#eventMarker-asistentes').tagsinput();
 }
 
@@ -29,20 +22,10 @@ Template.markerModalDetail.events({
                 $set: { 'data.nombre' : nombre,'data.donde' : donde ,'data.cuando':cuando ,'data.hora':hora,'data.asistentes':asistentes }
             });
             
-            if(nombre) marker.data.nombre = nombre;
-            if(donde) marker.data.donde = donde;
-            if(cuando) marker.data.cuando = cuando;
-            if(hora) marker.data.hora = hora;
-            if(asistentes) marker.data.asistentes = asistentes;
-            
-            Session.set('SelectedMarker', marker);
+            Session.set('SelectedMarker', false);
         }
         
         $('#basicModal').modal('hide');
-    },
-    'focus #basicModal': function (event) {
-        event.preventDefault();
-        console.log('Focusing');
     }
 });
 

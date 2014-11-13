@@ -18,10 +18,10 @@
 
 
 #show-current-location-btn { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.3em; left: 2.5em; outline: none; color: #FF6339; font-size: 28px; }
-#show-current-location-btn .toggled { color: #EBA538; }
+#show-current-location-btn.btn.toggled { color: #596680; }
 #addmarker-btn { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.35em; left: 5.75em; outline: none; color: #FF6339; font-size: 24px; }
-#addmarker-btn .toggled { color: #EBA538; }
+#addmarker-btn.btn.toggled { color: #596680; }
 #visibility-btn { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.3em; left: 8.5em; outline: none; color: #FF6339; font-size: 24px; height: 52px; }
-#visibility-btn .toggled { color: #EBA538; }
+#visibility-btn.btn.toggled { color: #596680; }
 
 #open-button-slide-nav { position: absolute; background: transparent; z-index: 990; border: 0; top: 0.3em; left: 0.5em; outline: none; color: #FF6339; font-size: 24px; height: 52px; }

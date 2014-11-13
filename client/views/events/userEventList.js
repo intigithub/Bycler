@@ -17,10 +17,12 @@ Template.userEventList.events({
     'click .btn-paso': function (event) {
         event.preventDefault();
     },
-    'click .list-group-item-heading': function (event) {
+    'click .list-group-item': function (event) {
+        event.preventDefault();
         var btn = event.currentTarget;
         var eventId = btn.id;
-        Session.set('selectedEventId', eventId);
+        var selectedMarker = Markers.findOne(eventId);
+        Session.set('SelectedMarker', selectedMarker);
         Router.go('googleMap');
     }
 });
