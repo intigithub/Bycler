@@ -1,10 +1,10 @@
 <template name="googleMap">
     <div id="map-canvas" style="position: absolute; width: 100%; height:100%"></div>
-        
+
     {{> markerModalDetail }}
-    
+
     {{> infobubble }}
-    
+
     <button type="button" class="btn btn-warning btn-circle btn-lg" id="play-button">
         <span class="glyphicon glyphicon-play" id="play-pause-icon"></span>
     </button>
@@ -20,7 +20,7 @@
     <button type="button" class="btn toggled" id="visibility-btn">
         <span class="glyphicon glyphicon-eye-close" id="visibility-icon"></span>
     </button>
-    
+
     <div id="markers-menu-wrapper">
         <ul class="markers-menu" role="menu">
             <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_estacionamiento.png" width="52"/></a></li>
@@ -31,7 +31,9 @@
             <li><a class="marker-add" href="#"><img src="/imgs/markers/ic_map_robo.png" width="52"/></a></li>
         </ul>
     </div>
-
-    <!-- OJO -->
-    <span class="label {{labelClass}}">{{username}}{{location.latitude}}</span>
+    <nav>
+        <div class="nav-group">
+            <a href="#" class="js-menu nav-item"><span class="glyphicon glyphicon-home" id="menu-icon"></span></a>
+        </div>
+    </nav>
 </template>

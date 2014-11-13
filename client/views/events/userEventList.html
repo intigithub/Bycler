@@ -1,38 +1,43 @@
 <template name="userEventList">
-<div class="panel panel-warning">
-    <div class="panel-heading" style="text-align: center;">
-        <h3 class="panel-title">Mis Eventos</h3>
-    </div>
-    <div class="panel-body">
-        {{#if userEventListCount}}
-            {{#each userEventList}}
-                <div class="list-group">
-                    <a href="#" id="{{_id}}" class="list-group-item" style="height: 80px;">
-                        <div class="col-xs-8">
-                            <h4 class="list-group-item-heading"><span>{{data.nombre}}</span></h4>
+    <nav>
+        <div class="nav-group">
+            <a href="#" class="js-menu nav-item"><span class="glyphicon glyphicon-home" id="menu-icon"></span></a>
+        </div>
+    </nav>
+    <div class="panel panel-warning">
+        <div class="panel-heading" style="text-align: center;">
+            <h3 class="panel-title">Mis Eventos</h3>
+        </div>
+        <div class="panel-body">
+            {{#if userEventListCount}}
+                {{#each userEventList}}
+                    <div class="list-group">
+                        <a href="#" id="{{_id}}" class="list-group-item" style="height: 80px;">
+                            <div class="col-xs-8">
+                                <h4 class="list-group-item-heading"><span>{{data.nombre}}</span></h4>
 
-                            <div style="position: relative; min-height: 35px;">
-                                <h5 class="list-group-item-text" style="float: left">{{formatDate fecha}}</h5>
+                                <div style="position: relative; min-height: 35px;">
+                                    <h5 class="list-group-item-text" style="float: left">{{formatDate fecha}}</h5>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-xs-4">
-                            <div class="btn-group" style="float: right">
-                                <button id="btn-voy" type="button" class="btn btn-default">
-                                    <label class="glyphicon glyphicon-thumbs-up"> Sí</label>
-                                </button>
-                                <button id="btn-paso" type="button" class="btn btn-default">
-                                    <label class="glyphicon glyphicon-thumbs-down"> No</label>
-                                </button>
+                            <div class="col-xs-4">
+                                <div class="btn-group" style="float: right">
+                                    <button id="btn-voy" type="button" class="btn btn-default">
+                                        <label class="glyphicon glyphicon-thumbs-up"> Sí</label>
+                                    </button>
+                                    <button id="btn-paso" type="button" class="btn btn-default">
+                                        <label class="glyphicon glyphicon-thumbs-down"> No</label>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
+                {{/each}}
+            {{else}}
+                <div class="alert alert-danger" role="alert" style="margin-top: 4px;">
+                    <a href="/googleMap" class="alert-link"><h4>No hay eventos</h4></a>
                 </div>
-            {{/each}}
-        {{else}}
-            <div class="alert alert-danger" role="alert" style="margin-top: 4px;">
-                <a href="/googleMap" class="alert-link"><h4>No hay eventos</h4></a>
-            </div>
-        {{/if}}
+            {{/if}}
+        </div>
     </div>
-</div>
 </template>

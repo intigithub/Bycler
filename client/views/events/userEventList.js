@@ -2,10 +2,10 @@ Meteor.subscribe("markers");
 
 Template.userEventList.helpers({
     userEventList: function () {
-        return Markers.find({ type: 1 }, {sort: {fecha: -1}});
+        return Markers.find({type: 1}, {sort: {fecha: -1}});
     },
     userEventListCount: function () {
-        var count = Markers.find({ type: 1 }).count();
+        var count = Markers.find({type: 1}).count();
         return count > 0;
     }
 });
