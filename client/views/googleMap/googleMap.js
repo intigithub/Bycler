@@ -22,7 +22,9 @@ var GoogleMap = function (element) {
         initialPosition = new google.maps.LatLng(selectedMarker.x, selectedMarker.y);
         Session.set('SelectedMarker', false);
         if(!$('#show-current-location-btn').hasClass('toggled')) $('#show-current-location-btn').toggleClass('toggled');
-    } else if(latLng) initialPosition = new google.maps.LatLng(latLng.lat, latLng.lng);
+    } else {
+        if(latLng) initialPosition = new google.maps.LatLng(latLng.lat, latLng.lng);
+    }
     
     var mapOptions = {
         center: initialPosition,
@@ -55,7 +57,7 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
         
         var latLng = Geolocation.latLng();
         if (latLng) {
-            if($('#show-current-location-btn').hasClass("toggled")) {
+            if(!$('#show-current-location-btn').hasClass("toggled")) {
                 if(googleMapInstance) 
                     googleMapInstance.setCenter(new google.maps.LatLng(latLng.lat, latLng.lng));
             } 
