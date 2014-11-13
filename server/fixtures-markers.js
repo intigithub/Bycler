@@ -1,4 +1,4 @@
-if(Markers.find().count == 0) {
+if(Markers.find().count === 0) {
     Markers.insert({ titulo: 'Deli House', direccion: 'Diagonal Pedro Aguirre Cerda 1234, Concepcion', fecha: new Date(), type: 0, x: -36.8265888, y: -73.0412985 });
     Markers.insert({ titulo: 'Rendibu ', direccion: 'O\u0022higgins 1026, Loc. 4, Concepción', fecha: new Date(), type: 0, x: -36.8256268, y: -73.044951 });
     Markers.insert({ titulo: 'Serviu', direccion: 'O\u0022higgins 510, Concepcion', fecha: new Date(), type: 0, x: -36.828479, y: -73.051686 });
