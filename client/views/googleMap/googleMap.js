@@ -54,14 +54,29 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
         marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(50, 61)));
 
-        var latLng = Geolocation.latLng();
-        if (latLng) {
+        var latLngNew = Geolocation.latLng();
+
+        if (latLngNew) {
             if (!$('#show-current-location-btn').hasClass("toggled")) {
                 if (googleMapInstance)
-                    googleMapInstance.setCenter(new google.maps.LatLng(latLng.lat, latLng.lng));
+                    googleMapInstance.setCenter(latLngNew);
             }
+            marker.setPosition(latLngNew);
 
-            marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
+            var currentTrackId = Session.get('currentTrackId');
+            if (currentTrackId != null) {
+                var id = GeoLog.insert({
+                    created: new Date(),
+                    userId: Meteor.userId(),
+                    trackId: currentTrackId,
+                    latitude: latLngNew.lat,
+                    longitude: latLngNew.lng,
+                    speed: 0
+                });
+            }
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.latitude": latLngNew.lat, "currentLocation.longitude": latLngNew.lng}
+            });
         }
     });
 };
@@ -100,7 +115,6 @@ GoogleMap.prototype.startAnimation = function () {
 
 }
 
-
 // Funcion para cargar los estilos
 GoogleMap.prototype.setStyle = function (styles) {
     var self = this;
@@ -138,7 +152,8 @@ GoogleMap.prototype.init = function () {
                     var marker_ = Session.get('SelectedMarker');
                     if (marker_ && marker_._id == marker._id) {
                         marker = marker_;
-                    } else {
+                    }
+                    else {
                         self.infobubble.close();
                     }
 
@@ -161,20 +176,25 @@ GoogleMap.prototype.init = function () {
             markersCounter++;
         },
         update: function (marker) {
-            console.log('Updating marker');
         }
     });
+
 }
 
 Template.googleMap.rendered = function () {
-    //call to real time users
+    if (Session.get('currentTrackId') == null) {
+        setPlayPauseStyle('play');
+    } else {
+        setPlayPauseStyle('pause');
+
+    }
+    if (!Meteor.user.currentLocation) {
+        Meteor.users.update({_id: Meteor.userId()}, {
+            $set: {"currentLocation.latitude": 0, "currentLocation.longitude": 0}
+        });
+    }
     var template = this;
     //geolocation code
-    if (!GeolocationBG.isStarted) {
-        setPlayPauseStyle('play')
-    } else {
-        setPlayPauseStyle('pause')
-    }
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
 
@@ -197,8 +217,58 @@ Template.googleMap.rendered = function () {
     if (Session.get('selectedTrackId') != null) {
         map.startAnimation();
     }
-};
 
+    var userMarkers = [];
+
+    Meteor.users.find({"status.online": true}).observe({
+        added: function (id) {
+            console.log('locationAdded');
+            console.log(id);
+            if (id.currentLocation && Meteor.userId() != id._id) {
+                console.log('added in if')
+                var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+                var imgSrc = '/imgs/markers/my_bycler.png';
+                var userMarkerOnMap = new google.maps.Marker({
+                    position: latLng,
+                    id: id._id,
+                    clickable: true,
+                    map: googleMapInstance,
+                    icon: new google.maps.MarkerImage(imgSrc, null, null, null,
+                        new google.maps.Size(50, 61))
+                });
+                userMarkerOnMap.info = new google.maps.InfoWindow({
+                    content: '<div style=\'margin: 8px;\'>' +
+                    '<b>' + id.profile.name + '</b> <br> ' +
+                    '</div>'
+                });
+
+                google.maps.event.addListener(userMarkerOnMap, 'click', function () {
+                    userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);
+                });
+                userMarkers.push(userMarkerOnMap);
+            }
+        },
+        removed: function (id) {
+            console.log('locationRemoved')
+        },
+        changed: function (id) {
+            if (id.currentLocation && Meteor.userId() != id._id) {
+                console.log('locationChanged')
+                var indexOf = findInArray(userMarkers, 'id', id._id);
+                var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+                userMarkers[indexOf].setPosition(latLng);
+            }
+        }
+    });
+};
+function findInArray(arraytosearch, key, valuetosearch) {
+    for (var i = 0; i < arraytosearch.length; i++) {
+        if (arraytosearch[i][key] == valuetosearch) {
+            return i;
+        }
+    }
+    return null;
+}
 Template.googleMap.events({
     'click #menu-toggle': function (event) {
         event.preventDefault();
@@ -333,6 +403,7 @@ function getImgFromTypeMarker(idType) {
     return path;
 }
 
+<<<<<<< HEAD
 // Mobile Gps Tracker To Server
 if (Meteor.isClient) {
     //Click to start tracking event
@@ -387,10 +458,37 @@ if (Meteor.isClient) {
                 return;
             }
             return;
+=======
+Template.googleMap.events({
+    'click #play-button': function (event) {
+        var btn = event.currentTarget;
+        if (Session.get('currentTrackId') != null) {
+            setPlayPauseStyle('play');
+            Session.set('currentTrackId', null);
+        } else {
+            setPlayPauseStyle('pause');
+            console.log('Started (every few minutes there should be an update)');
+            var trackId = UserTrack.insert({
+                name: moment().format("DD-MM-YYYY, h:mm:ss a"),
+                created: new Date(),
+                userId: Meteor.userId(),
+                public: true,
+                isDataGenerated: false,
+                maxSpeed: 0,
+                averageSpeed: 0,
+                totalDistance: 0,
+                timeDiff: 0,
+                diffDays: 0,
+                diffMs: 0,
+                diffHrs: 0,
+                diffMins: 0
+            });
+            Session.set('currentTrackId', trackId);
+            Router.go('userTrackList');
+>>>>>>> abc9bdadae26cd6e8916d77cf816e00c32df41bb
         }
-    })
-    ;
-}
+    }
+});
 
 function setPlayPauseStyle(playOrPause) {
     document.getElementById("play-pause-icon").className = 'glyphicon glyphicon-' + playOrPause;
@@ -411,7 +509,7 @@ GoogleMap.prototype.startAnimation = function () {
     var trackId = Session.get('selectedTrackId');
     var trackPoints = GeoLog.find({'trackId': trackId});
     trackPoints.forEach(function (point) {
-        path.push(new google.maps.LatLng(point.location.latitude, point.location.longitude));
+        path.push(new google.maps.LatLng(point.latitude, point.longitude));
     });
 
     var line = new google.maps.Polyline({
@@ -440,15 +538,16 @@ GoogleMap.prototype.startAnimation = function () {
     });
 }
 
-function zoomToObject(obj){
+function zoomToObject(obj) {
     var bounds = new google.maps.LatLngBounds();
     var points = obj.getPath().getArray();
-    for (var n = 0; n < points.length ; n++){
+    for (var n = 0; n < points.length; n++) {
         bounds.extend(points[n]);
     }
     googleMapInstance.fitBounds(bounds);
 }
 
+<<<<<<< HEAD
 if (Meteor.isCordova) {
     GeolocationBG.config({
         // productivo server
@@ -479,6 +578,8 @@ if (Meteor.isCordova) {
     });
 }
 
+=======
+>>>>>>> abc9bdadae26cd6e8916d77cf816e00c32df41bb
 var dia = [
     {
         "featureType": "water", "elementType": "geometry", "stylers": [

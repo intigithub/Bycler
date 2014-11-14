@@ -91,7 +91,8 @@ Template.appBody.events({
     },
 
     'click .js-logout': function () {
-        Meteor.logout();
-        Router.go('signin');
-    },
+        Meteor.logout(function (err) {
+            Router.go('signin');
+        });
+    }
 });

@@ -5,8 +5,16 @@ Meteor.startup(function () {
             //want the users facebook pic and it is not provided by the facebook.service
             options.profile.picture = "http://graph.facebook.com/" + user.services.facebook.id + "/picture/?type=large";
             user.profile = options.profile;
+        } else {
+            var email = user.emails[0].address;
+            user.profile = {
+                name: email.substring(0, email.indexOf('@')),
+            };
+            user.currentLocation = {
+                latitude: 0,
+                longitude: 0
+            };
         }
-
         return user;
     });
     // Remove configuration entries in case service is already configured
@@ -18,18 +26,12 @@ Meteor.startup(function () {
         ]
     });
     /*
-    ServiceConfiguration.configurations.insert({
-         "service": "facebook",
-         "appId": "305948542925876",
-         "secret": "df05c0af61a70f92bbb6fcd3c0ce49d0"
+     ServiceConfiguration.configurations.insert        "service": "facebook        "appId": "305948542925876        "secret": "df05c0af61a70f92bbb6fcd3c0ce49d0"
      });
-    */
+     */
     /*
      // EDU
-     ServiceConfiguration.configurations.insert({
-         "service": "facebook",
-         "appId": "1620984164795687",
-         "secret": "5ac1e79fd2444feafe5885d4c4b84866"
+     ServiceConfiguration.configurations.insert        "service": "facebook        "appId": "1620984164795687        "secret": "5ac1e79fd2444feafe5885d4c4b84866"
      });
      */
     //Productivo
