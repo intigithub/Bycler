@@ -18,12 +18,12 @@ Template.userEventList.events({
         event.preventDefault();
     },
     'click .list-group-item': function (event) {
-        event.preventDefault();
-        var btn = event.currentTarget;
-        var eventId = btn.id;
-        var selectedMarker = Markers.findOne(eventId);
-        Session.set('SelectedMarker', selectedMarker);
-        Router.go('googleMap');
+            event.preventDefault();
+            var btn = event.currentTarget;
+            var eventId = btn.id;
+            var selectedMarker = Markers.findOne(eventId);
+            Session.set('SelectedMarker', selectedMarker);
+            Router.go('googleMap');
     }
 });
 

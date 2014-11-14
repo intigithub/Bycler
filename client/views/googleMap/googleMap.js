@@ -190,10 +190,8 @@ Template.googleMap.rendered = function () {
     var template = this;
     //geolocation code
     if (!GeolocationBG.isStarted) {
-        console.log(GeolocationBG.isStarted + 'play')
         setPlayPauseStyle('play')
     } else {
-        console.log(GeolocationBG.isStarted + 'pause')
         setPlayPauseStyle('pause')
     }
     var map = new GoogleMap(template.firstNode);
@@ -433,9 +431,10 @@ GoogleMap.prototype.startAnimation = function () {
     var self = this, count = 0;
 
     var lineSymbol = {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 8,
-        strokeColor: '#FFE003'
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        scale: 6,
+        strokeColor: '#ff6339',
+        opacity: 0.8
     };
     var path = new google.maps.MVCArray;
 
@@ -448,21 +447,24 @@ GoogleMap.prototype.startAnimation = function () {
     });
 
     var line = new google.maps.Polyline({
+        strokeColor: "#ff6339",
+        strokeOpacity: 0.8,
+        strokeWeight: 3,
         path: path,
         icons: [
             {
                 icon: lineSymbol,
-                offset: '100%'
+                offset: '80%'
             }
         ],
         map: self.gmap
     });
+    zoomToObject(line);
 
     Deps.autorun(function () {
         var count = 0;
         window.setInterval(function () {
             count = (count + 1) % 200;
-
             var icons = line.get('icons');
             icons[0].offset = (count / 2) + '%';
             line.set('icons', icons);
@@ -470,12 +472,21 @@ GoogleMap.prototype.startAnimation = function () {
     });
 }
 
+function zoomToObject(obj){
+    var bounds = new google.maps.LatLngBounds();
+    console.log(bounds)
+    var points = obj.getPath().getArray();
+    for (var n = 0; n < points.length ; n++){
+        bounds.extend(points[n]);
+    }
+    googleMapInstance.fitBounds(bounds);
+}
 
 if (Meteor.isCordova) {
     GeolocationBG.config({
         // productivo server
         //'http://104.131.178.231/api/geolocation',
-        url: 'http://104.131.178.231/api/geolocation',
+        url: 'http://179.56.215.56:3000/api/geolocation',
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()

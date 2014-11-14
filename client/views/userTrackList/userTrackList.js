@@ -27,13 +27,12 @@ Template.userTrackList.helpers({
 
 Template.userTrackList.events({
     'click .view-track-btn': function (event) {
+        event.preventDefault();
         var btn = event.currentTarget;
         var trackId = btn.id;
+        console.log(trackId)
         Session.set('selectedTrackId', trackId);
-        console.log('renderizando');
-        Router.go('/googleMap');
-        console.log('fin renderizando');
-
+        Router.go('googleMap');
     },
     'click .delete-track-btn': function (event) {
         var btn = event.currentTarget;

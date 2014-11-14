@@ -6,6 +6,7 @@ Meteor.startup(function () {
             options.profile.picture = "http://graph.facebook.com/" + user.services.facebook.id + "/picture/?type=large";
             user.profile = options.profile;
         }
+
         return user;
     });
     // Remove configuration entries in case service is already configured
