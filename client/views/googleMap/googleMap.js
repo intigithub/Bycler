@@ -50,7 +50,6 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
     });
 
     Deps.autorun(function () {
-        console.log('Autorun para marker-bycler');
         var imgSrc = visibleMode ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
         marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(50, 61)));
@@ -157,7 +156,8 @@ GoogleMap.prototype.init = function () {
                     var marker_ = Session.get('SelectedMarker');
                     if (marker_ && marker_._id == marker._id) {
                         marker = marker_;
-                    } else {
+                    }
+                    else {
                         self.infobubble.close();
                     }
 
@@ -180,9 +180,9 @@ GoogleMap.prototype.init = function () {
             markersCounter++;
         },
         update: function (marker) {
-            console.log('Updating marker');
-        }
+         }
     });
+
 }
 
 Template.googleMap.rendered = function () {
@@ -216,8 +216,51 @@ Template.googleMap.rendered = function () {
     if (Session.get('selectedTrackId') != null) {
         map.startAnimation();
     }
-};
 
+    var userMarkers = [];
+
+    Meteor.users.find({"status.online": true}).observe({
+        added: function (id) {
+            if (id.currentLocation && Meteor.userId() != id._id) {
+                var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+                var imgSrc = '/imgs/markers/my_bycler.png';
+                var userMarkerOnMap = new google.maps.Marker({
+                    position: latLng,
+                    id: id._id,
+                    clickable: true,
+                    map: googleMapInstance,
+                    icon: new google.maps.MarkerImage(imgSrc, null, null, null,
+                        new google.maps.Size(50, 61))
+                });
+                userMarkerOnMap.info = new google.maps.InfoWindow({
+                    content: '<div style=\'margin: 8px;\'>' +
+                    '<b>' + id + '</b> <br> ' + '<b>Speed:' + id.currentLocation.speed + '</b>' +
+                    '</div>'
+                });
+
+                google.maps.event.addListener(userMarkerOnMap, 'click', function () {
+                    userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);
+                });
+                userMarkers.push(userMarkerOnMap);
+            }
+        },
+        removed: function (id) {
+        },
+        changed: function (id) {
+            var indexOf = findInArray(userMarkers, 'id', id._id);
+            var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+            userMarkers[indexOf].setPosition(latLng);
+        }
+    });
+};
+function findInArray(arraytosearch, key, valuetosearch) {
+    for (var i = 0; i < arraytosearch.length; i++) {
+        if (arraytosearch[i][key] == valuetosearch) {
+            return i;
+        }
+    }
+    return null;
+}
 Template.googleMap.events({
     'click #menu-toggle': function (event) {
         event.preventDefault();
@@ -232,7 +275,6 @@ Template.googleMap.events({
         MarkerEditable.setDraggable(false);
 
         var markerType = getTypeMarker(event.target.src);
-        console.log('markerType:' + markerType);
 
         if (markerType == 1) {
             var markerId = Markers.insert({
@@ -280,8 +322,7 @@ Template.googleMap.events({
     'click #show-current-location-btn': function (event) {
         $('#show-current-location-btn').toggleClass("toggled");
         if ($('#show-current-location-btn')) this.showCurrLocationMarker;
-        console.log("showcurrent-location toggling findmeMode: " + !$('#show-current-location-btn').hasClass("toggled"));
-    },
+     },
     'click #addmarker-btn': function (event) {
         $('#addmarker-btn').toggleClass("toggled");
         $("#markers-menu-wrapper").toggleClass("toggled");
@@ -302,12 +343,10 @@ Template.googleMap.events({
     'click #visibility-btn': function (event) {
         $('#visibility-btn').toggleClass("toggled");
         if (!visibleMode) {
-            console.log("visibility on");
-            $('#visibility-icon').removeClass("glyphicon-eye-close");
+             $('#visibility-icon').removeClass("glyphicon-eye-close");
             $('#visibility-icon').addClass("glyphicon-eye-open");
         } else {
-            console.log("visibility off");
-            $('#visibility-icon').removeClass("glyphicon-eye-open");
+             $('#visibility-icon').removeClass("glyphicon-eye-open");
             $('#visibility-icon').addClass("glyphicon-eye-close");
         }
         visibleMode = !visibleMode;
@@ -472,11 +511,11 @@ GoogleMap.prototype.startAnimation = function () {
     });
 }
 
-function zoomToObject(obj){
+function zoomToObject(obj) {
     var bounds = new google.maps.LatLngBounds();
     console.log(bounds)
     var points = obj.getPath().getArray();
-    for (var n = 0; n < points.length ; n++){
+    for (var n = 0; n < points.length; n++) {
         bounds.extend(points[n]);
     }
     googleMapInstance.fitBounds(bounds);
