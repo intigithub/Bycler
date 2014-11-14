@@ -50,7 +50,6 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
     });
 
     Deps.autorun(function () {
-        console.log('Autorun para marker-bycler');
         var imgSrc = visibleMode ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
         marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(50, 61)));
@@ -83,7 +82,6 @@ GoogleMap.prototype.startAnimation = function () {
     var path = new google.maps.MVCArray;
 
     var trackId = Session.get('selectedTrackId');
-    console.log(trackId);
     var topPosts = GeoLog.find({'trackId': trackId});
     topPosts.forEach(function (post) {
         path.push(new google.maps.LatLng(post.location.latitude, post.location.longitude));
@@ -115,30 +113,13 @@ GoogleMap.prototype.getMapInstance = function () {
     return self;
 }
 
-
-// Funcion que agrega una marca
-GoogleMap.prototype.addMarker = function (marker) {
-    var self = this;
-    MarkerEditable = new google.maps.Marker({
-        position: new google.maps.LatLng(marker.x, marker.y),
-        map: self.gmap,
-        icon: new google.maps.MarkerImage(getImgFromTypeMarker(marker.type), null, null, null,
-            new google.maps.Size(48, 48))
-    });
-
-    if (marker.type == 1) {
-        google.maps.event.addListener(MarkerEditable, 'click', function () {
-            console.log('???? No registrado');
-        });
-    }
-};
-
-
 // Funcion para inicializar el mapa con los marcadores
 GoogleMap.prototype.init = function () {
     var self = this;
     var byclersCounter = 0;
     var markersCounter = 0;
+    
+    // @TODO ClusterMarkers
 
     Markers.find({}).observe({
         added: function (marker) {
@@ -152,7 +133,7 @@ GoogleMap.prototype.init = function () {
 
             self.markers[markersCounter] = googleMarker;
 
-            if (marker.type == 1) {
+            if (marker.type == 1) {  // 1 = Evento
                 google.maps.event.addListener(googleMarker, 'click', function () {
                     var marker_ = Session.get('SelectedMarker');
                     if (marker_ && marker_._id == marker._id) {
@@ -232,7 +213,6 @@ Template.googleMap.events({
         MarkerEditable.setDraggable(false);
 
         var markerType = getTypeMarker(event.target.src);
-        console.log('markerType:' + markerType);
 
         if (markerType == 1) {
             var markerId = Markers.insert({
@@ -280,7 +260,6 @@ Template.googleMap.events({
     'click #show-current-location-btn': function (event) {
         $('#show-current-location-btn').toggleClass("toggled");
         if ($('#show-current-location-btn')) this.showCurrLocationMarker;
-        console.log("showcurrent-location toggling findmeMode: " + !$('#show-current-location-btn').hasClass("toggled"));
     },
     'click #addmarker-btn': function (event) {
         $('#addmarker-btn').toggleClass("toggled");
@@ -302,11 +281,9 @@ Template.googleMap.events({
     'click #visibility-btn': function (event) {
         $('#visibility-btn').toggleClass("toggled");
         if (!visibleMode) {
-            console.log("visibility on");
             $('#visibility-icon').removeClass("glyphicon-eye-close");
             $('#visibility-icon').addClass("glyphicon-eye-open");
         } else {
-            console.log("visibility off");
             $('#visibility-icon').removeClass("glyphicon-eye-open");
             $('#visibility-icon').addClass("glyphicon-eye-close");
         }
@@ -364,23 +341,19 @@ if (Meteor.isClient) {
             var btn = event.currentTarget;
 
             if (!Meteor.isCordova) {
-                console.log('Not Available, Not Cordova');
                 setPlayPauseStyle('play')
                 return;
             }
             if (!GeolocationBG.isStarted) {
                 if (!GeolocationBG.start()) {
-                    console.log('ERROR: Not Started, unable to start');
                     setPlayPauseStyle('play')
                     return;
                 }
                 if (!GeolocationBG.isStarted) {
                     setPlayPauseStyle('play')
-                    console.log('ERROR: Not Started, status = false');
                     return;
                 }
                 setPlayPauseStyle('pause')
-                console.log('Started (every few minutes there should be an update)');
                 var trackId = UserTrack.insert({
                     name: moment().format("DD-MM-YYYY, h:mm:ss a"),
                     created: new Date(),
@@ -402,18 +375,15 @@ if (Meteor.isClient) {
             }
             if (!GeolocationBG.stop()) {
                 setPlayPauseStyle('pause');
-                console.log('ERROR: Not Stopped, unable to stop');
                 return;
             }
             else {
                 Session.set('currentTrackId', null);
                 setPlayPauseStyle('play');
-                console.log('STOP TRACK:   Stopped');
                 return;
             }
             if (GeolocationBG.isStarted) {
                 setPlayPauseStyle('pause');
-                console.log('ERROR: Not Stopped, status = true');
                 return;
             }
             return;
@@ -439,9 +409,7 @@ GoogleMap.prototype.startAnimation = function () {
     var path = new google.maps.MVCArray;
 
     var trackId = Session.get('selectedTrackId');
-    console.log(trackId);
     var trackPoints = GeoLog.find({'trackId': trackId});
-    console.log('trackPointsCount', trackPoints.count());
     trackPoints.forEach(function (point) {
         path.push(new google.maps.LatLng(point.location.latitude, point.location.longitude));
     });
@@ -474,7 +442,6 @@ GoogleMap.prototype.startAnimation = function () {
 
 function zoomToObject(obj){
     var bounds = new google.maps.LatLngBounds();
-    console.log(bounds)
     var points = obj.getPath().getArray();
     for (var n = 0; n < points.length ; n++){
         bounds.extend(points[n]);
@@ -486,7 +453,8 @@ if (Meteor.isCordova) {
     GeolocationBG.config({
         // productivo server
         //'http://104.131.178.231/api/geolocation',
-        url: 'http://179.56.215.56:3000/api/geolocation',
+        // LEO: url: 'http://179.56.215.56:3000/api/geolocation',
+        url: 'http:// 179.56.233.87:3000/api/geolocation',       
         params: {
             // will be sent in with 'location' in POST data (root level params)
             // these will be added automatically in setup()

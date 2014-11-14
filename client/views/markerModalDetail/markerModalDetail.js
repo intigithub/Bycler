@@ -33,6 +33,10 @@ Template.markerModalDetail.helpers({
     eventMarker: function () {
         var marker = Session.get('SelectedMarker');
         if(marker) {
+            console.log('Data:' + marker.data.nombre + ':' + marker.data.asistentes);
+            $('#eventMarker-asistentes').tagsinput(marker.data.asistentes);
+            $('#eventMarker-asistentes').tagsinput('refresh');
+
            return marker;
         }
     }
