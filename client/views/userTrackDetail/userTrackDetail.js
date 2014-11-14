@@ -38,18 +38,18 @@ Template.userTrackDetail.rendered = function () {
 
         Waypoints.forEach(function (waypoint) {
                 if (count > 1) {
-                    totalDistance = totalDistance + getDistanceFromLatLonInKm(prevWaypoint.location.latitude,
-                        prevWaypoint.location.longitude, waypoint.location.latitude, waypoint.location.longitude);
+                    totalDistance = totalDistance + getDistanceFromLatLonInKm(prevWaypoint.latitude,
+                        prevWaypoint.longitude, waypoint.latitude, waypoint.longitude);
                 }
                 else {
-                    date1 = waypoint.pointDateTime;
+                    date1 = waypoint.created;
                 }
-                if (maxSpeed < waypoint.location.speed) {
-                    maxSpeed = waypoint.location.speed;
+                if (maxSpeed < waypoint.speed) {
+                    maxSpeed = waypoint.speed;
                 }
-                averageSpeed = averageSpeed + waypoint.location.speed;
+                averageSpeed = averageSpeed + waypoint.speed;
                 prevWaypoint = waypoint;
-                date2 = waypoint.pointDateTime;
+                date2 = waypoint.created;
                 count++;
             }
         );

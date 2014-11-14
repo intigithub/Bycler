@@ -50,18 +50,35 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
     });
 
     Deps.autorun(function () {
+        console.log("on auto run position map");
+
         var imgSrc = visibleMode ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
         marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(50, 61)));
 
-        var latLng = Geolocation.latLng();
-        if (latLng) {
+        var latLngNew = Geolocation.latLng();
+
+        if (latLngNew) {
             if (!$('#show-current-location-btn').hasClass("toggled")) {
                 if (googleMapInstance)
-                    googleMapInstance.setCenter(new google.maps.LatLng(latLng.lat, latLng.lng));
+                    googleMapInstance.setCenter(latLngNew);
             }
+            marker.setPosition(latLngNew);
 
-            marker.setPosition(new google.maps.LatLng(latLng.lat, latLng.lng));
+            var currentTrackId = Session.get('currentTrackId');
+            if (currentTrackId != null) {
+                var id = GeoLog.insert({
+                    created: new Date(),
+                    userId: Meteor.userId(),
+                    trackId: currentTrackId,
+                    latitude: latLngNew.lat,
+                    longitude: latLngNew.lng,
+                    speed: 0
+                });
+            }
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.latitude": latLngNew.lat, "currentLocation.longitude": latLngNew.lng}
+            });
         }
     });
 };
@@ -69,38 +86,6 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
 GoogleMap.prototype.getCenter = function () {
     return Geolocation.latLng();
 };
-
-// pintar ruta en mapa
-GoogleMap.prototype.startAnimation = function () {
-    var self = this, count = 0;
-
-    var lineSymbol = {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 8,
-        strokeColor: '#FFE003'
-    };
-    var path = new google.maps.MVCArray;
-
-    var trackId = Session.get('selectedTrackId');
-    console.log(trackId);
-    var topPosts = GeoLog.find({'trackId': trackId});
-    topPosts.forEach(function (post) {
-        path.push(new google.maps.LatLng(post.location.latitude, post.location.longitude));
-    });
-
-    var line = new google.maps.Polyline({
-        path: path,
-        icons: [
-            {
-                icon: lineSymbol,
-                offset: '100%'
-            }
-        ],
-        map: self.gmap
-    });
-
-}
-
 
 // Funcion para cargar los estilos
 GoogleMap.prototype.setStyle = function (styles) {
@@ -180,20 +165,25 @@ GoogleMap.prototype.init = function () {
             markersCounter++;
         },
         update: function (marker) {
-         }
+        }
     });
 
 }
 
 Template.googleMap.rendered = function () {
-    //call to real time users
+    if (Session.get('currentTrackId') == null) {
+        setPlayPauseStyle('play');
+    } else {
+        setPlayPauseStyle('pause');
+
+    }
+    if (!Meteor.user.currentLocation) {
+        Meteor.users.update({_id: Meteor.userId()}, {
+            $set: {"currentLocation.latitude": 0, "currentLocation.longitude": 0}
+        });
+    }
     var template = this;
     //geolocation code
-    if (!GeolocationBG.isStarted) {
-        setPlayPauseStyle('play')
-    } else {
-        setPlayPauseStyle('pause')
-    }
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
 
@@ -221,7 +211,10 @@ Template.googleMap.rendered = function () {
 
     Meteor.users.find({"status.online": true}).observe({
         added: function (id) {
+            console.log('locationAdded');
+            console.log(id);
             if (id.currentLocation && Meteor.userId() != id._id) {
+                console.log('added in if')
                 var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
                 var imgSrc = '/imgs/markers/my_bycler.png';
                 var userMarkerOnMap = new google.maps.Marker({
@@ -234,7 +227,7 @@ Template.googleMap.rendered = function () {
                 });
                 userMarkerOnMap.info = new google.maps.InfoWindow({
                     content: '<div style=\'margin: 8px;\'>' +
-                    '<b>' + id + '</b> <br> ' + '<b>Speed:' + id.currentLocation.speed + '</b>' +
+                    '<b>' + id.profile.name + '</b> <br> ' +
                     '</div>'
                 });
 
@@ -245,11 +238,15 @@ Template.googleMap.rendered = function () {
             }
         },
         removed: function (id) {
+            console.log('locationRemoved')
         },
         changed: function (id) {
-            var indexOf = findInArray(userMarkers, 'id', id._id);
-            var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
-            userMarkers[indexOf].setPosition(latLng);
+            if (id.currentLocation && Meteor.userId() != id._id) {
+                console.log('locationChanged')
+                var indexOf = findInArray(userMarkers, 'id', id._id);
+                var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+                userMarkers[indexOf].setPosition(latLng);
+            }
         }
     });
 };
@@ -322,7 +319,7 @@ Template.googleMap.events({
     'click #show-current-location-btn': function (event) {
         $('#show-current-location-btn').toggleClass("toggled");
         if ($('#show-current-location-btn')) this.showCurrLocationMarker;
-     },
+    },
     'click #addmarker-btn': function (event) {
         $('#addmarker-btn').toggleClass("toggled");
         $("#markers-menu-wrapper").toggleClass("toggled");
@@ -343,10 +340,10 @@ Template.googleMap.events({
     'click #visibility-btn': function (event) {
         $('#visibility-btn').toggleClass("toggled");
         if (!visibleMode) {
-             $('#visibility-icon').removeClass("glyphicon-eye-close");
+            $('#visibility-icon').removeClass("glyphicon-eye-close");
             $('#visibility-icon').addClass("glyphicon-eye-open");
         } else {
-             $('#visibility-icon').removeClass("glyphicon-eye-open");
+            $('#visibility-icon').removeClass("glyphicon-eye-open");
             $('#visibility-icon').addClass("glyphicon-eye-close");
         }
         visibleMode = !visibleMode;
@@ -395,71 +392,35 @@ function getImgFromTypeMarker(idType) {
     return path;
 }
 
-// Mobile Gps Tracker To Server
-if (Meteor.isClient) {
-    //Click to start tracking event
-    Template.googleMap.events({
-        'click #play-button': function (event) {
-            var btn = event.currentTarget;
-
-            if (!Meteor.isCordova) {
-                console.log('Not Available, Not Cordova');
-                setPlayPauseStyle('play')
-                return;
-            }
-            if (!GeolocationBG.isStarted) {
-                if (!GeolocationBG.start()) {
-                    console.log('ERROR: Not Started, unable to start');
-                    setPlayPauseStyle('play')
-                    return;
-                }
-                if (!GeolocationBG.isStarted) {
-                    setPlayPauseStyle('play')
-                    console.log('ERROR: Not Started, status = false');
-                    return;
-                }
-                setPlayPauseStyle('pause')
-                console.log('Started (every few minutes there should be an update)');
-                var trackId = UserTrack.insert({
-                    name: moment().format("DD-MM-YYYY, h:mm:ss a"),
-                    created: new Date(),
-                    userId: Meteor.userId(),
-                    public: true,
-                    isDataGenerated: false,
-                    maxSpeed: 0,
-                    averageSpeed: 0,
-                    totalDistance: 0,
-                    timeDiff: 0,
-                    diffDays: 0,
-                    diffMs: 0,
-                    diffHrs: 0,
-                    diffMins: 0
-                });
-                Session.set('currentTrackId', trackId);
-                Router.go('userTrackList');
-                return;
-            }
-            if (!GeolocationBG.stop()) {
-                setPlayPauseStyle('pause');
-                console.log('ERROR: Not Stopped, unable to stop');
-                return;
-            }
-            else {
-                Session.set('currentTrackId', null);
-                setPlayPauseStyle('play');
-                console.log('STOP TRACK:   Stopped');
-                return;
-            }
-            if (GeolocationBG.isStarted) {
-                setPlayPauseStyle('pause');
-                console.log('ERROR: Not Stopped, status = true');
-                return;
-            }
-            return;
+Template.googleMap.events({
+    'click #play-button': function (event) {
+        var btn = event.currentTarget;
+        if (Session.get('currentTrackId') != null) {
+            setPlayPauseStyle('play');
+            Session.set('currentTrackId', null);
+        } else {
+            setPlayPauseStyle('pause');
+            console.log('Started (every few minutes there should be an update)');
+            var trackId = UserTrack.insert({
+                name: moment().format("DD-MM-YYYY, h:mm:ss a"),
+                created: new Date(),
+                userId: Meteor.userId(),
+                public: true,
+                isDataGenerated: false,
+                maxSpeed: 0,
+                averageSpeed: 0,
+                totalDistance: 0,
+                timeDiff: 0,
+                diffDays: 0,
+                diffMs: 0,
+                diffHrs: 0,
+                diffMins: 0
+            });
+            Session.set('currentTrackId', trackId);
+            Router.go('userTrackList');
         }
-    })
-    ;
-}
+    }
+});
 
 function setPlayPauseStyle(playOrPause) {
     document.getElementById("play-pause-icon").className = 'glyphicon glyphicon-' + playOrPause;
@@ -482,7 +443,7 @@ GoogleMap.prototype.startAnimation = function () {
     var trackPoints = GeoLog.find({'trackId': trackId});
     console.log('trackPointsCount', trackPoints.count());
     trackPoints.forEach(function (point) {
-        path.push(new google.maps.LatLng(point.location.latitude, point.location.longitude));
+        path.push(new google.maps.LatLng(point.latitude, point.longitude));
     });
 
     var line = new google.maps.Polyline({
@@ -519,35 +480,6 @@ function zoomToObject(obj) {
         bounds.extend(points[n]);
     }
     googleMapInstance.fitBounds(bounds);
-}
-
-if (Meteor.isCordova) {
-    GeolocationBG.config({
-        // productivo server
-        //'http://104.131.178.231/api/geolocation',
-        url: 'http://179.56.215.56:3000/api/geolocation',
-        params: {
-            // will be sent in with 'location' in POST data (root level params)
-            // these will be added automatically in setup()
-            userId: GeolocationBG.userId(),
-            uuid: GeolocationBG.uuid(),
-            device: GeolocationBG.device()
-        },
-        headers: {
-            // will be sent in with 'location' in HTTP Header data
-        },
-        desiredAccuracy: 10,
-        stationaryRadius: 10,
-        distanceFilter: 2,
-        // Android ONLY, customize the title of the notification
-        notificationTitle: 'Trazando Ruta',
-        // Android ONLY, customize the text of the notification
-        notificationText: 'Bycler',
-        //
-        activityType: 'AutomotiveNavigation',
-        // enable this hear sounds for background-geolocation life-cycle.
-        debug: false
-    });
 }
 
 var dia = [

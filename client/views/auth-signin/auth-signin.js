@@ -52,7 +52,6 @@ Template.signin.events({
             if (error) {
                 return Session.set(ERRORS_KEY, {'none': error.reason});
             }
-
             Router.go('/googleMap');
         });
     }
