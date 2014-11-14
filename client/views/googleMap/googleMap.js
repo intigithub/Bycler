@@ -403,62 +403,6 @@ function getImgFromTypeMarker(idType) {
     return path;
 }
 
-<<<<<<< HEAD
-// Mobile Gps Tracker To Server
-if (Meteor.isClient) {
-    //Click to start tracking event
-    Template.googleMap.events({
-        'click #play-button': function (event) {
-            var btn = event.currentTarget;
-
-            if (!Meteor.isCordova) {
-                setPlayPauseStyle('play')
-                return;
-            }
-            if (!GeolocationBG.isStarted) {
-                if (!GeolocationBG.start()) {
-                    setPlayPauseStyle('play')
-                    return;
-                }
-                if (!GeolocationBG.isStarted) {
-                    setPlayPauseStyle('play')
-                    return;
-                }
-                setPlayPauseStyle('pause')
-                var trackId = UserTrack.insert({
-                    name: moment().format("DD-MM-YYYY, h:mm:ss a"),
-                    created: new Date(),
-                    userId: Meteor.userId(),
-                    public: true,
-                    isDataGenerated: false,
-                    maxSpeed: 0,
-                    averageSpeed: 0,
-                    totalDistance: 0,
-                    timeDiff: 0,
-                    diffDays: 0,
-                    diffMs: 0,
-                    diffHrs: 0,
-                    diffMins: 0
-                });
-                Session.set('currentTrackId', trackId);
-                Router.go('userTrackList');
-                return;
-            }
-            if (!GeolocationBG.stop()) {
-                setPlayPauseStyle('pause');
-                return;
-            }
-            else {
-                Session.set('currentTrackId', null);
-                setPlayPauseStyle('play');
-                return;
-            }
-            if (GeolocationBG.isStarted) {
-                setPlayPauseStyle('pause');
-                return;
-            }
-            return;
-=======
 Template.googleMap.events({
     'click #play-button': function (event) {
         var btn = event.currentTarget;
@@ -485,7 +429,6 @@ Template.googleMap.events({
             });
             Session.set('currentTrackId', trackId);
             Router.go('userTrackList');
->>>>>>> abc9bdadae26cd6e8916d77cf816e00c32df41bb
         }
     }
 });
@@ -547,39 +490,6 @@ function zoomToObject(obj) {
     googleMapInstance.fitBounds(bounds);
 }
 
-<<<<<<< HEAD
-if (Meteor.isCordova) {
-    GeolocationBG.config({
-        // productivo server
-        //'http://104.131.178.231/api/geolocation',
-        // LEO: url: 'http://179.56.215.56:3000/api/geolocation',
-        url: 'http:// 179.56.233.87:3000/api/geolocation',       
-        params: {
-            // will be sent in with 'location' in POST data (root level params)
-            // these will be added automatically in setup()
-            userId: GeolocationBG.userId(),
-            uuid: GeolocationBG.uuid(),
-            device: GeolocationBG.device()
-        },
-        headers: {
-            // will be sent in with 'location' in HTTP Header data
-        },
-        desiredAccuracy: 10,
-        stationaryRadius: 10,
-        distanceFilter: 2,
-        // Android ONLY, customize the title of the notification
-        notificationTitle: 'Trazando Ruta',
-        // Android ONLY, customize the text of the notification
-        notificationText: 'Bycler',
-        //
-        activityType: 'AutomotiveNavigation',
-        // enable this hear sounds for background-geolocation life-cycle.
-        debug: false
-    });
-}
-
-=======
->>>>>>> abc9bdadae26cd6e8916d77cf816e00c32df41bb
 var dia = [
     {
         "featureType": "water", "elementType": "geometry", "stylers": [
