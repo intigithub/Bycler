@@ -1,55 +1,57 @@
 <template name="userTrackDetail">
     <nav>
         <div class="nav-group">
-            <a href="#" class="js-menu nav-item"><span class="glyphicon glyphicon-home" id="menu-icon"></span></a>
+            <a href="#" class="js-menu nav-item">
+                <span class="glyphicon glyphicon-home" id="menu-icon-list"></span>
+            </a>
         </div>
     </nav>
-    <div class="panel panel-warning">
-        <div class="panel-heading" style="text-align: center;">
-            <h3 class="panel-title">{{trackObject.name}}</h3>
-        </div>
-        <div class="panel-body">
-
-            <ul class="list-group">
-                <li class="list-group-item"> Nombre: <input type="text" class="form-control track-name"
-                                                            id="{{trackObject._id}}" value="{{trackObject.name}}">
-                </li>
-                <li class="list-group-item">{{formatDate trackObject.created}}</li>
-            </ul>
-            <ul>
-                <li>
-                    <div class="container-track-detail">
-                        <canvas id="distance-canvas" width="120" height="70"></canvas>
-                    </div>
-                    <div class="label-track-dt">Distancia:</div>
-
-                    <div id="distance" class="label-track-dt"></div>
-                </li>
-                <li>
-                    <div class="container-track-detail">
-                        <canvas id="time-canvas" width="120" height="70"></canvas>
-                    </div>
-                    <div class="label-track-dt">Duración:</div>
-
-                    <div id="time" class="label-track-dt"></div>
-                </li>
-                <li>
-                    <div class="container-track-detail">
-                        <canvas id="max-speed-canvas" width="120" height="70"></canvas>
-                    </div>
-                    <div class="label-track-dt">Velocidad Máxima:</div>
-
-                    <div id="max-speed" class="label-track-dt"></div>
-                </li>
-                <li>
-                    <div class="container-track-detail">
-                        <canvas id="average-speed-canvas" width="120" height="70"></canvas>
-                    </div>
-                    <div class="label-track-dt">Velocidad Promedio:</div>
-                    <div id="average-speed" class="label-track-dt"></div>
-                </li>
-
-            </ul>
-        </div>
+    <div class="nav-title-center">
+        <h3 class="panel-title">{{trackObject.name}}</h3>
+    </div>
+    <div class="list-container">
+        <ul class="list-group center-text">
+            <li class="list-group-item"> Nombre:
+                <input type="text" class="form-control track-name"
+                       id="{{trackObject._id}}" value="{{trackObject.name}}">
+            </li>
+            <li class="list-group-item">{{formatDate trackObject.created}}</li>
+            <li class="list-group-item">
+                <div class="container-track-detail">
+                    <canvas id="distance-canvas" width="120" height="70"></canvas>
+                </div>
+                <div class="label-track-dt">Distancia:</div>
+                <div id="distance" class="label-track-dt"></div>
+                {{#if isKmDistance}}
+                    <h5>Kms</h5>
+                {{else}}
+                    <h5>Mts</h5>
+                {{/if}}
+            </li>
+            <li class="list-group-item">
+                <div class="container-track-detail">
+                    <canvas id="time-canvas" width="120" height="70"></canvas>
+                </div>
+                <div class="label-track-dt">Duración:</div>
+                <div id="time" class="label-track-dt"></div>
+                <h5>Minutos</h5>
+            </li>
+            <li class="list-group-item">
+                <div class="container-track-detail">
+                    <canvas id="max-speed-canvas" width="120" height="70"></canvas>
+                </div>
+                <div class="label-track-dt">Velocidad Máxima:</div>
+                <div id="max-speed" class="label-track-dt"></div>
+                <h5>Km/h</h5>
+            </li>
+            <li class="list-group-item">
+                <div class="container-track-detail">
+                    <canvas id="average-speed-canvas" width="120" height="70"></canvas>
+                </div>
+                <div class="label-track-dt">Velocidad Promedio:</div>
+                <div id="average-speed" class="label-track-dt"></div>
+                <h5>Km/h</h5>
+            </li>
+        </ul>
     </div>
 </template>

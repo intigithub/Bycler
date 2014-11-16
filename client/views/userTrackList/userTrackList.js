@@ -22,6 +22,32 @@ Template.userTrackList.helpers({
         } else {
             return false;
         }
+    },
+    isTrackEmpty: function (trackId) {
+        var points = GeoLog.find({'trackId': trackId});
+        console.log(points.count());
+        if (points.count() > 1) {
+            console.log('>1');        console.log('-------------------');
+
+            return false;
+        } else {
+            var currentTrackId =
+                Session.get('currentTrackId');
+            console.log(currentTrackId);
+            console.log(trackId);
+
+
+            if (currentTrackId == trackId) {
+                console.log('== trackId');        console.log('-------------------');
+
+                return false;
+            } else {
+                console.log('!!= trackId');        console.log('-------------------');
+
+                return true;
+            }
+        }
+
     }
 });
 

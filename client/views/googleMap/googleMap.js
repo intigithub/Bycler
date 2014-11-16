@@ -132,7 +132,7 @@ GoogleMap.prototype.init = function () {
     var self = this;
     var byclersCounter = 0;
     var markersCounter = 0;
-    
+
     // @TODO ClusterMarkers
 
     Markers.find({}).observe({
@@ -181,6 +181,19 @@ GoogleMap.prototype.init = function () {
 
 }
 
+function giveMeUniqueName(nameUnique) {
+    if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
+        return nameUnique
+    } else {
+        for (var i = 1; i < 9999; i++) {
+            nameUnique = nameUnique + '_' + i.toString();
+            if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
+                return nameUnique;
+            }
+        }
+    }
+}
+
 Template.googleMap.rendered = function () {
     if (Session.get('currentTrackId') == null) {
         setPlayPauseStyle('play');
@@ -193,6 +206,13 @@ Template.googleMap.rendered = function () {
             $set: {"currentLocation.latitude": 0, "currentLocation.longitude": 0}
         });
     }
+    if (Meteor.users.find({'profile.name': Meteor.user().profile.name})) {
+        Meteor.users.update({_id: Meteor.userId()}, {
+            $set: {"profile.name": giveMeUniqueName(Meteor.user().profile.name)}
+        });
+    };
+
+
     var template = this;
     //geolocation code
     var map = new GoogleMap(template.firstNode);

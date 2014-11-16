@@ -6,6 +6,15 @@ Template.userTrackDetail.helpers({
     trackObject: function () {
         var trackId = Session.get('trackIdInView');
         return UserTrack.findOne({_id: trackId});
+    },
+    isKmDistance: function () {
+        var trackId = Session.get('trackIdInView');
+        var Track = UserTrack.findOne({_id: trackId});
+        if (Track.totalDistance >= 1000) {
+            return true;
+        } else {
+            return false;
+        }
     }
 });
 Template.userTrackDetail.events({
@@ -27,27 +36,28 @@ Template.userTrackDetail.rendered = function () {
     if (true) {
         //busca los puntos de la ruta
         var Waypoints = GeoLog.find({trackId: Track._id});
-
         var prevWaypoint = null;
         var maxSpeed = 0.0;
         var averageSpeed = 0.0;
         var totalDistance = 0.0;
         var date1 = new Date();
         var date2 = new Date();
-        var count = 1;
+        var count = 0;
 
         Waypoints.forEach(function (waypoint) {
-                if (count > 1) {
-                    totalDistance = totalDistance + getDistanceFromLatLonInKm(prevWaypoint.latitude,
+                if (count > 0) {
+                    totalDistance = totalDistance + distance_on_geoid(prevWaypoint.latitude,
                         prevWaypoint.longitude, waypoint.latitude, waypoint.longitude);
+                    var speed = getSpeed2Points(prevWaypoint, waypoint);
+                    GeoLog.update({_id: waypoint._id}, {$set: {"speed": speed}});
+                    averageSpeed = averageSpeed + speed;
+                    if (maxSpeed < speed) maxSpeed = speed;
                 }
                 else {
+                    GeoLog.update({_id: waypoint._id}, {$set: {"speed": 0}});
                     date1 = waypoint.created;
                 }
-                if (maxSpeed < waypoint.speed) {
-                    maxSpeed = waypoint.speed;
-                }
-                averageSpeed = averageSpeed + waypoint.speed;
+
                 prevWaypoint = waypoint;
                 date2 = waypoint.created;
                 count++;
@@ -56,11 +66,10 @@ Template.userTrackDetail.rendered = function () {
 
         //calcula velocidad promedio -
         if (averageSpeed > 0.0) averageSpeed = (averageSpeed / Waypoints.count());
-        else averageSpeed = 0.0;//si por un caso la ruta tiene 0 puntos queda NaN, esto deberia cubrirlo, pero esa ruta no deberia existir.
-        //calculo de inicio y fin de ruta - duracion de la ruta
+        else averageSpeed = 0.0;
         var timeDiff = Math.abs(date2.getTime() - date1.getTime());
         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        var diffMs = (date2 - date1); // milliseconds between now & Christmas
+        var diffMs = (date2 - date1);
         var diffHrs = Math.round((diffMs % 86400000) / 3600000); // hours
         var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 
@@ -81,9 +90,7 @@ Template.userTrackDetail.rendered = function () {
         );
     }
 
-
     Track = UserTrack.findOne({_id: trackId});
-
     var opts = {
         lines: 12,
         angle: 0.15,
@@ -91,11 +98,11 @@ Template.userTrackDetail.rendered = function () {
         pointer: {
             length: 0.9,
             strokeWidth: 0.035,
-            color: '#000000'
+            color: '#ff6339'
         },
         limitMax: 'false',
-        percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]], // !!!!
-        strokeColor: '#E0E0E0',
+        percentColors: [[0.0, "#95C0EF"], [0.50, "#596680"], [1.0, "#2F3C4C"]], // !!!!
+        strokeColor: '#D3E0EE',
         generateGradient: true
     };
     var target = document.getElementById('max-speed-canvas');
@@ -113,13 +120,15 @@ Template.userTrackDetail.rendered = function () {
     gauge2.maxValue = Track.averageSpeed * 2;
     gauge2.set(Track.averageSpeed);
 
+    if (Track.totalDistance >= 1000) {
+        totalDistance = totalDistance / 1000;
+    }
     var target3 = document.getElementById('distance-canvas');
     var gauge3 = new Gauge(target3).setOptions(opts);
     gauge3.animationSpeed = 32;
     gauge3.setTextField(document.getElementById('distance'))
-    gauge3.maxValue = (Track.totalDistance) * 2;
-    gauge3.set(Track.totalDistance);
-
+    gauge3.maxValue = (totalDistance) * 2;
+    gauge3.set(totalDistance);
 
     var target4 = document.getElementById('time-canvas');
     var gauge4 = new Gauge(target4).setOptions(opts);
@@ -129,6 +138,24 @@ Template.userTrackDetail.rendered = function () {
     gauge4.set(Track.diffMins);
 }
 
+function deg2rad(deg) {
+    return deg * (Math.PI / 180)
+}
+
+UI.registerHelper("formatDate", function (datetime) {
+    if (moment)
+        return moment(datetime).fromNow();
+    else
+        return datetime;
+});
+
+function getSpeed2Points(p1, p2) {
+    var dist = distance_on_geoid(p1.latitude, p1.longitude, p2.latitude, p2.longitude);
+    var time_s = (p2.created - p1.created) / 1000.0;
+    var speed_mps = dist / time_s;
+    var speed_kph = (speed_mps * 3600.0) / 1000.0;
+    return speed_kph;
+}
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     var R = 6371; // Radius of the earth in km
     var dLat = deg2rad(lat2 - lat1);  // deg2rad below
@@ -142,16 +169,36 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     var d = R * c; // Distance in km
     return d;
 }
+function distance_on_geoid(lat1, lon1, lat2, lon2) {
 
-function deg2rad(deg) {
-    return deg * (Math.PI / 180)
+    // Convert degrees to radians
+    lat1 = lat1 * Math.PI / 180.0;
+    lon1 = lon1 * Math.PI / 180.0;
+
+    lat2 = lat2 * Math.PI / 180.0;
+    lon2 = lon2 * Math.PI / 180.0;
+
+    // radius of earth in metres
+    var r = 6378100;
+
+    // P
+    var rho1 = r * Math.cos(lat1);
+    var z1 = r * Math.sin(lat1);
+    var x1 = rho1 * Math.cos(lon1);
+    var y1 = rho1 * Math.sin(lon1);
+
+    // Q
+    var rho2 = r * Math.cos(lat2);
+    var z2 = r * Math.sin(lat2);
+    var x2 = rho2 * Math.cos(lon2);
+    var y2 = rho2 * Math.sin(lon2);
+
+    // Dot product
+    var dot = (x1 * x2 + y1 * y2 + z1 * z2);
+    var cos_theta = dot / (r * r);
+
+    var theta = Math.acos(cos_theta);
+
+    // Distance in Metres
+    return r * theta;
 }
-
-UI.registerHelper("formatDate", function (datetime) {
-    if (moment) {
-        return moment(datetime).fromNow();
-    }
-    else {
-        return datetime;
-    }
-});
