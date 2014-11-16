@@ -1107,9 +1107,7 @@ InfoBubble.prototype['getContent'] = InfoBubble.prototype.getContent;
  * Sets the marker content and adds loading events to images
  */
 InfoBubble.prototype.updateContent_ = function() {
-    console.log('updating InforBubble content...');
     if (!this.content_) {
-        console.log('There is no content!');
         // The Content area doesnt exist.
         return;
     }
@@ -1118,15 +1116,21 @@ InfoBubble.prototype.updateContent_ = function() {
     var content = this.getContent();
     if (content) {
         if (typeof content == 'string') {
-        content = this.htmlToDocumentFragment_(content);
+            content = this.htmlToDocumentFragment_(content);
         }  
         this.content_.appendChild(content);
 
         var that = this;
         var buttons = this.content_.getElementsByTagName('BUTTON');
         buttons[0].addEventListener('click', function () {
-            console.log('Close infobubble from updateContent_');
             that.close();
+            var marker = Session.get('SelectedMarker');
+            if(marker) {
+                console.log('marker.data.asistentes(' + marker._id + '): ' + marker.data.asistentes);
+                $('#eventMarker-asistentes').tagsinput('removeAll');
+                $('#eventMarker-asistentes').tagsinput('add', marker.data.asistentes);
+                $('#eventMarker-asistentes').tagsinput('refresh');
+            }
             $('#basicModal').modal('show');
         });
     }
@@ -1402,11 +1406,7 @@ InfoBubble.prototype.positionCloseButton_ = function() {
 };
 
 Template.infobubble.rendered = function() {
-    console.log('rendered de infobubble');
 }
 
 Template.infobubble.events({
-    'click div': function (event) {
-        console.log('click infobubble');
-    }
 });

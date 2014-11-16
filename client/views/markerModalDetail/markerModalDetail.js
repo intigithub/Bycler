@@ -4,7 +4,6 @@ var MarkerModalDetail = function (element) {
 
 Template.markerModalDetail.rendered = function () {
     $('#datepicker-fecha').datepicker({ format: 'dd/mm/yy' });
-    $('#eventMarker-asistentes').tagsinput();
 }
 
 Template.markerModalDetail.events({
@@ -33,8 +32,6 @@ Template.markerModalDetail.helpers({
     eventMarker: function () {
         var marker = Session.get('SelectedMarker');
         if(marker) {
-            $('#eventMarker-asistentes').tagsinput(marker.data.asistentes);
-            $('#eventMarker-asistentes').tagsinput('refresh');
            return marker;
         }
     }

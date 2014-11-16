@@ -7,35 +7,57 @@ Template.userEventList.helpers({
     userEventListCount: function () {
         var count = Markers.find({type: 1}).count();
         return count > 0;
+    },
+    userIsParticipant: function(markerId) {
+        var marker = Markers.findOne(markerId);
+        var sessionUsername = Meteor.user().profile.name;
+        if(marker) {
+            if(marker.data.asistentes.indexOf(sessionUsername)==-1) {
+                return false;
+            } else return true;
+        } 
+        return false;        
     }
 });
 
+
 Template.userEventList.events({
-    'click .btn-voy': function (event) {
+    'click .btn-asistencia': function (event) {
         event.preventDefault();
         var btn = event.currentTarget;
-        debugger;
-        var eventId = btn.id.substring(btn.id.indexOf('btn-voy') + 7);
+        var eventId = btn.id.substring(btn.id.indexOf('btn-asistencia') + 14);
         var selectedMarker = Markers.findOne(eventId);
         var asistentes = selectedMarker.data.asistentes;
-        console.log(asistentes);
-    },
-    'click .btn-paso': function (event) {
-        event.preventDefault();
-        var btn = event.currentTarget;
-        debugger;
-        var eventId = btn.id.substring(btn.id.indexOf('btn-paso') + 8);
-        var selectedMarker = Markers.findOne(eventId);
-        var asistentes = selectedMarker.data.asistentes;
-        console.log(asistentes);
+        var arreglo = asistentes.split(','), index = -1, sessionUsername = Meteor.user().profile.name;
+        asistentes = '';
+        for(var i=0; i<arreglo.length; i++) {
+            if(arreglo[i]==sessionUsername) {
+                index = i;
+            } else {
+                asistentes = asistentes + arreglo[i] + ',';
+            }
+        }
+
+        if(index==-1) {
+            asistentes = asistentes + sessionUsername;
+        }   
+        
+        Markers.update({_id: eventId}, {
+            $set: {"data.asistentes": asistentes.substr(0, asistentes.length - (index==-1?0:1))}
+        });
+        
+        $('#' + btn.id).toggleClass('btn-primary btn-default');
+        $('#' + btn.id + ' label').toggleClass('glyphicon-thumbs-up glyphicon-thumbs-down');
+        
+        console.log('Final: ' + asistentes.substr(0, asistentes.length - (index==-1?0:1)));
     },
     'click .btn-go-event-marker': function (event) {
-            event.preventDefault();
-            var btn = event.currentTarget;
-            var eventId = btn.id;
-            var selectedMarker = Markers.findOne(eventId);
-            Session.set('SelectedMarker', selectedMarker);
-            Router.go('googleMap');
+        event.preventDefault();
+        var btn = event.currentTarget;
+        var eventId = btn.id;
+        var selectedMarker = Markers.findOne(eventId);
+        Session.set('SelectedMarker', selectedMarker);
+        Router.go('googleMap');
     }
 });
 
