@@ -1,46 +1,48 @@
 <template name="userEventList">
     <nav>
         <div class="nav-group">
-            <a href="#" class="js-menu nav-item"><span class="glyphicon glyphicon-home" id="menu-icon"></span></a>
+            <a href="#" class="js-menu nav-item">
+                <span class="glyphicon glyphicon-home" id="menu-icon-list"></span>
+            </a>
         </div>
     </nav>
-    <div class="panel panel-warning">
-        <div class="panel-heading" style="text-align: center;">
-            <h3 class="panel-title">Mis Eventos</h3>
-        </div>
-        <div class="panel-body">
-            {{#if userEventListCount}}
-                {{#each userEventList}}
-                    <div class="list-group">
-                        <a class="list-group-item" style="height: 80px;">
-                            <div class="col-xs-7">
-                                <h5 class="list-group-item-heading">
-                                    <span id="{{_id}}" class="btn-go-event-marker glyphicon glyphicon-map-marker"></span>
-                                    {{data.nombre}}
-                                </h5>
+    <div class="nav-title-center">
+        <h3>Eventos Cercanos</h3>
+    </div>
+    <div class="list-container">
+        {{#if userEventListCount}}
+            {{#each userEventList}}
+                <div class="list-item">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <h5 class="list-group-item-heading">
+                                    <span id="{{_id}}"
+                                          class="btn-go-event-marker glyphicon glyphicon-map-marker"></span>
+                                {{data.nombre}}
+                            </h5>
 
-                                <div style="position: relative; min-height: 35px;">
-                                    <h5 class="list-group-item-text" style="float: left">{{formatDate fecha}}</h5>
-                                </div>
+                            <div style="position: relative; min-height: 35px;">
+                                <h5 class="list-group-item-text" style="float: left">{{formatDate fecha}}</h5>
                             </div>
-                            <div class="col-xs-5">
-                                <div class="btn-group" style="float: right">
-                                    <button id="btn-voy{{_id}}" type="button" class="btn btn-default btn-voy">
-                                        <label class="glyphicon glyphicon-thumbs-up"></label>
-                                    </button>
-                                    <button id="btn-paso{{_id}}" type="button" class="btn btn-primary btn-paso">
-                                        <label class="glyphicon glyphicon-thumbs-down"></label>
-                                    </button>
-                                </div>
+                        </div>
+                        <div class="col-xs-5">
+                            <div class="btn-group" style="float: right">
+                                <button id="btn-voy{{_id}}" type="button" class="btn btn-default btn-voy">
+                                    <label class="glyphicon glyphicon-thumbs-up"></label>
+                                </button>
+                                <button id="btn-paso{{_id}}" type="button" class="btn btn-primary btn-paso">
+                                    <label class="glyphicon glyphicon-thumbs-down"></label>
+                                </button>
                             </div>
-                        </a>
+                        </div>
                     </div>
-                {{/each}}
-            {{else}}
-                <div class="alert alert-danger" role="alert" style="margin-top: 4px;">
-                    <a href="/googleMap" class="alert-link"><h4>No hay eventos</h4></a>
                 </div>
-            {{/if}}
-        </div>
+                <hr>
+            {{/each}}
+        {{else}}
+            <div class="alert alert-danger" role="alert" style="margin-top: 4px;">
+                <a href="/googleMap" class="alert-link"><h4>No hay eventos</h4></a>
+            </div>
+        {{/if}}
     </div>
 </template>
