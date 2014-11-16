@@ -1,27 +1,6 @@
-.list-group {
-    margin: 4px 4px 0px 4px;
-}
-
-.panel-warning {
-    min-height: 100%;
-}
-
-.panel-body {
-    padding: 0px;
-    min-height: 100%;
-    height: 100%;
-    width: 100%;
-    background-size: 100% auto; /* width and height, can be %, px or whatever. */
-    background-position: bottom;
-}
-
-.panel-title {
-    margin-top: 4px;
-}
-
-.glyphicon-refresh-animate {
-    -animation: spin .7s infinite linear;
-    -webkit-animation: spin2 .7s infinite linear;
+.still-in-track {
+    -animation: spin .1s infinite linear;
+    -webkit-animation: spin2 .1s infinite linear;
 }
 
 @-webkit-keyframes spin2 {

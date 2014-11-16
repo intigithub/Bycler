@@ -22,3 +22,11 @@ ul {
 .margin-panel{
     margin: 16px;
 }
+.center-text{
+    text-align: center;
+}
+.list-group-item {
+    padding: 2px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+}
