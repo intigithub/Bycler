@@ -14,21 +14,21 @@
             {{#each userEventList}}
                 <div class="list-item">
                     <div class="row">
-                        <div class="col-xs-7">
+                        <div class="col-xs-10">
                             <h5 class="list-group-item-heading">
                                     <span id="{{_id}}"
                                           class="btn-go-event-marker glyphicon glyphicon-map-marker"></span>
                                 {{data.nombre}}
                             </h5>
-
+                            
                             <div style="position: relative; min-height: 35px;">
                                 <h5 class="list-group-item-text" style="float: left">{{formatDate fecha}}</h5>
                             </div>
-                            <div class="col-xs-2">
-                                <button id="btn-asistencia{{_id}}" type="button" class="btn btn-{{#if userIsParticipant _id}}primary{{else}}default{{/if}} btn-asistencia">
-                                    <label class="glyphicon glyphicon-thumbs-{{#if userIsParticipant _id}}up{{else}}down{{/if}}"></label>
-                                </button>
-                            </div>
+                        </div>
+                        <div class="col-xs-2">
+                            <button id="btn-asistencia{{_id}}" type="button" class="btn btn-{{#if userIsParticipant _id}}primary{{else}}default{{/if}} btn-asistencia">
+                                <label class="glyphicon glyphicon-thumbs-{{#if userIsParticipant _id}}up{{else}}down{{/if}}"></label>
+                            </button>
                         </div>
                     </div>
                 </div>

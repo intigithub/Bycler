@@ -189,6 +189,8 @@ function giveMeUniqueName(nameUnique) {
             nameUnique = nameUnique + '_' + i.toString();
             if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
                 return nameUnique;
+            } else {
+                
             }
         }
     }
