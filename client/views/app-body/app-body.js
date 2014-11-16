@@ -58,6 +58,18 @@ Template.appBody.helpers({
             return email.substring(0, email.indexOf('@'));
         }
     },
+    getName: function () {
+        if (Meteor.user().profile.name) {
+            return Meteor.user().profile.name;
+        } else {
+            if (Meteor.user().services.facebook) {
+                return Meteor.user().profile.name;
+            } else {
+                var email = Meteor.user().emails[0].address;
+                return email.substring(0, email.indexOf('@'));
+            }
+        }
+    },
     userMenuOpen: function () {
         return Session.get(USER_MENU_KEY);
     },

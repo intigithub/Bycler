@@ -1,6 +1,5 @@
 <template name="appBody">
     <div id="container" class="{{menuOpen}} {{cordova}}">
-
         <section id="menu">
             {{#if currentUser}}
                 <div class="btns-group-vertical">
@@ -10,7 +9,7 @@
                         {{else}}
                             <span class="icon-arrow-down"></span>
                         {{/if}}
-                        {{emailLocalPart}}
+                        {{getName}}
                     </a>
                     {{#if userMenuOpen}}
                         <a class="js-logout btn-secondary btn-big-padding">Logout</a>

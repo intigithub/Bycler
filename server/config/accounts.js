@@ -3,13 +3,16 @@ Meteor.startup(function () {
     Accounts.onCreateUser(function (options, user) {
 
         function giveMeUniqueName(nameUnique) {
-            if (Meteor.users.find({'profile.name':'leoleo'}).count() == 0) {
+            if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
                 return nameUnique
             } else {
                 for (var i = 1; i < 9999; i++) {
+                    var name = nameUnique;
                     nameUnique = nameUnique + '_' + i.toString();
                     if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
                         return nameUnique;
+                    }else{
+                        nameUnique = name
                     }
                 }
             }
