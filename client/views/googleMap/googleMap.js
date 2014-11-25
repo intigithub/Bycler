@@ -130,10 +130,12 @@ GoogleMap.prototype.getMapInstance = function () {
 // Funcion para inicializar el mapa con los marcadores
 GoogleMap.prototype.init = function () {
     var self = this;
-    var byclersCounter = 0;
     var markersCounter = 0;
 
-    // @TODO ClusterMarkers
+    var map = googleMapInstance;
+    var markers = [];
+
+    //-----------------------
 
     Markers.find({}).observe({
         added: function (marker) {
@@ -146,6 +148,7 @@ GoogleMap.prototype.init = function () {
             });
 
             self.markers[markersCounter] = googleMarker;
+            markers.push(googleMarker);
 
             if (marker.type == 1) {  // 1 = Evento
                 google.maps.event.addListener(googleMarker, 'click', function () {
@@ -174,10 +177,12 @@ GoogleMap.prototype.init = function () {
             }
 
             markersCounter++;
+
         },
         update: function (marker) {
         }
     });
+    var markerCluster = new MarkerClusterer(map, markers);
 
 }
 
@@ -277,7 +282,11 @@ Template.googleMap.rendered = function () {
             }
         },
         removed: function (id) {
-            console.log('locationRemoved')
+            console.log('locationRemoved');
+            if (id.currentLocation && Meteor.userId() != id._id) {
+                var indexOf = findInArray(userMarkers, 'id', id._id);
+                userMarkers[indexOf].setMap(null);
+            }
         },
         changed: function (id) {
             if (id.currentLocation && Meteor.userId() != id._id) {
