@@ -9,33 +9,29 @@
     <div class="nav-title-center">
         <h3>Mis Rutas</h3>
     </div>
-    <div class="list-container">
+    <div class="content-scrollable list-items list-container">
         {{#if userTracksListCount}}
             {{#each userTracksList}}
                 <div class="list-item">
-                    <div class="row">
-                        <div class="col-lg-9">
-                            <h4 class="list-group-item-heading">Nombre: <span>{{name}}</span></h4>
-                            <h5 style="float: left">{{formatDate created}}</h5>
-                            <div style="float: right">
-                                <input type="image" width="32" src="list/ver_ruta_seleccion.png"
-                                       class="list-view-item-img view-track-btn" id="{{_id}}"/>
-                                <input type="image" width="32" src="list/no_seleccion.png"
-                                       class="list-delete-item-img delete-track-btn" id="{{_id}}"/>
-                                <a type="button" class="detail-track-btn"
-                                   href="{{pathFor route='userTrackDetail' _id = _id}}">
-                                    <input type="image" width="32" src="list/ver_info_seleccion.png"
-                                           class="list-detail-item-img detail-track-btn" id="{{_id}}"/>
-                                </a>
-                                {{#if isTrackStillAlive _id}}
-                                    <input type="image" width="32" class="still-in-track" src="list/rueda.png">
-                                {{/if}}
-                                {{#if isTrackEmpty _id}}
-                                    <h6>Ruta vacia</h6>
-                                {{/if}}
-                            </div>
-                        </div>
-
+                    <div class="col-xs-8">
+                        <h5 class="list-group-item-heading">Nombre: <span>{{name}}</span></h5>
+                        <h6 style="float: left">{{formatDate created}}  {{#if isTrackEmpty _id}}
+                            Ruta vacia
+                        {{/if}}</h6>
+                    </div>
+                    <div class="col-xs-4" style="margin-top: 0.7em;">
+                        <input type="image" width="32" src="list/ver_ruta_seleccion.png"
+                               class="list-view-item-img view-track-btn" id="{{_id}}"/>
+                        <input type="image" width="32" src="list/no_seleccion.png"
+                               class="list-delete-item-img delete-track-btn" id="{{_id}}"/>
+                        <a type="button" class="detail-track-btn"
+                           href="{{pathFor route='userTrackDetail' _id = _id}}">
+                            <input type="image" width="32" src="list/ver_info_seleccion.png"
+                                   class="list-detail-item-img detail-track-btn" id="{{_id}}"/>
+                        </a>
+                        {{#if isTrackStillAlive _id}}
+                            <input type="image" width="32" class="still-in-track" src="list/rueda.png">
+                        {{/if}}
 
                     </div>
                 </div>
