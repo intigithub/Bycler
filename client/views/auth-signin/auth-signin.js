@@ -17,7 +17,7 @@ Template.signin.events({
     'click #facebook-login-with': function (event) {
         event.preventDefault();
         Meteor.loginWithFacebook({
-            requestPermissions: ['publish_actions']
+            requestPermissions: ['email']
         }, function (err) {
             if(err) {
                 console.log(err);

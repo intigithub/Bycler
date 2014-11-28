@@ -1,37 +1,39 @@
 // Set up login services
 Meteor.startup(function () {
     Accounts.onCreateUser(function (options, user) {
-
-        function giveMeUniqueName(nameUnique) {
-            if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
-                return nameUnique
-            } else {
-                for (var i = 1; i < 9999; i++) {
-                    var name = nameUnique;
-                    nameUnique = nameUnique + '_' + i.toString();
-                    if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
-                        return nameUnique;
-                    }else{
-                        nameUnique = name
-                    }
-                }
-            }
-        }
-
         if (options.profile) {
             //want the users facebook pic and it is not provided by the facebook.service
+            options.profile.image = "http://graph.facebook.com/" + user.services.facebook.id + "/picture/?type=large";
             options.profile.picture = "http://graph.facebook.com/" + user.services.facebook.id + "/picture/?type=large";
             options.profile.name = giveMeUniqueName(options.profile.name);
+            options.profile.fullName = '';
+            options.profile.country = '';
+            options.profile.city = '';
+            options.profile.kmAccum = '';
+            options.profile.level = 1;
+            console.log(options)
             user.profile = options.profile;
         } else {
             var email = user.emails[0].address;
             user.profile = {
-                name: giveMeUniqueName(email.substring(0, email.indexOf('@')))
-            };
+                image: "/imgs/navigation/foto_perfil_mdpi.png",
+                picture: "/imgs/navigation/foto_perfil_mdpi.png",
+                name: giveMeUniqueName(email.substring(0, email.indexOf('@'))),
+                fullName: '',
+                country: '',
+                city: '',
+                kmAccum: 0,
+                level: 1
+            }
+            ;
         }
         user.currentLocation = {
             latitude: 0,
             longitude: 0
+        };
+        user.stats = {
+            markersCount: 0,
+            rating: 2.5
         };
         return user;
     });
@@ -42,8 +44,8 @@ Meteor.startup(function () {
 
     ServiceConfiguration.configurations.insert({
         "service": "facebook",
-        "appId": "296870120500385",
-        "secret": "427f178bcbe43791448f361f72003c37"
+        "appId": "305948542925876",
+        "secret": "df05c0af61a70f92bbb6fcd3c0ce49d0"
     });
     /*
      Leo:
@@ -56,6 +58,7 @@ Meteor.startup(function () {
      appId 296870120500385
      secret 427f178bcbe43791448f361f72003c37
      */
-});
+})
+;
 
 
