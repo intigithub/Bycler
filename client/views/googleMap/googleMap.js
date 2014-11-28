@@ -186,46 +186,14 @@ GoogleMap.prototype.init = function () {
 
 }
 
-function giveMeUniqueName(nameUnique) {
-    if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
-        return nameUnique
-    } else {
-        for (var i = 1; i < 9999; i++) {
-            var name = nameUnique;
-            nameUnique = nameUnique + '_' + i.toString();
-            if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
-                return nameUnique;
-            }else{
-                nameUnique = name
-            }
-        }
-    }
-}
-
 Template.googleMap.rendered = function () {
+    checkForVoidFields();
     if (Session.get('currentTrackId') == null) {
         setPlayPauseStyle('play');
     } else {
         setPlayPauseStyle('pause');
 
     }
-    if (!Meteor.user.currentLocation) {
-        Meteor.users.update({_id: Meteor.userId()}, {
-            $set: {"currentLocation.latitude": 0, "currentLocation.longitude": 0}
-        });
-    }
-    if(!Meteor.user().profile){
-        Meteor.users.update({_id: Meteor.userId()}, {
-            $set: {"profile": {name : giveMeUniqueName(Meteor.user().profile.name)}}
-        });
-    }else{
-        if (Meteor.users.find({'profile.name': Meteor.user().profile.name}).count()>1) {
-            Meteor.users.update({_id: Meteor.userId()}, {
-                $set: {"profile.name": giveMeUniqueName(Meteor.user().profile.name)}
-            });
-        };
-    }
-
     var template = this;
     //geolocation code
     var map = new GoogleMap(template.firstNode);

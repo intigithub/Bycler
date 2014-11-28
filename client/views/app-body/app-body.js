@@ -38,8 +38,19 @@ Template.appBody.rendered = function () {
         }
     };
 };
-
 Template.appBody.helpers({
+    getBackgroundStyle: function () {
+        if (Meteor.user().profile.image) {
+            return (Meteor.user().profile.image);
+        } else {
+            if (Meteor.user().profile.picture) {
+                return (Meteor.user().profile.picture);
+            }
+            else {
+                return "/imgs/navigation/foto_perfil_mdpi.png";
+            }
+        }
+    },
     // We use #each on an array of one item so that the "list" template is
     // removed and a new copy is added when changing lists, which is
     // important for animation purposes. #each looks at the _id property of it's
