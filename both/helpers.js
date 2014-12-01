@@ -43,41 +43,135 @@ giveMeUniqueName = function (nameUnique) {
         }
     }
 };
-checkForVoidFields = function () {
-    //when changes in user doc for updates reasons we check for fields and set default
-    //current format is like
-    //createdAt
-    //currentLocation
-    //emails
-    //profile.fullName*
-    //profile.country*
-    //profile.city*
-    //profile.image
-    //profile.name
-    //profile.upgraded
-    //profile.kmAccum *
-    //profile.level*
-    //stats.markersCount*
-    //stats.userRating*
-    if (!Meteor.user.currentLocation) {
-        Meteor.users.update({_id: Meteor.userId()}, {
-            $set: {"currentLocation.latitude": 0, "currentLocation.longitude": 0}
-        });
-    }
-    if (!Meteor.user().profile) {
-        Meteor.users.update({_id: Meteor.userId()}, {
-            $set: {"profile": {name: giveMeUniqueName(Meteor.user().profile.name)}}
-        });
+
+
+getLevelByKm = function () {
+    var kmAccum = Meteor.user().profile.kmAccum;
+    if (kmAccum == 0) {
+        return 1;
     } else {
-        if (Meteor.users.find({'profile.name': Meteor.user().profile.name}).count() > 1) {
-            Meteor.users.update({_id: Meteor.userId()}, {
-                $set: {"profile.name": giveMeUniqueName(Meteor.user().profile.name)}
-            });
+        if (kmAccum > 0) {
+            var level = 0.011 * Math.sqrt(kmAccum * 1000);
+            console.log(kmAccum)
+            console.log(level)
+            return level;
+        } else {
+            return 1;
         }
-        ;
     }
 }
+//when changes in user doc for updates reasons we check for fields and set default
+//current format is like
+//createdAt
+//currentLocation
+//emails
+//profile.fullName*
+//profile.country*
+//profile.city*
+//profile.image
+//profile.name
+//profile.upgraded
+//profile.kmAccum *
+//profile.level*
+//stats.markersCount*
+//stats.userRating*
 
+checkForVoidFields = function () {
+    if (!Meteor.user().isUpdatedFields) {
+        Meteor.users.update({_id: Meteor.userId()}, {
+            $set: {"isUpdatedFields": ''}
+        });
+    }
+    if (Meteor.user().isUpdatedFields != '0.0.5') {
+        //check if user have current location if not it set default
+        if (!Meteor.user().currentLocation) {
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {
+                    "currentLocation.latitude": 0,
+                    "currentLocation.longitude": 0,
+                    "currentLocation.allowViewLevel": 0
+                }
+            });
+        } else {
+            if (!Meteor.user().currentLocation.allowViewLevel)
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {
+                        "currentLocation.allowViewLevel": 0
+                    }
+                });
+        }
+        if (!Meteor.user().profile) {
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {
+                    "profile": {
+                        name: giveMeUniqueName(Meteor.user().profile.name),
+                        image: "/imgs/navigation/foto_perfil_mdpi.png",
+                        picture: "/imgs/navigation/foto_perfil_mdpi.png",
+                        fullName: '',
+                        country: '',
+                        city: '',
+                        kmAccum: 0,
+                        level: 1
+                    }
+                }
+            });
+        } else {
+            if (!Meteor.user().profile.image)
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {'profile.image': '/imgs/navigation/foto_perfil_mdpi.png'}
+                });
+            if (!Meteor.user().profile.picture)
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {'profile.picture': "/imgs/navigation/foto_perfil_mdpi.png"}
+                });
+            if (!Meteor.user().profile.fullName)
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {"profile.fullName": ''}
+                });
+            if (!Meteor.user().profile.country)
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {"profile.country": ''}
+                });
+            if (!Meteor.user().profile.city)
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {"profile.city": ''}
+                });
+            if (!Meteor.user().profile.kmAccum)
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {"profile.kmAccum": 0}
+                });
+            if (!Meteor.user().profile.level) {
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {"profile.level": 1}
+                });
+            }
+            // revisa si el nombre de usuario es unico
+            if (Meteor.users.find({'profile.name': Meteor.user().profile.name}).count() > 1) {
+                Meteor.users.update({_id: Meteor.userId()}, {
+                    $set: {"profile.name": giveMeUniqueName(Meteor.user().profile.name)}
+                });
+            }
+            ;
+        }
+        if (!Meteor.user().stats) {
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {
+                    "stats": {
+                        markersCount: 0,
+                        rating: 2.5
+                    }
+                }
+            });
+        }
+
+        Meteor.users.update({_id: Meteor.userId()}, {
+            $set: {
+                "isUpdatedFields": '0.0.5'
+            }
+        });
+
+    }
+}
 
 /*
  *	Original script by: Shafiul Azam

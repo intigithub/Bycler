@@ -1,6 +1,7 @@
 Meteor.subscribe('userStatus');
 
-var googleMapInstance, visibleMode = false, infobubbleInstance = false, MarkerEditable = false;
+var googleMapInstance, visibleMode = 0;
+var infobubbleInstance = false, MarkerEditable = false;
 
 var GoogleMap = function (element) {
     var self = this;
@@ -41,16 +42,17 @@ var GoogleMap = function (element) {
 GoogleMap.prototype.showCurrLocationMarker = function () {
     var self = this;
     var latLng = Geolocation.latLng();
-    var imgSrc = visibleMode ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
+
+    var imgSrc = visibleMode == 0 || visibleMode == 1 ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
         map: self.gmap,
         icon: new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(50, 61))
     });
-
+    // violeta azul indigo, calipso, verde, amarillo, naranjo, rojo.
     Deps.autorun(function () {
-        var imgSrc = visibleMode ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
+        var imgSrc = visibleMode == 0 || visibleMode == 1 ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
         marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(50, 61)));
 
@@ -187,14 +189,31 @@ GoogleMap.prototype.init = function () {
 }
 
 Template.googleMap.rendered = function () {
+    //always first
     checkForVoidFields();
-    if (Session.get('currentTrackId') == null) {
-        setPlayPauseStyle('play');
-    } else {
-        setPlayPauseStyle('pause');
-
-    }
+    //
     var template = this;
+
+    //fix modal bloking google map
+    var modal = template.find('#basicModal');
+    modal.style.display = 'none';
+    //
+    visibleMode = Meteor.user().currentLocation.allowViewLevel;
+    console.log(visibleMode)
+    if (visibleMode == 2) {
+        console.log('dentro')
+        $('#visibility-icon').removeClass("glyphicon-eye-open");
+        $('#visibility-icon').addClass("glyphicon-eye-close");
+    } else {
+        console.log('fuera')
+        $('#visibility-icon').removeClass("glyphicon-eye-close");
+        $('#visibility-icon').addClass("glyphicon-eye-open");
+    }
+
+    if (Session.get('currentTrackId') == null)
+        setPlayPauseStyle('play');
+    else
+        setPlayPauseStyle('pause');
     //geolocation code
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
@@ -223,45 +242,83 @@ Template.googleMap.rendered = function () {
 
     Meteor.users.find({"status.online": true}).observe({
         added: function (id) {
-            console.log('locationAdded');
-            console.log(id);
-            if (id.currentLocation && Meteor.userId() != id._id) {
-                console.log('added in if')
-                var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
-                var imgSrc = '/imgs/markers/my_bycler.png';
-                var userMarkerOnMap = new google.maps.Marker({
-                    position: latLng,
-                    id: id._id,
-                    clickable: true,
-                    map: googleMapInstance,
-                    icon: new google.maps.MarkerImage(imgSrc, null, null, null,
-                        new google.maps.Size(50, 61))
-                });
-                userMarkerOnMap.info = new google.maps.InfoWindow({
-                    content: '<div style=\'margin: 8px;\'>' +
-                    '<b>' + id.profile.name + '</b> <br> ' +
-                    '</div>'
-                });
+            if (Meteor.user().currentLocation.allowViewLevel == 0) {
+                if (id.currentLocation && Meteor.userId() != id._id) {
+                    console.log('added in ifs')
+                    var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+                    var imgSrc = '/imgs/markers/my_bycler.png';
+                    var sizeX = 50;
+                    var sizeY = 61;
+                    switch (Meteor.user().profile.level) {
+                        case 1:
+                            imgSrc = '/imgs/useronmap/1.png';
+                            sizeX = 48;
+                            sizeY = 48;
+                            break;
+                        case 2:
+                            imgSrc = '/imgs/useronmap/2.png';
+                            sizeX = 48;
+                            sizeY = 48;
+                            break;
+                        case 3:
+                            imgSrc = '/imgs/useronmap/3.png';
+                            sizeX = 48;
+                            sizeY = 48;
+                            break;
+                        case 4:
+                            imgSrc = '/imgs/useronmap/4.png';
+                            sizeX = 48;
+                            sizeY = 48;
+                            break;
+                        case 5:
+                            imgSrc = '/imgs/useronmap/5.png';
+                            sizeX = 48;
+                            sizeY = 48;
+                            break;
+                        default:
+                            break;
+                    }
 
-                google.maps.event.addListener(userMarkerOnMap, 'click', function () {
-                    userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);
-                });
-                userMarkers.push(userMarkerOnMap);
+                    var userMarkerOnMap = new google.maps.Marker({
+                        position: latLng,
+                        id: id._id,
+                        clickable: true,
+                        map: googleMapInstance,
+                        icon: new google.maps.MarkerImage(imgSrc, null, null, null,
+                            new google.maps.Size(sizeX, sizeY))
+                    });
+                    userMarkerOnMap.info = new google.maps.InfoWindow({
+                        content: '<div style=\'margin: 8px;\'>' +
+                        '<b>' + id.profile.name + '</b> <br> ' +
+                        '</div>'
+                    });
+
+                    google.maps.event.addListener(userMarkerOnMap, 'click', function () {
+                        userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);
+                    });
+                    userMarkers.push(userMarkerOnMap);
+                }
             }
+
         },
         removed: function (id) {
-            console.log('locationRemoved');
-            if (id.currentLocation && Meteor.userId() != id._id) {
-                var indexOf = findInArray(userMarkers, 'id', id._id);
-                userMarkers[indexOf].setMap(null);
+            if (Meteor.user().currentLocation.allowViewLevel == 0) {
+
+                console.log('locationRemoved');
+                if (id.currentLocation && Meteor.userId() != id._id) {
+                    var indexOf = findInArray(userMarkers, 'id', id._id);
+                    userMarkers[indexOf].setMap(null);
+                }
             }
         },
         changed: function (id) {
-            if (id.currentLocation && Meteor.userId() != id._id) {
-                console.log('locationChanged')
-                var indexOf = findInArray(userMarkers, 'id', id._id);
-                var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
-                userMarkers[indexOf].setPosition(latLng);
+            if (Meteor.user().currentLocation.allowViewLevel == 0) {
+                if (id.currentLocation && Meteor.userId() != id._id) {
+                    console.log('locationChanged')
+                    var indexOf = findInArray(userMarkers, 'id', id._id);
+                    var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+                    userMarkers[indexOf].setPosition(latLng);
+                }
             }
         }
     });
@@ -355,14 +412,21 @@ Template.googleMap.events({
     },
     'click #visibility-btn': function (event) {
         $('#visibility-btn').toggleClass("toggled");
-        if (!visibleMode) {
+        if (visibleMode == 2) {
             $('#visibility-icon').removeClass("glyphicon-eye-close");
             $('#visibility-icon').addClass("glyphicon-eye-open");
+            visibleMode = 0;
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.allowViewLevel": 0}
+            });
         } else {
             $('#visibility-icon').removeClass("glyphicon-eye-open");
             $('#visibility-icon').addClass("glyphicon-eye-close");
+            visibleMode = 2;
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.allowViewLevel": 2}
+            });
         }
-        visibleMode = !visibleMode;
     }
 });
 

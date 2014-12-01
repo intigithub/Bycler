@@ -33,7 +33,7 @@ Template.userTrackDetail.rendered = function () {
     var trackId = Session.get('trackIdInView');
     var Track = UserTrack.findOne({_id: trackId});
     //valida si se ah generado resumen de datos
-    if (true) {
+    if (!Track.isDataGenerated) {
         //busca los puntos de la ruta
         var Waypoints = GeoLog.find({trackId: Track._id});
         var prevWaypoint = null;
@@ -88,6 +88,16 @@ Template.userTrackDetail.rendered = function () {
                 }
             }
         );
+        var kmAccum = Meteor.user().profile.kmAccum;
+
+            kmAccum = kmAccum + totalDistance;
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"profile.kmAccum": kmAccum}
+            });
+        Meteor.users.update({_id: Meteor.userId()}, {
+            $set: {"profile.level": getLevelByKm()}
+        });
+
     }
 
     Track = UserTrack.findOne({_id: trackId});
@@ -155,19 +165,6 @@ function getSpeed2Points(p1, p2) {
     var speed_mps = dist / time_s;
     var speed_kph = (speed_mps * 3600.0) / 1000.0;
     return speed_kph;
-}
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(lat2 - lat1);  // deg2rad below
-    var dLon = deg2rad(lon2 - lon1);
-    var a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2)
-        ;
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
-    return d;
 }
 function distance_on_geoid(lat1, lon1, lat2, lon2) {
 

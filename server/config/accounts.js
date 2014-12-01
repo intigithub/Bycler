@@ -11,7 +11,6 @@ Meteor.startup(function () {
             options.profile.city = '';
             options.profile.kmAccum = '';
             options.profile.level = 1;
-            console.log(options)
             user.profile = options.profile;
         } else {
             var email = user.emails[0].address;
@@ -27,14 +26,17 @@ Meteor.startup(function () {
             }
             ;
         }
+        // 0 = public 1 = friends 2 = no visible
         user.currentLocation = {
             latitude: 0,
-            longitude: 0
+            longitude: 0,
+            allowViewLevel: 0
         };
         user.stats = {
             markersCount: 0,
             rating: 2.5
         };
+        user.isUpdatedFields = '0.0.5';
         return user;
     });
 

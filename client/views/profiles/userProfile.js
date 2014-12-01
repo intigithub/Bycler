@@ -24,11 +24,10 @@ if (Meteor.isClient) {
                 }
             }
         }
-
     });
+
     Template.userProfile.rendered = function () {
-        $('.selectpickercountry').selectpicker();
-        $('.selectpickercity').selectpicker();
+
     }
 
 }
