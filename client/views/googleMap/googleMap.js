@@ -165,10 +165,7 @@ GoogleMap.prototype.init = function () {
                     marker = Markers.findOne(marker._id);
 
                     if (!self.infobubble.isOpen()) {
-                        self.infobubble.setContent('<button id="btnid' + marker._id + '" class="btn btn-info"><span class="glyphicon glyphicon-info-sign"> </span> '
-                        + marker.data.nombre + '</button><br/><span id="spn-event-detail" style="margin-left: 4px;">'
-                        + (marker.data.cuando ? marker.data.cuando : 'Sin fecha') + (marker.data.hora ? ' (' + (marker.data.hora) + ')' : '')
-                        + "</span>");
+                        self.infobubble.setContent(getMarkerEventContent(marker));
                         self.infobubble.open(googleMarker.getMap(), googleMarker);
                         Session.set('SelectedMarker', marker);
                     } else {
@@ -177,13 +174,28 @@ GoogleMap.prototype.init = function () {
                     }
                 });
             } else {
-                var idMarkerInfo = "info-marker-" + marker._id
-                googleMarker.info = new google.maps.InfoWindow({
-                    content: getContentForRatingMarkerWindows(googleMarker)
-                });
+
                 google.maps.event.addListener(googleMarker, 'click', function () {
-                    googleMarker.info.open(googleMapInstance, googleMarker);
+                    var marker_ = Session.get('SelectedMarker');
+                    if (marker_ && marker_._id == marker._id) {
+                        marker = marker_;
+                    }
+                    else {
+                        self.infobubble.close();
+                    }
+
+                    marker = Markers.findOne(marker._id);
+
+                    if (!self.infobubble.isOpen()) {
+                        self.infobubble.setContent(getContentForRatingMarkerWindows(marker));
+                        self.infobubble.open(googleMarker.getMap(), googleMarker);
+                        Session.set('SelectedMarker', marker);
+                    } else {
+                        Session.set('SelectedMarker', false);
+                        self.infobubble.close();
+                    }
                 });
+
             }
             markersCounter++;
 

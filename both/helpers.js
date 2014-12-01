@@ -180,6 +180,7 @@ getMarkerEventContent = function (marcador) {
 }
 
 getContentForRatingMarkerWindows = function (marcador) {
+
     return '<span class="rating">'
         + '<input type="radio" class="rating-input"'
         + 'id="rating-input-1-5" name="rating-input-1">'
