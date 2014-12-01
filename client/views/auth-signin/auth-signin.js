@@ -20,9 +20,7 @@ Template.signin.events({
             requestPermissions: ['email']
         }, function (err) {
             if(err) {
-                console.log(err);
             } else {
-                console.log('go to map succes login facebook');
                 Router.go('/googleMap');
             }
         });

@@ -1,5 +1,4 @@
 var MarkerModalDetail = function (element) {
-    console.log('Constructor de MarkerModalDetail');
 }
 
 Template.markerModalDetail.rendered = function () {

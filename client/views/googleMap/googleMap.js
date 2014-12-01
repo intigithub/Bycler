@@ -176,14 +176,22 @@ GoogleMap.prototype.init = function () {
                         self.infobubble.close();
                     }
                 });
+            } else {
+                var idMarkerInfo = "info-marker-" + marker._id
+                googleMarker.info = new google.maps.InfoWindow({
+                    content: getContentForRatingMarkerWindows(googleMarker)
+                });
+                google.maps.event.addListener(googleMarker, 'click', function () {
+                    googleMarker.info.open(googleMapInstance, googleMarker);
+                });
             }
-
             markersCounter++;
 
         },
         update: function (marker) {
         }
-    });
+    })
+    ;
     var markerCluster = new MarkerClusterer(map, markers);
 
 }
@@ -199,13 +207,10 @@ Template.googleMap.rendered = function () {
     modal.style.display = 'none';
     //
     visibleMode = Meteor.user().currentLocation.allowViewLevel;
-    console.log(visibleMode)
     if (visibleMode == 2) {
-        console.log('dentro')
         $('#visibility-icon').removeClass("glyphicon-eye-open");
         $('#visibility-icon').addClass("glyphicon-eye-close");
     } else {
-        console.log('fuera')
         $('#visibility-icon').removeClass("glyphicon-eye-close");
         $('#visibility-icon').addClass("glyphicon-eye-open");
     }
@@ -242,9 +247,8 @@ Template.googleMap.rendered = function () {
 
     Meteor.users.find({"status.online": true}).observe({
         added: function (id) {
-            if (Meteor.user().currentLocation.allowViewLevel == 0) {
+            if (id.currentLocation.allowViewLevel == 0) {
                 if (id.currentLocation && Meteor.userId() != id._id) {
-                    console.log('added in ifs')
                     var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
                     var imgSrc = '/imgs/markers/my_bycler.png';
                     var sizeX = 50;
@@ -278,7 +282,6 @@ Template.googleMap.rendered = function () {
                         default:
                             break;
                     }
-
                     var userMarkerOnMap = new google.maps.Marker({
                         position: latLng,
                         id: id._id,
@@ -287,12 +290,12 @@ Template.googleMap.rendered = function () {
                         icon: new google.maps.MarkerImage(imgSrc, null, null, null,
                             new google.maps.Size(sizeX, sizeY))
                     });
+
                     userMarkerOnMap.info = new google.maps.InfoWindow({
-                        content: '<div style=\'margin: 8px;\'>' +
+                        content: '<div>' +
                         '<b>' + id.profile.name + '</b> <br> ' +
                         '</div>'
                     });
-
                     google.maps.event.addListener(userMarkerOnMap, 'click', function () {
                         userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);
                     });
@@ -302,9 +305,7 @@ Template.googleMap.rendered = function () {
 
         },
         removed: function (id) {
-            if (Meteor.user().currentLocation.allowViewLevel == 0) {
-
-                console.log('locationRemoved');
+            if (id.currentLocation.allowViewLevel == 0) {
                 if (id.currentLocation && Meteor.userId() != id._id) {
                     var indexOf = findInArray(userMarkers, 'id', id._id);
                     userMarkers[indexOf].setMap(null);
@@ -312,9 +313,8 @@ Template.googleMap.rendered = function () {
             }
         },
         changed: function (id) {
-            if (Meteor.user().currentLocation.allowViewLevel == 0) {
+            if (id.currentLocation.allowViewLevel == 0) {
                 if (id.currentLocation && Meteor.userId() != id._id) {
-                    console.log('locationChanged')
                     var indexOf = findInArray(userMarkers, 'id', id._id);
                     var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
                     userMarkers[indexOf].setPosition(latLng);
@@ -323,14 +323,7 @@ Template.googleMap.rendered = function () {
         }
     });
 };
-function findInArray(arraytosearch, key, valuetosearch) {
-    for (var i = 0; i < arraytosearch.length; i++) {
-        if (arraytosearch[i][key] == valuetosearch) {
-            return i;
-        }
-    }
-    return null;
-}
+
 Template.googleMap.events({
     'click #menu-toggle': function (event) {
         event.preventDefault();
@@ -368,10 +361,7 @@ Template.googleMap.events({
                 var marker = Markers.findOne(markerId);
 
                 if (infobubbleInstance && !infobubbleInstance.isOpen()) {
-                    infobubbleInstance.setContent('<button id="btnid' + marker._id + '" class="btn btn-info"><span class="glyphicon glyphicon-info-sign"> </span> '
-                    + marker.data.nombre + '</button><br/><span id="spn-event-detail" style="margin-left: 4px;">'
-                    + (marker.data.cuando ? marker.data.cuando : 'Sin fecha') + (marker.data.hora ? ' (' + (marker.data.hora) + ')' : '')
-                    + "</span>");
+                    infobubbleInstance.setContent(getMarkerEventContent(marker));
                     infobubbleInstance.setPosition(new google.maps.LatLng(marker.x, marker.y));
                     infobubbleInstance.open(map, MarkerEditable);
                     Session.set('SelectedMarker', marker);
@@ -480,7 +470,6 @@ Template.googleMap.events({
             Session.set('currentTrackId', null);
         } else {
             setPlayPauseStyle('pause');
-            console.log('Started (every few minutes there should be an update)');
             var trackId = UserTrack.insert({
                 name: moment().format("DD-MM-YYYY, h:mm:ss a"),
                 created: new Date(),

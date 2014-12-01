@@ -20,7 +20,6 @@ Template.userTrackDetail.helpers({
 Template.userTrackDetail.events({
     'change .track-name': function (evt, template) {
         var trackId = template.find(".track-name").id;
-        console.log('trackId' + trackId)
         UserTrack.update({_id: trackId}
             , {
                 $set: {
@@ -117,7 +116,6 @@ Template.userTrackDetail.rendered = function () {
     };
     var target = document.getElementById('max-speed-canvas');
     var gauge = new Gauge(target).setOptions(opts);
-    console.log('Track.maxSpeed' + Track.maxSpeed)
     gauge.animationSpeed = 32;
     gauge.setTextField(document.getElementById('max-speed'));
     gauge.maxValue = Track.maxSpeed;

@@ -52,8 +52,6 @@ getLevelByKm = function () {
     } else {
         if (kmAccum > 0) {
             var level = 0.011 * Math.sqrt(kmAccum * 1000);
-            console.log(kmAccum)
-            console.log(level)
             return level;
         } else {
             return 1;
@@ -173,6 +171,39 @@ checkForVoidFields = function () {
     }
 }
 
+getMarkerEventContent = function (marcador) {
+    return '<button id="btnid' + marcador._id
+        + '" class="btn btn-info"><span class="glyphicon glyphicon-info-sign"> </span> '
+        + marcador.data.nombre + '</button><br/><span id="spn-event-detail" style="margin-left: 4px;">'
+        + (marcador.data.cuando ? marcador.data.cuando : 'Sin fecha') + (marcador.data.hora ? ' (' + (marcador.data.hora) + ')' : '')
+        + "</span>"
+}
+
+getContentForRatingMarkerWindows = function (marcador) {
+    return '<span class="rating">'
+        + '<input type="radio" class="rating-input"'
+        + 'id="rating-input-1-5" name="rating-input-1">'
+        + '<label for="rating-input-1-5" class="rating-star"></label>'
+        + ' <input type="radio" class="rating-input"'
+        + '  id="rating-input-1-4" name="rating-input-1">'
+        + '  <label for="rating-input-1-4" class="rating-star"></label>'
+        + ' <input type="radio" class="rating-input"'
+        + ' id="rating-input-1-3" name="rating-input-1">'
+        + ' <label for="rating-input-1-3" class="rating-star"></label>'
+        + ' <input type="radio" class="rating-input"'
+        + ' id="rating-input-1-2" name="rating-input-1">'
+        + ' <label for="rating-input-1-2" class="rating-star"></label>'
+        + ' <input type="radio" class="rating-input"'
+        + ' id="rating-input-1-1" name="rating-input-1">'
+        + ' <label for="rating-input-1-1" class="rating-star"></label>'
+        + ' </span>'
+}
+findInArray = function (arraytosearch, key, valuetosearch) {
+    for (var i = 0; i < arraytosearch.length; i++)
+        if (arraytosearch[i][key] == valuetosearch)
+            return i;
+    return null;
+}
 /*
  *	Original script by: Shafiul Azam
  *	ishafiul@gmail.com

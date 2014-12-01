@@ -49,7 +49,6 @@ Template.userEventList.events({
         $('#' + btn.id).toggleClass('btn-primary btn-default');
         $('#' + btn.id + ' label').toggleClass('glyphicon-thumbs-up glyphicon-thumbs-down');
         
-        console.log('Final: ' + asistentes.substr(0, asistentes.length - (index==-1?0:1)));
     },
     'click .btn-go-event-marker': function (event) {
         event.preventDefault();

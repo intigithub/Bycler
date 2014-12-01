@@ -1126,7 +1126,6 @@ InfoBubble.prototype.updateContent_ = function() {
             that.close();
             var marker = Session.get('SelectedMarker');
             if(marker) {
-                console.log('marker.data.asistentes(' + marker._id + '): ' + marker.data.asistentes);
                 $('#eventMarker-asistentes').tagsinput('removeAll');
                 $('#eventMarker-asistentes').tagsinput('add', marker.data.asistentes);
                 $('#eventMarker-asistentes').tagsinput('refresh');

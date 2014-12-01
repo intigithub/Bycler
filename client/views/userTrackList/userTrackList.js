@@ -25,25 +25,15 @@ Template.userTrackList.helpers({
     },
     isTrackEmpty: function (trackId) {
         var points = GeoLog.find({'trackId': trackId});
-        console.log(points.count());
         if (points.count() > 1) {
-            console.log('>1');        console.log('-------------------');
 
             return false;
         } else {
             var currentTrackId =
                 Session.get('currentTrackId');
-            console.log(currentTrackId);
-            console.log(trackId);
-
-
             if (currentTrackId == trackId) {
-                console.log('== trackId');        console.log('-------------------');
-
                 return false;
             } else {
-                console.log('!!= trackId');        console.log('-------------------');
-
                 return true;
             }
         }
@@ -56,7 +46,6 @@ Template.userTrackList.events({
         event.preventDefault();
         var btn = event.currentTarget;
         var trackId = btn.id;
-        console.log(trackId)
         Session.set('selectedTrackId', trackId);
         Router.go('googleMap');
     },
