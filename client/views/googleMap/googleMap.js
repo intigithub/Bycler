@@ -174,7 +174,6 @@ GoogleMap.prototype.init = function () {
                     }
                 });
             } else {
-
                 google.maps.event.addListener(googleMarker, 'click', function () {
                     var marker_ = Session.get('SelectedMarker');
                     if (marker_ && marker_._id == marker._id) {
@@ -336,101 +335,6 @@ Template.googleMap.rendered = function () {
     });
 };
 
-Template.googleMap.events({
-    'click #menu-toggle': function (event) {
-        event.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    },
-    'click .marker-add img': function (event) {
-        $("#markers-menu-wrapper").toggleClass("toggled");
-        $('#addmarker-btn').toggleClass("toggled");
-        MarkerEditable.setIcon(new google.maps.MarkerImage(event.target.src.substr(event.target.src.indexOf('/imgs/markers/')),
-            null, null, null,
-            new google.maps.Size(48, 48)));
-        MarkerEditable.setDraggable(false);
-
-        var markerType = getTypeMarker(event.target.src);
-
-        if (markerType == 1) {
-            var markerId = Markers.insert({
-                fecha: new Date(),
-                type: markerType,
-                x: MarkerEditable.getPosition().k,
-                y: MarkerEditable.getPosition().B,
-                data: {
-                    nombre: "Nuevo Evento",
-                    cuando: moment().format('L'),
-                    donde: "Sin definir",
-                    hora: "08:30",
-                    asistentes: ""
-                }
-            });
-
-            var marker = Markers.findOne(markerId);
-            var map = MarkerEditable.getMap();
-
-            google.maps.event.addListener(MarkerEditable, 'click', function () {
-                var marker = Markers.findOne(markerId);
-
-                if (infobubbleInstance && !infobubbleInstance.isOpen()) {
-                    infobubbleInstance.setContent(getMarkerEventContent(marker));
-                    infobubbleInstance.setPosition(new google.maps.LatLng(marker.x, marker.y));
-                    infobubbleInstance.open(map, MarkerEditable);
-                    Session.set('SelectedMarker', marker);
-                } else {
-                    Session.set('SelectedMarker', false);
-                    if (infobubbleInstance) infobubbleInstance.close();
-                }
-            });
-        } else {
-            Markers.insert({
-                fecha: new Date(),
-                type: markerType,
-                x: MarkerEditable.getPosition().k,
-                y: MarkerEditable.getPosition().B
-            });
-        }
-    },
-    'click #show-current-location-btn': function (event) {
-        $('#show-current-location-btn').toggleClass("toggled");
-        if ($('#show-current-location-btn')) this.showCurrLocationMarker;
-    },
-    'click #addmarker-btn': function (event) {
-        $('#addmarker-btn').toggleClass("toggled");
-        $("#markers-menu-wrapper").toggleClass("toggled");
-        if (googleMapInstance) {
-            if ($('#addmarker-btn').hasClass('toggled')) {
-                MarkerEditable = new google.maps.Marker({
-                    position: googleMapInstance.getCenter(),
-                    draggable: true,
-                    map: googleMapInstance,
-                    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
-                        new google.maps.Size(48, 48))
-                });
-            } else {
-                MarkerEditable.setMap(null);
-            }
-        }
-    },
-    'click #visibility-btn': function (event) {
-        $('#visibility-btn').toggleClass("toggled");
-        if (visibleMode == 2) {
-            $('#visibility-icon').removeClass("glyphicon-eye-close");
-            $('#visibility-icon').addClass("glyphicon-eye-open");
-            visibleMode = 0;
-            Meteor.users.update({_id: Meteor.userId()}, {
-                $set: {"currentLocation.allowViewLevel": 0}
-            });
-        } else {
-            $('#visibility-icon').removeClass("glyphicon-eye-open");
-            $('#visibility-icon').addClass("glyphicon-eye-close");
-            visibleMode = 2;
-            Meteor.users.update({_id: Meteor.userId()}, {
-                $set: {"currentLocation.allowViewLevel": 2}
-            });
-        }
-    }
-});
 
 function getTypeMarker(imgSrc) {
     if (imgSrc.indexOf('estacionamiento') != -1) return 0;
@@ -499,6 +403,114 @@ Template.googleMap.events({
             });
             Session.set('currentTrackId', trackId);
             Router.go('userTrackList');
+        }
+    },
+
+    'click #menu-toggle': function (event) {
+        event.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    },
+    'click .marker-add img': function (event) {
+        $("#markers-menu-wrapper").toggleClass("toggled");
+        $('#addmarker-btn').toggleClass("toggled");
+        MarkerEditable.setIcon(new google.maps.MarkerImage(event.target.src.substr(event.target.src.indexOf('/imgs/markers/')),
+            null, null, null,
+            new google.maps.Size(48, 48)));
+        MarkerEditable.setDraggable(false);
+        var markerType = getTypeMarker(event.target.src);
+
+        if (markerType == 1) {
+            var markerId = Markers.insert({
+                userId: Meteor.user()._id,
+                ratingAverage: 0,
+                fecha: new Date(),
+                type: markerType,
+                x: MarkerEditable.getPosition().k,
+                y: MarkerEditable.getPosition().B,
+                data: {
+                    nombre: getTituloFromMarkerType(markerType),
+                    cuando: moment().format('L'),
+                    donde: "Sin definir",
+                    hora: "08:30",
+                    asistentes: ""
+                }
+
+            });
+
+            var marker = Markers.findOne(markerId);
+            var map = MarkerEditable.getMap();
+
+            google.maps.event.addListener(MarkerEditable, 'click', function () {
+                var marker = Markers.findOne(markerId);
+
+                if (infobubbleInstance && !infobubbleInstance.isOpen()) {
+                    infobubbleInstance.setContent(getMarkerEventContent(marker));
+                    infobubbleInstance.setPosition(new google.maps.LatLng(marker.x, marker.y));
+                    infobubbleInstance.open(map, MarkerEditable);
+                    Session.set('SelectedMarker', marker);
+                } else {
+                    Session.set('SelectedMarker', false);
+                    if (infobubbleInstance) infobubbleInstance.close();
+                }
+            });
+        } else {
+            Markers.insert({
+                fecha: new Date(),
+                type: markerType,
+                x: MarkerEditable.getPosition().k,
+                y: MarkerEditable.getPosition().B,
+                userId: Meteor.user()._id,
+                ratingAverage: 0,
+                titulo: getTituloFromMarkerType(markerType)
+            });
+            var count = Meteor.user().stats.markersCount;
+            if (count >= 0) {
+                count++
+            }
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {
+                    "stats.markersCount": count
+                }
+            });
+        }
+    },
+    'click #show-current-location-btn': function (event) {
+        $('#show-current-location-btn').toggleClass("toggled");
+        if ($('#show-current-location-btn')) this.showCurrLocationMarker;
+    },
+    'click #addmarker-btn': function (event) {
+        $('#addmarker-btn').toggleClass("toggled");
+        $("#markers-menu-wrapper").toggleClass("toggled");
+        if (googleMapInstance) {
+            if ($('#addmarker-btn').hasClass('toggled')) {
+                MarkerEditable = new google.maps.Marker({
+                    position: googleMapInstance.getCenter(),
+                    draggable: true,
+                    map: googleMapInstance,
+                    icon: new google.maps.MarkerImage('/imgs/markers/ic_map_peligro.png', null, null, null,
+                        new google.maps.Size(48, 48))
+                });
+            } else {
+                MarkerEditable.setMap(null);
+            }
+        }
+    },
+    'click #visibility-btn': function (event) {
+        $('#visibility-btn').toggleClass("toggled");
+        if (visibleMode == 2) {
+            $('#visibility-icon').removeClass("glyphicon-eye-close");
+            $('#visibility-icon').addClass("glyphicon-eye-open");
+            visibleMode = 0;
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.allowViewLevel": 0}
+            });
+        } else {
+            $('#visibility-icon').removeClass("glyphicon-eye-open");
+            $('#visibility-icon').addClass("glyphicon-eye-close");
+            visibleMode = 2;
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.allowViewLevel": 2}
+            });
         }
     }
 });

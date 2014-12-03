@@ -1,3 +1,12 @@
+UI.registerHelper("formatDate", function (datetime) {
+    if (moment) {
+        return moment(datetime).fromNow();
+    }
+    else {
+        return datetime;
+    }
+});
+
 UI.registerHelper('getFullName', function () {
     if (Meteor.user().profile.fullName)
         return Meteor.user().profile.fullName;
@@ -44,7 +53,14 @@ giveMeUniqueName = function (nameUnique) {
     }
 };
 
-
+formatDateToMomment = function (datetime) {
+    if (moment) {
+        return moment(datetime).fromNow();
+    }
+    else {
+        return datetime;
+    }
+}
 getLevelByKm = function () {
     var kmAccum = Meteor.user().profile.kmAccum;
     if (kmAccum == 0) {
@@ -170,7 +186,34 @@ checkForVoidFields = function () {
 
     }
 }
-
+getTituloFromMarkerType = function (markerType) {
+    switch (markerType) {
+        case 0:
+            return "Estacionamiento";
+            break;
+        case 1:
+            return "Nuevo Evento";
+            break;
+        case 2:
+            return "Servicentro/Aire";
+            break;
+        case 3:
+            return "Taller";
+            break;
+        case 4:
+            return "Tienda";
+            break;
+        case 5:
+            return "Robo!";
+            break;
+        case 6:
+            return "Bicicletas Compartidas";
+            break;
+        default:
+            return "Marker";
+            break;
+    }
+}
 getMarkerEventContent = function (marcador) {
     return '<button id="btnid' + marcador._id
         + '" class="btn btn-info"><span class="glyphicon glyphicon-info-sign"> </span> '
@@ -180,25 +223,63 @@ getMarkerEventContent = function (marcador) {
 }
 
 getContentForRatingMarkerWindows = function (marcador) {
+    var titulo = "";
+    var creador = "";
+    var fecha = formatDateToMomment(marcador.fecha);
 
-    return '<span class="rating">'
-        + '<input type="radio" class="rating-input"'
-        + 'id="rating-input-1-5" name="rating-input-1">'
-        + '<label for="rating-input-1-5" class="rating-star"></label>'
-        + ' <input type="radio" class="rating-input"'
-        + '  id="rating-input-1-4" name="rating-input-1">'
-        + '  <label for="rating-input-1-4" class="rating-star"></label>'
-        + ' <input type="radio" class="rating-input"'
-        + ' id="rating-input-1-3" name="rating-input-1">'
-        + ' <label for="rating-input-1-3" class="rating-star"></label>'
-        + ' <input type="radio" class="rating-input"'
-        + ' id="rating-input-1-2" name="rating-input-1">'
-        + ' <label for="rating-input-1-2" class="rating-star"></label>'
-        + ' <input type="radio" class="rating-input"'
-        + ' id="rating-input-1-1" name="rating-input-1">'
-        + ' <label for="rating-input-1-1" class="rating-star"></label>'
-        + ' </span>'
+    var valoracionPersonal = 0;
+    var valoracionPromedio = 0;
+    debugger
+
+    //se obtiene el titulo del marcador y si no tiene lo coloca por defecto y actualiza
+    if (!marcador.titulo) {
+        titulo = getTituloFromMarkerType(marcador.type);
+        Markers.update({_id: marcador._id}, {
+            $set: {
+                "titulo": titulo
+            }
+        });
+    } else {
+        titulo = marcador.titulo
+        Markers.update({_id: marcador._id}, {
+            $set: {
+                "titulo": titulo
+            }
+        });
+    }
+    // se obtiene el creador del marcador
+    if (!marcador.userId) {
+        creador = "Bycler"
+    } else {
+        creador = Meteor.users.findOne({_id: marcador.userId}).profile.name;
+    }
+
+    //buscamos el rating del usuario si ya ha rankeado el marcador
+    var markerRating = MarkerRating.findOne({markerId: marcador._id, userId: Meteor.user()._id});
+    console.log(markerRating)
+    if (!markerRating) {
+        valoracionPersonal = 0;
+    } else {
+        valoracionPersonal = markerRating.rating;
+    }
+
+    valoracionPromedio = marcador.rating;
+    if (!marcador.ratingAverage) {
+        valoracionPromedio = 0;
+    } else {
+        valoracionPromedio = marcador.ratingAverage;
+    }
+    return '<div style="min-width:120px;min-height:48px;margin:4px;padding-top:6px;">'
+        + '<h5 style="">' + titulo + '</h5>'
+        + '<div class="rateit">  </div>'
+        + '<h6 style="">Valoracion Total: ' + valoracionPromedio + '</h6>'
+        + '<h6 style="">Valoracion Personal: ' + valoracionPersonal + '</h6>'
+        + '<a href="/userProfile" ><h6 style="color:orange">Creador: ' + creador + '</h6></a>'
+        + '<h6 style="">' + fecha + '</h6>'
+        + '</div>'
+
 }
+
 findInArray = function (arraytosearch, key, valuetosearch) {
     for (var i = 0; i < arraytosearch.length; i++)
         if (arraytosearch[i][key] == valuetosearch)

@@ -60,11 +60,3 @@ Template.userEventList.events({
     }
 });
 
-UI.registerHelper("formatDate", function (datetime) {
-    if (moment) {
-        return moment(datetime).fromNow();
-    }
-    else {
-        return datetime;
-    }
-});

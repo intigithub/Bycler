@@ -1132,10 +1132,48 @@ InfoBubble.prototype.updateContent_ = function () {
             });
         }
         else {
-            console.log('marker no event')
+            var buttons = this.content_.getElementsByClassName('rateit');
+            buttons[0].addEventListener('click', function () {
+                console.log('akiiieeee')
+                var val = $('.rateit').rateit('value')
+                var markerRating = MarkerRating.findOne({markerId: marker._id, userId: Meteor.user()._id});
+                console.log(markerRating)
+                debugger
+                if (!markerRating) {//add
+                    MarkerRating.insert({
+                        markerId: marker._id,
+                        userId: Meteor.userId(),
+                        created: new Date(),
+                        modified: new Date(),
+                        rating: val
+                    });
+                } else {//update
+                    MarkerRating.update({_id: markerRating._id}, {
+                        $set: {
+                            modified: new Date(),
+                            rating: val
+                        }
+                    });
+                    var usersRatings = MarkerRating.find({'markerId': marker._id});
+                    var nuevoPromedio = 0;
+                    usersRatings.forEach(function (r) {
+                        if (r.rating)
+                            nuevoPromedio = nuevoPromedio + r.rating;
+                    });
+                    nuevoPromedio = nuevoPromedio / usersRatings.count();
+
+                    Markers.update({_id: marker._id}, {
+                        $set: {
+                            ratingAverage: nuevoPromedio
+                        }
+                    });
+                }
+            });
         }
     }
     this.redraw_();
+    $('.rateit').rateit();
+
 };
 
 /**
@@ -1407,6 +1445,7 @@ InfoBubble.prototype.positionCloseButton_ = function () {
 };
 
 Template.infobubble.rendered = function () {
+
 }
 
 Template.infobubble.events({});

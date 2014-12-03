@@ -150,12 +150,6 @@ function deg2rad(deg) {
     return deg * (Math.PI / 180)
 }
 
-UI.registerHelper("formatDate", function (datetime) {
-    if (moment)
-        return moment(datetime).fromNow();
-    else
-        return datetime;
-});
 
 function getSpeed2Points(p1, p2) {
     var dist = distance_on_geoid(p1.latitude, p1.longitude, p2.latitude, p2.longitude);
