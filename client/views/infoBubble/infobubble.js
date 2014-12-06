@@ -1138,7 +1138,6 @@ InfoBubble.prototype.updateContent_ = function () {
                 var val = $('.rateit').rateit('value')
                 var markerRating = MarkerRating.findOne({markerId: marker._id, userId: Meteor.user()._id});
                 console.log(markerRating)
-                debugger
                 if (!markerRating) {//add
                     MarkerRating.insert({
                         markerId: marker._id,
@@ -1167,7 +1166,10 @@ InfoBubble.prototype.updateContent_ = function () {
                             ratingAverage: nuevoPromedio
                         }
                     });
+                    $('#markerRatingCount').text(usersRatings);
                 }
+                $('#valoracionPromedio').text(nuevoPromedio);
+                $('#valoracionPersonal').text(val);
             });
         }
     }

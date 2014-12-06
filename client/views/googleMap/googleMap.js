@@ -301,11 +301,12 @@ Template.googleMap.rendered = function () {
                         icon: new google.maps.MarkerImage(imgSrc, null, null, null,
                             new google.maps.Size(sizeX, sizeY))
                     });
-
+                    console.log(id._id);
                     userMarkerOnMap.info = new google.maps.InfoWindow({
-                        content: '<div>' +
-                        '<b>' + id.profile.name + '</b> <br> ' +
-                        '</div>'
+                        content: '<div>'
+                        + '<span> Nivel: ' + (id.profile.level).toFixed(0) + '</span>'
+                        + '<a href=/userProfile/"' + id._id + '">' + id.profile.name + ' </a>'
+                        + '</div>'
                     });
                     google.maps.event.addListener(userMarkerOnMap, 'click', function () {
                         userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);

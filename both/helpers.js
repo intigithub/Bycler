@@ -6,7 +6,18 @@ UI.registerHelper("formatDate", function (datetime) {
         return datetime;
     }
 });
-
+UI.registerHelper("getCountryId", function (datetime) {
+    if (Meteor.user().profile.country)
+        return Meteor.user().profile.country;
+    else
+        return 0;
+});
+UI.registerHelper("getCityId", function (datetime) {
+    if (Meteor.user().profile.city)
+        return Meteor.user().profile.city;
+    else
+        return 0;
+});
 UI.registerHelper('getFullName', function () {
     if (Meteor.user().profile.fullName)
         return Meteor.user().profile.fullName;
@@ -23,7 +34,7 @@ UI.registerHelper('getName', function () {
 });
 UI.registerHelper('getLevel', function () {
     var userLevel = Meteor.user().profile.level;
-    return userLevel;
+    return userLevel.toFixed(0);
 });
 UI.registerHelper('getKmAccum', function () {
     var kmaccum = Meteor.user().profile.kmAccum;
@@ -35,7 +46,7 @@ UI.registerHelper('getMarkersCount', function () {
 });
 UI.registerHelper('getUserRating', function () {
     var userRating = Meteor.user().stats.rating;
-    return userRating;
+    return userRating.toFixed(1);
 });
 giveMeUniqueName = function (nameUnique) {
     if (Meteor.users.find({'profile.name': nameUnique}).count() == 0) {
@@ -229,7 +240,6 @@ getContentForRatingMarkerWindows = function (marcador) {
 
     var valoracionPersonal = 0;
     var valoracionPromedio = 0;
-    debugger
 
     //se obtiene el titulo del marcador y si no tiene lo coloca por defecto y actualiza
     if (!marcador.titulo) {
@@ -253,7 +263,7 @@ getContentForRatingMarkerWindows = function (marcador) {
     } else {
         creador = Meteor.users.findOne({_id: marcador.userId}).profile.name;
     }
-
+    var markerRatingCount = MarkerRating.find({markerId: marcador._id}).count();
     //buscamos el rating del usuario si ya ha rankeado el marcador
     var markerRating = MarkerRating.findOne({markerId: marcador._id, userId: Meteor.user()._id});
     console.log(markerRating)
@@ -269,13 +279,27 @@ getContentForRatingMarkerWindows = function (marcador) {
     } else {
         valoracionPromedio = marcador.ratingAverage;
     }
+    if (!markerRatingCount)
+        markerRatingCount = 0;
+    else {
+        if (markerRatingCount > 1) {
+        }
+        else
+            markerRatingCount = 1
+    }
+    var creadorProfileId = 0;
+
+    creadorProfileId = Meteor.users.findOne({_id: marcador.userId})._id;
+    console.log(Meteor.users.findOne({_id: marcador.userId})._id);
     return '<div style="min-width:120px;min-height:48px;margin:4px;padding-top:6px;">'
         + '<h5 style="">' + titulo + '</h5>'
-        + '<div class="rateit">  </div>'
-        + '<h6 style="">Valoracion Total: ' + valoracionPromedio + '</h6>'
-        + '<h6 style="">Valoracion Personal: ' + valoracionPersonal + '</h6>'
-        + '<a href="/userProfile" ><h6 style="color:orange">Creador: ' + creador + '</h6></a>'
-        + '<h6 style="">' + fecha + '</h6>'
+        + '<input type="range" min="0" max="5" value="' + valoracionPromedio.toFixed(1) + '" step="0.5" id="backing2">'
+        + '<div class="rateit" data-rateit-backingfld="#backing2"></div>   '
+        + '<br><span>Calificacion <span id="valoracionPromedio">' + valoracionPromedio.toFixed(1) + '</span></span>'
+        + '<br><span> Valoraciones: <span id="markerRatingCount">' + markerRatingCount + '</span></span>'
+        + '<br><span>Mi Valoracion: <span id="valoracionPersonal">' + valoracionPersonal.toFixed(1) + '</span></span>'
+        + '<br><span>' + fecha + '</span>'
+        + '<br><a href="/userProfile/' + creadorProfileId + '" ><span style="color:orange">Creador: ' + creador + '</span></a>'
         + '</div>'
 
 }
@@ -586,6 +610,7 @@ print_state = function (state_id, state_index) {
     option_str.options[0] = new Option('Select State', '');
     option_str.selectedIndex = 0;
     var state_arr = s_a[state_index].split("|");
+
     for (var i = 0; i < state_arr.length; i++) {
         option_str.options[option_str.length] = new Option(state_arr[i], state_arr[i]);
     }

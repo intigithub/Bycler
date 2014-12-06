@@ -39,6 +39,9 @@ Template.appBody.rendered = function () {
     };
 };
 Template.appBody.helpers({
+    getUserId: function () {
+      return Meteor.user()._id;
+    },
     getBackgroundStyle: function () {
         if (Meteor.user().profile.image) {
             return (Meteor.user().profile.image);

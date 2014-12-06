@@ -27,6 +27,7 @@ if (Meteor.isClient) {
     });
 
     Template.userProfile.rendered = function () {
+        $('.rateit-profile').rateit();
 
     }
 

@@ -14,4 +14,7 @@ if(Meteor.isServer) {
     Meteor.publish("markersRatings", function() {
         return MarkerRating.find({});
     });
+    Meteor.publish("users", function() {
+        return Meteor.users.find({});
+    });
 }

@@ -1,4 +1,4 @@
-<template name="userProfile">
+<template name="externalUserProfile">
     <nav>
         <div class="nav-group">
             <a href="#" class="js-menu nav-item">
@@ -15,15 +15,14 @@
                 <div class="col-sm-12 col-md-12 user-details">
                     <div class="user-image">
                         <img src="{{getBackgroundStyle}}" class="img-circle">
-                        {{> editYourAvatarModal}}
                     </div>
                     <div class="user-info-block">
                         <div class="user-heading">
-                            <h3>{{getFullName}}</h3>
+                            <h3>{{getFullName _id}}</h3>
                             <span class="help-block">{{getFullCountryCity}}</span>
                             <select onchange="print_state('state',this.selectedIndex);" id="country" name ="country" class="selectpickercountry"></select>
                             <br />
-                            <select name ="state" id ="state" class="selectpickercity"></select>
+                            <select name ="state" id ="state" class="selectpickercity" aria-label="11"></select>
                             <script language="javascript">print_country("country");</script>
                         </div>
                         <div class="user-body">

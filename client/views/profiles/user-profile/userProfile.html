@@ -1,0 +1,77 @@
+<template name="userProfile">
+    <nav>
+        <div class="nav-group">
+            <a href="#" class="js-menu nav-item">
+                <span class="glyphicon glyphicon-home" id="menu-icon-list"></span>
+            </a>
+        </div>
+    </nav>
+    <div class="nav-title-center">
+        <h3>Mi perfil</h3>
+    </div>
+    <div class="content-scrollable list-items list-container">
+        <div class="content-profile">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 user-details">
+                    <div class="user-image">
+                        <img src="{{getBackgroundStyle}}" class="img-circle">
+                        {{> editYourAvatarModal}}
+                    </div>
+                    <div class="user-info-block">
+                        <div class="user-heading">
+                            <h3>{{getFullName}}</h3>
+
+                            <div class="rateit-profile" data-rateit-value="{{getUserRating}}"
+                                 data-rateit-ispreset="true" data-rateit-readonly="true"></div>
+                            <br/>
+                            <select onchange="print_state('state',this.selectedIndex);" style="max-width: 55%;"
+                                    id="country" name="country"
+                                    class="selectpickercountry"></select>
+                            <br/>
+                            <select name="state" id="state" class="selectpickercity"
+                                    style="max-width: 40%; margin-top: 8px"></select>
+                            <script language="javascript">
+                                print_country("country", {{getCountryId}});
+                                print_state('state',{{getCityId}});
+                            </script>
+                        </div>
+                        <div class="user-body">
+                            <div class="tab-content">
+                                <div id="information" class="tab-pane active">
+                                    <div class="row">
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-addon user-ancho">User Name</span>
+                                            <input type="text" class="form-control" placeholder="Username"
+                                                   value="{{getName}}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-addon">Nivel</span>
+                                            <input type="text" class="form-control" placeholder="Username"
+                                                   value="{{getLevel}}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-addon">Km Acumulados</span>
+                                            <input type="text" class="form-control" placeholder="Username"
+                                                   value="{{getKmAccum}}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-addon">Contador de marcadores</span>
+                                            <input type="text" class="form-control" placeholder="Username"
+                                                   value="{{getMarkersCount}}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
