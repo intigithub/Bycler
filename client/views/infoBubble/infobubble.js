@@ -1166,7 +1166,7 @@ InfoBubble.prototype.updateContent_ = function () {
                             ratingAverage: nuevoPromedio
                         }
                     });
-                    $('#markerRatingCount').text(usersRatings);
+                    $('#markerRatingCount').text(usersRatings.count());
                 }
                 $('#valoracionPromedio').text(nuevoPromedio);
                 $('#valoracionPersonal').text(val);

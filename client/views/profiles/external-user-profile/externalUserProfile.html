@@ -1,4 +1,4 @@
-<template name="userProfile">
+<template name="externalUserProfile">
     <nav>
         <div class="nav-group">
             <a href="#" class="js-menu nav-item">
@@ -13,14 +13,13 @@
         <div class="content-profile">
             <div class="row">
                 <div class="col-sm-12 col-md-12 user-details">
-                    <div class="user-image">
-                        <img src="{{getBackgroundStyle}}" class="img-circle">
-                        {{> editYourAvatarModal}}
-                    </div>
-                    <div class="user-info-block">
-                        <div class="user-heading">
-                            <h3>{{getFullName}}</h3>
-                            <div class="rateit-profile" data-rateit-value="{{getUserRating}}"
+
+                    <div class="user-info-block" style="padding-top: 8px;margin: 0px 0 0;">
+                        <div class="circular"
+                             style="background: url('{{getBackgroundStyleForOthers _id}}') no-repeat;  background-size: 120px;"></div>
+                        <div class="user-heading" style="margin-top:24px;">
+                            <h3>{{getFullNameForOthers _id}}</h3>
+                            <div class="rateit-profile-other" data-rateit-value="{{stats.rating}}"
                                  data-rateit-ispreset="true" data-rateit-readonly="true"></div>
                             <br/>
                         </div>
@@ -31,28 +30,28 @@
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon user-ancho">User Name</span>
                                             <input type="text" class="form-control" placeholder="User Name"
-                                                   value="{{getName}}">
+                                                   value="{{profile.name}}" disabled="true">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon">Nivel</span>
                                             <input type="text" class="form-control" placeholder="Nivel"
-                                                   value="{{getLevel}}">
+                                                   value="{{getLevelForOthers profile.level}}" disabled="true">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon">Km Acumulados</span>
                                             <input type="text" class="form-control" placeholder="Km Acumulados"
-                                                   value="{{getKmAccum}}">
+                                                   value="{{getKmAccumOther profile.kmAccum}}" disabled="true">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon">Marcadores</span>
                                             <input type="text" class="form-control" placeholder="Marcadores"
-                                                   value="{{getMarkersCount}}">
+                                                   value="{{stats.markersCount}}" disabled="true">
                                         </div>
                                     </div>
                                 </div>

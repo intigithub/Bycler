@@ -1,6 +1,6 @@
 .still-in-track {
-    -animation: spin .1s infinite linear;
-    -webkit-animation: spin2 .1s infinite linear;
+    -animation: spin .9s infinite linear;
+    -webkit-animation: spin2 .9s infinite linear;
 }
 
 @-webkit-keyframes spin2 {

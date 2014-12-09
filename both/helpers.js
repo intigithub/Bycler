@@ -37,8 +37,11 @@ UI.registerHelper('getLevel', function () {
     return userLevel.toFixed(0);
 });
 UI.registerHelper('getKmAccum', function () {
-    var kmaccum = Meteor.user().profile.kmAccum;
-    return kmaccum;
+    var kmAccum = Meteor.user().profile.kmAccum;
+    if (kmAccum == "") {
+        return 0;
+    }
+    return kmAccum;
 });
 UI.registerHelper('getMarkersCount', function () {
     var markersCount = Meteor.user().stats.markersCount;
@@ -288,22 +291,35 @@ getContentForRatingMarkerWindows = function (marcador) {
             markerRatingCount = 1
     }
     var creadorProfileId = 0;
+    if (marcador.userId) {
+        creadorProfileId = Meteor.users.findOne({_id: marcador.userId})._id;
+    }
 
-    creadorProfileId = Meteor.users.findOne({_id: marcador.userId})._id;
-    console.log(Meteor.users.findOne({_id: marcador.userId})._id);
-    return '<div style="min-width:120px;min-height:48px;margin:4px;padding-top:6px;">'
+    var content = '<div style="min-width:120px;min-height:48px;margin:4px;padding-top:6px;">'
         + '<h5 style="">' + titulo + '</h5>'
         + '<input type="range" min="0" max="5" value="' + valoracionPromedio.toFixed(1) + '" step="0.5" id="backing2">'
         + '<div class="rateit" data-rateit-backingfld="#backing2"></div>   '
         + '<br><span>Calificacion <span id="valoracionPromedio">' + valoracionPromedio.toFixed(1) + '</span></span>'
         + '<br><span> Valoraciones: <span id="markerRatingCount">' + markerRatingCount + '</span></span>'
         + '<br><span>Mi Valoracion: <span id="valoracionPersonal">' + valoracionPersonal.toFixed(1) + '</span></span>'
-        + '<br><span>' + fecha + '</span>'
-        + '<br><a href="/userProfile/' + creadorProfileId + '" ><span style="color:orange">Creador: ' + creador + '</span></a>'
-        + '</div>'
+        + '<br><span>' + fecha + '</span>';
+    if (creadorProfileId != 0) {
+        if (creadorProfileId == Meteor.user()._id)
+            content = content + '<br><a href="/userProfile/' + creadorProfileId + '" ><span style="color:orange">Creador: Yo</span></a>'
+        else {
+            content = content + '<br><a href="/externalUserProfile/' + creadorProfileId + '" ><span style="color:orange">Creador: ' + creador + '</span></a>'
+        }
+    }
+    else {
+        content = content + '<br><span style="color:orange">Creador: Bycler</span>'
+
+    }
+    content = content + '</div>'
+
+    return content;
+
 
 }
-
 findInArray = function (arraytosearch, key, valuetosearch) {
     for (var i = 0; i < arraytosearch.length; i++)
         if (arraytosearch[i][key] == valuetosearch)

@@ -301,11 +301,11 @@ Template.googleMap.rendered = function () {
                         icon: new google.maps.MarkerImage(imgSrc, null, null, null,
                             new google.maps.Size(sizeX, sizeY))
                     });
-                    console.log(id._id);
+
                     userMarkerOnMap.info = new google.maps.InfoWindow({
-                        content: '<div>'
-                        + '<span> Nivel: ' + (id.profile.level).toFixed(0) + '</span>'
-                        + '<a href=/userProfile/"' + id._id + '">' + id.profile.name + ' </a>'
+                        content: '<div style="height:32px">'
+                        + '<b><span style="color:orange"> Nivel: ' + (id.profile.level).toFixed(0) + ' - </span></b>'
+                        + '<a  href="/userProfile/' + id._id + '">' + '<b> Bycler: ' + id.profile.name + ' </b></a>'
                         + '</div>'
                     });
                     google.maps.event.addListener(userMarkerOnMap, 'click', function () {

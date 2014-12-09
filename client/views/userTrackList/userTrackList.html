@@ -20,8 +20,14 @@
                         {{/if}}</h6>
                     </div>
                     <div class="col-xs-4" style="margin-top: 0.7em;">
-                        <input type="image" width="32" src="list/ver_ruta_seleccion.png"
-                               class="list-view-item-img view-track-btn" id="{{_id}}"/>
+                        {{#if isTrackStillAlive _id}}
+                            <input type="image" width="32" src="list/ver_ruta_seleccion.png"
+                                   class="list-view-item-img view-track-btn still-in-track" id="{{_id}}"/>
+                        {{else}}
+                            <input type="image" width="32" src="list/ver_ruta_seleccion.png"
+                                   class="list-view-item-img view-track-btn" id="{{_id}}"/>
+                        {{/if}}
+
                         <input type="image" width="32" src="list/no_seleccion.png"
                                class="list-delete-item-img delete-track-btn" id="{{_id}}"/>
                         <a type="button" class="detail-track-btn"
@@ -29,13 +35,10 @@
                             <input type="image" width="32" src="list/ver_info_seleccion.png"
                                    class="list-detail-item-img detail-track-btn" id="{{_id}}"/>
                         </a>
-                        {{#if isTrackStillAlive _id}}
-                            <input type="image" width="32" class="still-in-track" src="list/rueda.png">
-                        {{/if}}
+
 
                     </div>
                 </div>
-                <hr>
             {{/each}}
         {{else}}
             <div class="alert alert-danger" role="alert" style="margin-top: 4px;">
