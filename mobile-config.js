@@ -8,7 +8,7 @@ App.info({
     author: 'Bycler',
     email: 'info@bycler.com',
     website: 'http://www.bycler.com',
-    version: '0.0.4'
+    version: '0.0.5'
 });
 
 App.icons({
