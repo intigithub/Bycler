@@ -1,6 +1,6 @@
-GeoLog = new Mongo.Collection('geo_log');
+GeoLogs = new Mongo.Collection('geo_log');
 
-GeoLog.allow({
+GeoLogs.allow({
     insert: function () {
         return true;
     }, update: function () {

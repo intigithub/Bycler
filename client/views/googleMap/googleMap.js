@@ -1,6 +1,6 @@
 Meteor.subscribe('userStatus');
 
-var googleMapInstance, visibleMode = 0;
+var googleMapInstance;
 var infobubbleInstance = false, MarkerEditable = false;
 
 var GoogleMap = function (element) {
@@ -18,7 +18,7 @@ var GoogleMap = function (element) {
 
     var latLng = Geolocation.latLng();
     var selectedMarker = Session.get('SelectedMarker');
-    var initialPosition = new google.maps.LatLng(-36.832383, -73.055458);
+    var initialPosition = new google.maps.LatLng(-33.459312, -70.647526);
     if (selectedMarker) {
         initialPosition = new google.maps.LatLng(selectedMarker.x, selectedMarker.y);
         Session.set('SelectedMarker', false);
@@ -30,7 +30,7 @@ var GoogleMap = function (element) {
     var mapOptions = {
         center: initialPosition,
         disableDefaultUI: true,
-        zoom: (selectedMarker ? 19 : 15)
+        zoom: (selectedMarker ? 19 : 12)
     };
     self.gmap = new google.maps.Map(element, mapOptions);
 
@@ -39,11 +39,11 @@ var GoogleMap = function (element) {
     self.infobubble.modalDetail = $('#basicModal');
 };
 
-GoogleMap.prototype.showCurrLocationMarker = function () {
+/*GoogleMap.prototype.showCurrLocationMarker = function () {
     var self = this;
     var latLng = Geolocation.latLng();
-
-    var imgSrc = visibleMode == 0 || visibleMode == 1 ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
+    var visibleMode = Meteor.user().currentLocation?Meteor.user().currentLocation.allowViewLevel:-1;
+    var imgSrc = visibleMode == 0 || visibleMode == 1 ? '/imgs/markers/my_bycler_invi.png' : '/imgs/markers/my_bycler.png';
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(latLng ? latLng.lat : 0, latLng ? latLng.lng : 0),
         map: self.gmap,
@@ -52,7 +52,8 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
     });
     // violeta azul indigo, calipso, verde, amarillo, naranjo, rojo.
     Deps.autorun(function () {
-        var imgSrc = visibleMode == 0 || visibleMode == 1 ? '/imgs/markers/my_bycler.png' : '/imgs/markers/my_bycler_invi.png';
+        var visibleMode = Meteor.user().currentLocation?Meteor.user().currentLocation.allowViewLevel:-1;
+        var imgSrc = visibleMode == 0 || visibleMode == 1 ? '/imgs/markers/my_bycler_invi.png' : '/imgs/markers/my_bycler.png';
         marker.setIcon(new google.maps.MarkerImage(imgSrc, null, null, null,
             new google.maps.Size(50, 61)));
 
@@ -67,7 +68,7 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
 
             var currentTrackId = Session.get('currentTrackId');
             if (currentTrackId != null) {
-                var id = GeoLog.insert({
+                var id = GeoLogs.insert({
                     created: new Date(),
                     userId: Meteor.userId(),
                     trackId: currentTrackId,
@@ -76,12 +77,13 @@ GoogleMap.prototype.showCurrLocationMarker = function () {
                     speed: 0
                 });
             }
+            
             Meteor.users.update({_id: Meteor.userId()}, {
                 $set: {"currentLocation.latitude": latLngNew.lat, "currentLocation.longitude": latLngNew.lng}
             });
         }
     });
-};
+};*/
 
 GoogleMap.prototype.getCenter = function () {
     return Geolocation.latLng();
@@ -99,9 +101,9 @@ GoogleMap.prototype.startAnimation = function () {
     var path = new google.maps.MVCArray;
 
     var trackId = Session.get('selectedTrackId');
-    var topPosts = GeoLog.find({'trackId': trackId});
-    topPosts.forEach(function (post) {
-        path.push(new google.maps.LatLng(post.location.latitude, post.location.longitude));
+    var geoLogs = GeoLogs.find({'trackId': trackId});
+    geoLogs.forEach(function (geolog) {
+        path.push(new google.maps.LatLng(geolog.location.latitude, geolog.location.longitude));
     });
 
     var line = new google.maps.Polyline({
@@ -114,7 +116,6 @@ GoogleMap.prototype.startAnimation = function () {
         ],
         map: self.gmap
     });
-
 }
 
 // Funcion para cargar los estilos
@@ -136,11 +137,44 @@ GoogleMap.prototype.init = function () {
 
     var map = googleMapInstance;
     var markers = [];
+    
+    // Autorun para la actualizacion de la geo-localizacion de usuario
+    Deps.autorun(function () {
+        var latLngNew = Geolocation.latLng();
+        if(latLngNew) {
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.latitude": latLngNew.lat, "currentLocation.longitude": latLngNew.lng}
+            });
+        }
+    });
+    
+    // Autorun para el trackeo de las rutas
+    Deps.autorun(function () {
+        var trackId = Session.get('currentTrackId');
+        if(trackId) {
+            this.startAnimation();
+        }
+    });
+    
 
-    //-----------------------
-
+    // Dibuja los marcadores reactivamente
     Markers.find({}).observe({
         added: function (marker) {
+            // Aquellos marker de tipo 'Evento' (marker.type==1) que estén caducados, deberán ser eliminados
+            if (marker.type == 1) {  // 1 = Evento
+                var parts = marker.data.cuando.split("/");
+                var dt = new Date(parseInt(parts[2], 10) + 2000,
+                                    parseInt(parts[1], 10) - 1,
+                                    parseInt(parts[0], 10));
+
+                dt = dt.setDate( dt.getDate() + 1);
+                
+                if(dt < new Date()) {
+                    Markers.update({ _id: marker._id }, { $set: { deleted: true } });
+                    return;
+                }
+            }
+            
             // @TODO Improve the filter (radio, markerfilter)
             var googleMarker = new google.maps.Marker({
                 position: new google.maps.LatLng(marker.x, marker.y),
@@ -151,6 +185,7 @@ GoogleMap.prototype.init = function () {
 
             self.markers[markersCounter] = googleMarker;
             markers.push(googleMarker);
+            markersCounter++;
 
             if (marker.type == 1) {  // 1 = Evento
                 google.maps.event.addListener(googleMarker, 'click', function () {
@@ -194,17 +229,13 @@ GoogleMap.prototype.init = function () {
                         self.infobubble.close();
                     }
                 });
-
             }
-            markersCounter++;
-
         },
         update: function (marker) {
         }
-    })
-    ;
-    var markerCluster = new MarkerClusterer(map, markers);
+    });
 
+    var markerCluster = new MarkerClusterer(map, markers);
 }
 
 Template.googleMap.rendered = function () {
@@ -219,11 +250,13 @@ Template.googleMap.rendered = function () {
     //
     visibleMode = Meteor.user().currentLocation.allowViewLevel;
     if (visibleMode == 2) {
-        $('#visibility-icon').removeClass("glyphicon-eye-open");
-        $('#visibility-icon').addClass("glyphicon-eye-close");
-    } else {
         $('#visibility-icon').removeClass("glyphicon-eye-close");
         $('#visibility-icon').addClass("glyphicon-eye-open");
+        $('#visibility-icon').removeClass('toggled');
+    } else {
+        $('#visibility-icon').removeClass("glyphicon-eye-open");
+        $('#visibility-icon').addClass("glyphicon-eye-close");
+        $('#visibility-icon').addClass('toggled');
     }
 
     if (Session.get('currentTrackId') == null)
@@ -234,7 +267,7 @@ Template.googleMap.rendered = function () {
     var map = new GoogleMap(template.firstNode);
     var options = template.data;
 
-    map.showCurrLocationMarker();
+    //map.showCurrLocationMarker();
 
     var DateTime = new Date();
     var strHours = DateTime.getHours();
@@ -257,79 +290,74 @@ Template.googleMap.rendered = function () {
     var userMarkers = [];
 
     Meteor.users.find({"status.online": true}).observe({
-        added: function (id) {
-            if (id.currentLocation.allowViewLevel == 0) {
-                if (id.currentLocation && Meteor.userId() != id._id) {
-                    var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
-                    var imgSrc = '/imgs/markers/my_bycler.png';
-                    var sizeX = 50;
-                    var sizeY = 61;
-                    switch (Meteor.user().profile.level) {
-                        case 1:
-                            imgSrc = '/imgs/useronmap/1.png';
-                            sizeX = 48;
-                            sizeY = 48;
-                            break;
-                        case 2:
-                            imgSrc = '/imgs/useronmap/2.png';
-                            sizeX = 48;
-                            sizeY = 48;
-                            break;
-                        case 3:
-                            imgSrc = '/imgs/useronmap/3.png';
-                            sizeX = 48;
-                            sizeY = 48;
-                            break;
-                        case 4:
-                            imgSrc = '/imgs/useronmap/4.png';
-                            sizeX = 48;
-                            sizeY = 48;
-                            break;
-                        case 5:
-                            imgSrc = '/imgs/useronmap/5.png';
-                            sizeX = 48;
-                            sizeY = 48;
-                            break;
-                        default:
-                            break;
-                    }
+        added: function (bycler) {
+            if (bycler.currentLocation.allowViewLevel == 2 || Meteor.user()._id==bycler._id ) {
+                if (bycler.currentLocation) {
+                    var latLng = new google.maps.LatLng(bycler.currentLocation.latitude, bycler.currentLocation.longitude)
+
+                    var byclerImage = (bycler._id!=Meteor.user()._id) 
+                                        ? '/imgs/useronmap/' + (Meteor.user().profile.level?Meteor.user().profile.level:1) + '.png' 
+                                        : '/imgs/markers/my_bycler' + (bycler.currentLocation.allowViewLevel==2?'':'_invi') + '.png';
+                    var xSize = (bycler._id!=Meteor.user()._id)?48:50;
+                    var ySize = (bycler._id!=Meteor.user()._id)?48:61;
+                    
                     var userMarkerOnMap = new google.maps.Marker({
                         position: latLng,
-                        id: id._id,
+                        id: bycler._id,
                         clickable: true,
                         map: googleMapInstance,
-                        icon: new google.maps.MarkerImage(imgSrc, null, null, null,
-                            new google.maps.Size(sizeX, sizeY))
+                        icon: new google.maps.MarkerImage(byclerImage, null, null, null,
+                            new google.maps.Size(xSize, ySize))
                     });
-
-                    userMarkerOnMap.info = new google.maps.InfoWindow({
-                        content: '<div style="height:32px">'
-                        + '<b><span style="color:orange"> Nivel: ' + (id.profile.level).toFixed(0) + ' - </span></b>'
-                        + '<a  href="/userProfile/' + id._id + '">' + '<b> Bycler: ' + id.profile.name + ' </b></a>'
-                        + '</div>'
-                    });
-                    google.maps.event.addListener(userMarkerOnMap, 'click', function () {
-                        userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);
-                    });
+                    
+                    if(Meteor.user()._id!=bycler._id) {
+                        userMarkerOnMap.info = new google.maps.InfoWindow({
+                            content: '<div style="height:32px">'
+                            + '<b><span style="color:orange"> Nivel: ' + (bycler.profile.level).toFixed(0) + ' - </span></b>'
+                            + '<a  href="/userProfile/' + bycler._id + '">' + '<b> Bycler: ' + bycler.profile.name + ' </b></a>'
+                            + '</div>'
+                        });
+                        google.maps.event.addListener(userMarkerOnMap, 'click', function () {
+                            userMarkerOnMap.info.open(googleMapInstance, userMarkerOnMap);
+                        });
+                    }
                     userMarkers.push(userMarkerOnMap);
                 }
-            }
-
+            } 
         },
-        removed: function (id) {
-            if (id.currentLocation.allowViewLevel == 0) {
-                if (id.currentLocation && Meteor.userId() != id._id) {
-                    var indexOf = findInArray(userMarkers, 'id', id._id);
-                    userMarkers[indexOf].setMap(null);
-                }
+        removed: function (bycler) {
+            var indexOf = findInArray(userMarkers, 'id', bycler._id);
+            if(userMarkers[indexOf]) {
+                userMarkers[indexOf].setMap(null);
             }
         },
-        changed: function (id) {
-            if (id.currentLocation.allowViewLevel == 0) {
-                if (id.currentLocation && Meteor.userId() != id._id) {
-                    var indexOf = findInArray(userMarkers, 'id', id._id);
-                    var latLng = new google.maps.LatLng(id.currentLocation.latitude, id.currentLocation.longitude)
+        changed: function (bycler) {
+            var byclerImage, latLng, xSize, ySize;
+            if (bycler.currentLocation.allowViewLevel == 2 && Meteor.user()._id!=bycler._id) {
+                latLng = new google.maps.LatLng(bycler.currentLocation.latitude, bycler.currentLocation.longitude);
+                byclerImage = '/imgs/useronmap/' + (Meteor.user().profile.level?Meteor.user().profile.level:1) + '.png';
+                xSize = 48;
+                ySize = 48;
+            } else if(Meteor.user()._id==bycler._id) {
+                latLng = Geolocation.latLng();
+                byclerImage = '/imgs/markers/my_bycler' + (bycler.currentLocation.allowViewLevel==2?'':'_invi') + '.png';
+                xSize = 50;
+                ySize = 61;
+            }
+            
+            if(bycler.currentLocation.allowViewLevel == 2 || (bycler.currentLocation.allowViewLevel != 2 && Meteor.user()._id==bycler._id)) {
+                // Se cambian valores de acuerdo al cambio reactivo
+                var indexOf = findInArray(userMarkers, 'id', bycler._id);
+                if(userMarkers[indexOf]) {
                     userMarkers[indexOf].setPosition(latLng);
+                    userMarkers[indexOf].setIcon(new google.maps.MarkerImage(byclerImage, null, null, null,
+                                new google.maps.Size(xSize, ySize)));
+                    userMarkers[indexOf].setMap(googleMapInstance);
+                }
+            } else {
+                var indexOf = findInArray(userMarkers, 'id', bycler._id);
+                if(userMarkers[indexOf]) {
+                    userMarkers[indexOf].setMap(null);
                 }
             }
         }
@@ -387,7 +415,7 @@ Template.googleMap.events({
             Session.set('currentTrackId', null);
         } else {
             setPlayPauseStyle('pause');
-            var trackId = UserTrack.insert({
+            var trackId = UserTracks.insert({
                 name: moment().format("DD-MM-YYYY, h:mm:ss a"),
                 created: new Date(),
                 userId: Meteor.userId(),
@@ -426,8 +454,8 @@ Template.googleMap.events({
                 ratingAverage: 0,
                 fecha: new Date(),
                 type: markerType,
-                x: MarkerEditable.getPosition().k,
-                y: MarkerEditable.getPosition().B,
+                x: MarkerEditable.getPosition().lat(),
+                y: MarkerEditable.getPosition().lng(),
                 data: {
                     nombre: getTituloFromMarkerType(markerType),
                     cuando: moment().format('L'),
@@ -455,29 +483,53 @@ Template.googleMap.events({
                 }
             });
         } else {
-            Markers.insert({
+            var markerId = Markers.insert({
                 fecha: new Date(),
                 type: markerType,
-                x: MarkerEditable.getPosition().k,
-                y: MarkerEditable.getPosition().B,
+                x: MarkerEditable.getPosition().lat(),
+                y: MarkerEditable.getPosition().lng(),
                 userId: Meteor.user()._id,
                 ratingAverage: 0,
+                ratingsCount: 0,
                 titulo: getTituloFromMarkerType(markerType)
             });
+            
             var count = Meteor.user().stats.markersCount;
             if (count >= 0) {
                 count++
             }
+            
             Meteor.users.update({_id: Meteor.userId()}, {
-                $set: {
-                    "stats.markersCount": count
+                $set: { "stats.markersCount": count }
+            });
+            
+            google.maps.event.addListener(MarkerEditable, 'click', function () {
+                var marker_ = Session.get('SelectedMarker');
+                if (marker_ && marker_._id == marker._id) {
+                    marker = marker_;
+                }
+                else {
+                    infobubbleInstance.close();
+                }
+
+                marker = Markers.findOne(markerId);
+
+                if (!infobubbleInstance.isOpen()) {
+                    infobubbleInstance.setContent(getContentForRatingMarkerWindows(marker));
+                    infobubbleInstance.open(MarkerEditable.getMap(), MarkerEditable);
+                    Session.set('SelectedMarker', marker);
+                } else {
+                    Session.set('SelectedMarker', false);
+                    infobubbleInstance.close();
                 }
             });
         }
     },
     'click #show-current-location-btn': function (event) {
         $('#show-current-location-btn').toggleClass("toggled");
-        if ($('#show-current-location-btn')) this.showCurrLocationMarker;
+        if (!$('#show-current-location-btn').hasClass("toggled")) {
+            googleMapInstance.setCenter(Geolocation.latLng());
+        }
     },
     'click #addmarker-btn': function (event) {
         $('#addmarker-btn').toggleClass("toggled");
@@ -498,19 +550,18 @@ Template.googleMap.events({
     },
     'click #visibility-btn': function (event) {
         $('#visibility-btn').toggleClass("toggled");
-        if (visibleMode == 2) {
-            $('#visibility-icon').removeClass("glyphicon-eye-close");
-            $('#visibility-icon').addClass("glyphicon-eye-open");
-            visibleMode = 0;
-            Meteor.users.update({_id: Meteor.userId()}, {
-                $set: {"currentLocation.allowViewLevel": 0}
-            });
-        } else {
+        visibleMode =  Meteor.user().currentLocation?Meteor.user().currentLocation.allowViewLevel:-1;
+        if (visibleMode == 0) {
             $('#visibility-icon').removeClass("glyphicon-eye-open");
             $('#visibility-icon').addClass("glyphicon-eye-close");
-            visibleMode = 2;
             Meteor.users.update({_id: Meteor.userId()}, {
                 $set: {"currentLocation.allowViewLevel": 2}
+            });
+        } else {
+            $('#visibility-icon').removeClass("glyphicon-eye-close");
+            $('#visibility-icon').addClass("glyphicon-eye-open");
+            Meteor.users.update({_id: Meteor.userId()}, {
+                $set: {"currentLocation.allowViewLevel": 0}
             });
         }
     }
@@ -533,7 +584,7 @@ GoogleMap.prototype.startAnimation = function () {
     var path = new google.maps.MVCArray;
 
     var trackId = Session.get('selectedTrackId');
-    var trackPoints = GeoLog.find({'trackId': trackId});
+    var trackPoints = GeoLogs.find({'trackId': trackId});
     trackPoints.forEach(function (point) {
         path.push(new google.maps.LatLng(point.latitude, point.longitude));
     });

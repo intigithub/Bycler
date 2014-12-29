@@ -200,6 +200,7 @@ checkForVoidFields = function () {
 
     }
 }
+
 getTituloFromMarkerType = function (markerType) {
     switch (markerType) {
         case 0:
@@ -236,90 +237,65 @@ getMarkerEventContent = function (marcador) {
         + "</span>"
 }
 
-getContentForRatingMarkerWindows = function (marcador) {
-    var titulo = "";
-    var creador = "";
-    var fecha = formatDateToMomment(marcador.fecha);
+getContentForRatingMarkerWindows = function (marker) {
+    var titulo = "", creador = "";
+    var fecha = formatDateToMomment(marker.fecha);
 
-    var valoracionPersonal = 0;
-    var valoracionPromedio = 0;
+    var rating = 0, averageRating = 0;
 
     //se obtiene el titulo del marcador y si no tiene lo coloca por defecto y actualiza
-    if (!marcador.titulo) {
-        titulo = getTituloFromMarkerType(marcador.type);
-        Markers.update({_id: marcador._id}, {
-            $set: {
-                "titulo": titulo
-            }
-        });
+    if (!marker.titulo) {
+        titulo = getTituloFromMarkerType(marker.type);
     } else {
-        titulo = marcador.titulo
-        Markers.update({_id: marcador._id}, {
-            $set: {
-                "titulo": titulo
-            }
-        });
+        titulo = marker.titulo
     }
+    
+    Markers.update({_id: marker._id}, { $set: { "titulo": titulo } });
+    
     // se obtiene el creador del marcador
-    if (!marcador.userId) {
-        creador = "Bycler"
+    if (!marker.userId) {
+        creador = "Bycler";
     } else {
-        creador = Meteor.users.findOne({_id: marcador.userId}).profile.name;
+        creador = Meteor.users.findOne({ _id: marker.userId }).profile.name;
     }
-    var markerRatingCount = MarkerRating.find({markerId: marcador._id}).count();
+    
+    var ratingsCount = marker.ratingsCount?marker.ratingsCount:0;
     //buscamos el rating del usuario si ya ha rankeado el marcador
-    var markerRating = MarkerRating.findOne({markerId: marcador._id, userId: Meteor.user()._id});
-    console.log(markerRating)
-    if (!markerRating) {
-        valoracionPersonal = 0;
-    } else {
-        valoracionPersonal = markerRating.rating;
-    }
-
-    valoracionPromedio = marcador.rating;
-    if (!marcador.ratingAverage) {
-        valoracionPromedio = 0;
-    } else {
-        valoracionPromedio = marcador.ratingAverage;
-    }
-    if (!markerRatingCount)
-        markerRatingCount = 0;
-    else {
-        if (markerRatingCount > 1) {
-        }
-        else
-            markerRatingCount = 1
-    }
+    var markerRating = MarkerRatings.findOne({ markerId: marker._id, userId: Meteor.userId() });
+    
+    rating = markerRating && markerRating.rating?markerRating.rating:0;
+    ratingAverage = marker.ratingAverage?marker.ratingAverage:0;
+    
     var creadorProfileId = 0;
-    if (marcador.userId) {
-        creadorProfileId = Meteor.users.findOne({_id: marcador.userId})._id;
+    if (marker.userId) {
+        creadorProfileId = Meteor.users.findOne({_id: marker.userId})._id;
     }
 
-    var content = '<div style="min-width:120px;min-height:48px;margin:4px;padding-top:6px;">'
-        + '<h5 style="">' + titulo + '</h5>'
-        + '<input type="range" min="0" max="5" value="' + valoracionPromedio.toFixed(1) + '" step="0.5" id="backing2">'
-        + '<div class="rateit" data-rateit-backingfld="#backing2"></div>   '
-        + '<br><span>Calificacion <span id="valoracionPromedio">' + valoracionPromedio.toFixed(1) + '</span></span>'
-        + '<br><span> Valoraciones: <span id="markerRatingCount">' + markerRatingCount + '</span></span>'
-        + '<br><span>Mi Valoracion: <span id="valoracionPersonal">' + valoracionPersonal.toFixed(1) + '</span></span>'
+    var content = '<div style="min-width:120px;margin:4px;padding-top:6px;">'
+        + '<h5 class="label-marker-title" style="display:">' + titulo + '</h5>'
+        + '<input class="input-marker-title" type="text" style="display:none; width: 100%" value="'+ titulo +'"/>'
+        + '<div class="rateit-marker" data-rateit-backingfld="#backing2"></div>   '
+        + '<input type="range" min="0" max="5" value="' + ratingAverage.toFixed(1) + '" step="0.5" id="backing2" style="width:112px"/>'
+        + '<br><span>Calificacion <span id="valoracionPromedio">' + ratingAverage.toFixed(1) + '</span></span>'
+        + '<br><span> Valoraciones: <span id="markerRatingCount">' + ratingsCount + '</span></span>'
+        + '<br><span>Mi Valoracion: <span id="valoracionPersonal">' + ratingAverage.toFixed(1) + '</span></span>'
         + '<br><span>' + fecha + '</span>';
+    
     if (creadorProfileId != 0) {
-        if (creadorProfileId == Meteor.user()._id)
+        if (creadorProfileId == Meteor.user()._id) {
             content = content + '<br><a href="/userProfile/' + creadorProfileId + '" ><span style="color:orange">Creador: Yo</span></a>'
-        else {
+        } else {
             content = content + '<br><a href="/externalUserProfile/' + creadorProfileId + '" ><span style="color:orange">Creador: ' + creador + '</span></a>'
         }
-    }
-    else {
+    } else {
         content = content + '<br><span style="color:orange">Creador: Bycler</span>'
-
     }
+    
     content = content + '</div>'
 
     return content;
-
-
 }
+
 findInArray = function (arraytosearch, key, valuetosearch) {
     for (var i = 0; i < arraytosearch.length; i++)
         if (arraytosearch[i][key] == valuetosearch)

@@ -5,11 +5,11 @@ Meteor.subscribe('basic');
 Template.userTrackDetail.helpers({
     trackObject: function () {
         var trackId = Session.get('trackIdInView');
-        return UserTrack.findOne({_id: trackId});
+        return UserTracks.findOne({_id: trackId});
     },
     isKmDistance: function () {
         var trackId = Session.get('trackIdInView');
-        var Track = UserTrack.findOne({_id: trackId});
+        var Track = UserTracks.findOne({_id: trackId});
         if (Track.totalDistance >= 1000) {
             return true;
         } else {
@@ -20,7 +20,7 @@ Template.userTrackDetail.helpers({
 Template.userTrackDetail.events({
     'change .track-name': function (evt, template) {
         var trackId = template.find(".track-name").id;
-        UserTrack.update({_id: trackId}
+        UserTracks.update({_id: trackId}
             , {
                 $set: {
                     name: template.find(".track-name").value
@@ -30,11 +30,11 @@ Template.userTrackDetail.events({
 });
 Template.userTrackDetail.rendered = function () {
     var trackId = Session.get('trackIdInView');
-    var Track = UserTrack.findOne({_id: trackId});
+    var Track = UserTracks.findOne({_id: trackId});
     //valida si se ah generado resumen de datos
     if (!Track.isDataGenerated) {
         //busca los puntos de la ruta
-        var Waypoints = GeoLog.find({trackId: Track._id});
+        var Waypoints = GeoLogs.find({trackId: Track._id});
         var prevWaypoint = null;
         var maxSpeed = 0.0;
         var averageSpeed = 0.0;
@@ -48,12 +48,12 @@ Template.userTrackDetail.rendered = function () {
                     totalDistance = totalDistance + distance_on_geoid(prevWaypoint.latitude,
                         prevWaypoint.longitude, waypoint.latitude, waypoint.longitude);
                     var speed = getSpeed2Points(prevWaypoint, waypoint);
-                    GeoLog.update({_id: waypoint._id}, {$set: {"speed": speed}});
+                    GeoLogs.update({_id: waypoint._id}, {$set: {"speed": speed}});
                     averageSpeed = averageSpeed + speed;
                     if (maxSpeed < speed) maxSpeed = speed;
                 }
                 else {
-                    GeoLog.update({_id: waypoint._id}, {$set: {"speed": 0}});
+                    GeoLogs.update({_id: waypoint._id}, {$set: {"speed": 0}});
                     date1 = waypoint.created;
                 }
 
@@ -72,7 +72,7 @@ Template.userTrackDetail.rendered = function () {
         var diffHrs = Math.round((diffMs % 86400000) / 3600000); // hours
         var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 
-        UserTrack.update({_id: trackId}
+        UserTracks.update({_id: trackId}
             , {
                 $set: {
                     isDataGenerated: true,
@@ -99,7 +99,7 @@ Template.userTrackDetail.rendered = function () {
 
     }
 
-    Track = UserTrack.findOne({_id: trackId});
+    Track = UserTracks.findOne({_id: trackId});
     var opts = {
         lines: 12,
         angle: 0.15,

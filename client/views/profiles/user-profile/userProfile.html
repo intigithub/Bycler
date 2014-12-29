@@ -19,10 +19,17 @@
                     </div>
                     <div class="user-info-block">
                         <div class="user-heading">
-                            <h3>{{getFullName}}</h3>
                             <div class="rateit-profile" data-rateit-value="{{getUserRating}}"
                                  data-rateit-ispreset="true" data-rateit-readonly="true"></div>
                             <br/>
+                            <h3 id="title-full-name">{{getFullName}}</h3>
+                            <div class="row" style="display:none" id="div-full-name">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-addon user-ancho">Nombre</span>
+                                    <input type="text" class="form-control" placeholder="Full Name"
+                                           id="input-full-name" value="{{getFullName}}">
+                                </div>
+                            </div>
                         </div>
                         <div class="user-body">
                             <div class="tab-content">
@@ -31,28 +38,28 @@
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon user-ancho">User Name</span>
                                             <input type="text" class="form-control" placeholder="User Name"
-                                                   value="{{getName}}">
+                                                id="input-user-name" value="{{getName}}">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon">Nivel</span>
                                             <input type="text" class="form-control" placeholder="Nivel"
-                                                   value="{{getLevel}}">
+                                                   value="{{getLevel}}" readonly="true"/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon">Km Acumulados</span>
                                             <input type="text" class="form-control" placeholder="Km Acumulados"
-                                                   value="{{getKmAccum}}">
+                                                   value="{{getKmAccum}}" readonly="true"/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="input-group input-group-lg">
                                             <span class="input-group-addon">Marcadores</span>
                                             <input type="text" class="form-control" placeholder="Marcadores"
-                                                   value="{{getMarkersCount}}">
+                                                   value="{{getMarkersCount}}" readonly="true"/>
                                         </div>
                                     </div>
                                 </div>

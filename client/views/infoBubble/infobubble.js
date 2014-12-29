@@ -81,7 +81,7 @@ InfoBubble.prototype.ARROW_STYLE_ = 0;
  * @const
  * @private
  */
-InfoBubble.prototype.SHADOW_STYLE_ = 1;
+InfoBubble.prototype.SHADOW_STYLE_ = 0;
 
 
 /**
@@ -941,6 +941,7 @@ InfoBubble.prototype.open_ = function (opt_map, opt_anchor) {
     }
 
     this.redraw_();
+    
     this.isOpen_ = true;
 
     var pan = !this.get('disableAutoPan');
@@ -948,8 +949,9 @@ InfoBubble.prototype.open_ = function (opt_map, opt_anchor) {
         var that = this;
         window.setTimeout(function () {
             // Pan into view, done in a time out to make it feel nicer :)
+            $('.rateit-marker').rateit();
             that.panToView();
-        }, 200);
+        }, 0);
     }
 };
 InfoBubble.prototype['open'] = InfoBubble.prototype.open;
@@ -1035,7 +1037,7 @@ InfoBubble.prototype.panToView = function () {
 
     pos.y -= deltaY;
     latLng = projection.fromContainerPixelToLatLng(pos);
-
+    
     if (map.getCenter() != latLng) {
         map.panTo(latLng);
     }
@@ -1130,52 +1132,82 @@ InfoBubble.prototype.updateContent_ = function () {
                 }
                 $('#basicModal').modal('show');
             });
-        }
-        else {
-            var buttons = this.content_.getElementsByClassName('rateit');
+        } else {
+            // Eventos asociados al rating
+            var buttons = this.content_.getElementsByClassName('rateit-marker');
             buttons[0].addEventListener('click', function () {
-                console.log('akiiieeee')
-                var val = $('.rateit').rateit('value')
-                var markerRating = MarkerRating.findOne({markerId: marker._id, userId: Meteor.user()._id});
-                console.log(markerRating)
+                var val = $('.rateit-marker').rateit('value');
+
+                var markerRating = MarkerRatings.findOne({ markerId: marker._id, userId: Meteor.userId() });
+                if(val==0) {
+                    if(!markerRating) return; // Sin voto, sale
+                    if(!markerRating.rating) return; // Sin valorización en el voto (inconsistencia validada), sale
+                    
+                    var lastRating = markerRating.rating;
+                    var recalculatedAverage = marker.ratingsCount==1?0:(marker.ratingAverage - lastRating) / (marker.ratingsCount - 1);
+                    
+                    Markers.update({ _id: marker._id }, { 
+                        $set: { ratingAverage : recalculatedAverage, ratingsCount: marker.ratingsCount - 1 }
+                    });
+                    
+                    MarkerRatings.delete(markerRating._id);                    
+                    return;
+                }
+                
                 if (!markerRating) {//add
-                    MarkerRating.insert({
+                    var markerRatingId = MarkerRatings.insert({
                         markerId: marker._id,
                         userId: Meteor.userId(),
                         created: new Date(),
                         modified: new Date(),
-                        rating: val
+                        rating: 0
                     });
-                } else {//update
-                    MarkerRating.update({_id: markerRating._id}, {
-                        $set: {
-                            modified: new Date(),
-                            rating: val
-                        }
-                    });
-                    var usersRatings = MarkerRating.find({'markerId': marker._id});
-                    var nuevoPromedio = 0;
-                    usersRatings.forEach(function (r) {
-                        if (r.rating)
-                            nuevoPromedio = nuevoPromedio + r.rating;
-                    });
-                    nuevoPromedio = nuevoPromedio / usersRatings.count();
-
-                    Markers.update({_id: marker._id}, {
-                        $set: {
-                            ratingAverage: nuevoPromedio
-                        }
-                    });
-                    $('#markerRatingCount').text(usersRatings.count());
+                    markerRating = MarkerRatings.findOne(markerRatingId);
                 }
-                $('#valoracionPromedio').text(nuevoPromedio);
+                
+                var ratingsCount = marker.markersCount?marker.markersCount:0;
+                var actualRating = markerRating.rating?markerRating.rating:0;
+                var ratingAverage = ( ratingsCount * actualRating + val ) / (ratingsCount + 1);
+
+                Markers.update({_id: marker._id}, {
+                    $set: {
+                        ratingAverage: ratingAverage,
+                        ratingsCount: ratingsCount + 1
+                    }
+                });
+                
+                MarkerRatings.update({ _id: markerRating._id }, {
+                    $set: { rating: val }
+                });
+                
+                $('#markerRatingCount').text(ratingsCount + 1);
+                $('#valoracionPromedio').text(ratingAverage);
                 $('#valoracionPersonal').text(val);
             });
+            
+            // Eventos asociados la edición del título
+            var labels = this.content_.getElementsByClassName('label-marker-title');
+            labels[0].addEventListener('click', function () {
+                var marker = Session.get('SelectedMarker');
+                if(marker.userId!=Meteor.userId()) return;
+                $('.label-marker-title').hide();
+                $('.input-marker-title').show();
+            });
+
+            // Eventos asociados la edición del título
+            var inputs = this.content_.getElementsByClassName('input-marker-title');
+            inputs[0].addEventListener('change', function () {
+                var marker = Session.get('SelectedMarker');
+                var nuevoTitulo = $(this).val();
+                Markers.update({ _id: marker._id }, { $set: { titulo: nuevoTitulo } });
+                $('.label-marker-title').text(nuevoTitulo);
+                $('.label-marker-title').show();
+                $('.input-marker-title').hide();
+            });
+
+            this.redraw_();
         }
     }
-    this.redraw_();
-    $('.rateit').rateit();
-
 };
 
 /**

@@ -1,6 +1,6 @@
-MarkerRating = new Mongo.Collection("markersRating");
+MarkerRatings = new Mongo.Collection("markerRatings");
 
-MarkerRating.allow({
+MarkerRatings.allow({
     insert: function () {
         return true;
     },
@@ -12,7 +12,7 @@ MarkerRating.allow({
     },
     fetch: ['owner']
 });
-MarkerRating.deny({
+MarkerRatings.deny({
     remove: function (userId, doc) {
         return doc.locked;
     },

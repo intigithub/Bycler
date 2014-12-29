@@ -3,11 +3,11 @@
  */
 Template.userTrackList.helpers({
     userTracksList: function () {
-        return UserTrack.find({}, {sort: {created: -1}});
+        return UserTracks.find({}, {sort: {created: -1}});
 
     },
     userTracksListCount: function () {
-        var count = UserTrack.find({}).count();
+        var count = UserTracks.find({}).count();
         return count > 0;
     },
     isTrackStillAlive: function (trackItemId) {
@@ -24,7 +24,7 @@ Template.userTrackList.helpers({
         }
     },
     isTrackEmpty: function (trackId) {
-        var points = GeoLog.find({'trackId': trackId});
+        var points = GeoLogs.find({'trackId': trackId});
         if (points.count() > 1) {
 
             return false;
@@ -54,7 +54,7 @@ Template.userTrackList.events({
         var trackId = btn.id;
         if (Session.get('currentTrackId') != trackId) {
             var btn = event.currentTarget;
-            UserTrack.remove(trackId);
+            UserTracks.remove(trackId);
         }
     }
 });
